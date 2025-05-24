@@ -1,0 +1,69 @@
+@use '../abstracts/variables' as *;
+@use '../abstracts/mixins' as *;
+
+.hero-section {
+  background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+              url('/hero-bg.jpg') center/cover;
+  height: 500px;
+  @include flex(column, center, center);
+  text-align: center;
+  color: $white;
+  margin-top: $header-height;
+
+  &-content {
+    max-width: 800px;
+    padding: $spacing-lg;
+  }
+
+  h1 {
+    @include heading-1;
+    color: $white;
+  }
+
+  p {
+    font-size: 1.2rem;
+    margin-bottom: $spacing-lg;
+  }
+
+  .search-form {
+    margin-bottom: $spacing-lg;
+
+    .search-container {
+      @include flex(row, center, center);
+      max-width: 600px;
+      margin: 0 auto;
+
+      input {
+        flex: 1;
+        padding: $spacing-sm;
+        border: none;
+        border-radius: $border-radius 0 0 $border-radius;
+        font-size: $font-size-base;
+      }
+
+      .search-button {
+        @include button-primary;
+        border-radius: 0 $border-radius $border-radius 0;
+        padding: $spacing-sm $spacing-lg;
+      }
+    }
+  }
+
+  .popular-searches {
+    @include flex(row, center, center);
+    gap: $spacing-sm;
+    flex-wrap: wrap;
+
+    span {
+      color: $light-gray;
+    }
+
+    a {
+      color: $white;
+
+      &:hover {
+        color: $primary-color;
+      }
+    }
+  }
+} 

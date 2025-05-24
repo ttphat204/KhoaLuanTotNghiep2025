@@ -1,0 +1,63 @@
+@use '../abstracts/variables' as *;
+@use '../abstracts/mixins' as *;
+
+.job-categories {
+  padding: $spacing-xl 0;
+  background-color: $light-gray;
+
+  h2 {
+    @include heading-2;
+    text-align: center;
+    margin-bottom: $spacing-lg;
+    color: $text-color;
+  }
+
+  .categories-grid {
+    @include grid(4, $spacing-md);
+    margin-bottom: $spacing-lg;
+
+    @include respond-to(lg) {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    @include respond-to(md) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    @include respond-to(sm) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .category-card {
+    @include card;
+    @include flex(column, center, center);
+    text-align: center;
+
+    .category-icon {
+      font-size: 2.5rem;
+      margin-bottom: $spacing-sm;
+    }
+
+    h3 {
+      @include heading-3;
+      margin: 0 0 $spacing-xs;
+    }
+
+    p {
+      margin: 0;
+      color: $dark-gray;
+      font-size: 0.9rem;
+    }
+  }
+
+  .view-all {
+    text-align: center;
+
+    &-link {
+      @include button-primary;
+      display: inline-block;
+      padding: $spacing-xs $spacing-lg;
+    }
+  }
+} 
