@@ -1,34 +1,50 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import { motion } from 'framer-motion'
+import Header from './components/Header'
+import SearchBar from './components/SearchBar'
+import JobList from './components/JobList'
 import './App.css'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [filters, setFilters] = useState({
+    industry: '',
+    location: '',
+    workType: '',
+    salary: ''
+  })
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1 className='text-3xl font-bold underline'>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <div className="min-h-screen bg-[#f6fbff]">
+      <Header />
+      
+      <main className="pt-16">
+        <div className="w-full px-4 sm:px-6 lg:px-8 py-8">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <SearchBar />
+          </motion.div>
+
+          <div className="mt-8">
+            <JobList filters={filters} />
+          </div>
+
+          <div className="mt-8">
+          </div>
+        </div>
+      </main>
+
+      <footer className="bg-white border-t mt-12 py-6">
+        <div className="w-full px-4 sm:px-6 lg:px-8">
+          <div className="text-center text-gray-500">
+            <p>© 2024 JobFinder. All rights reserved.</p>
+            <p className="mt-2">Powered by React & Tailwind CSS</p>
+          </div>
+        </div>
+      </footer>
+    </div>
   )
 }
 
