@@ -16,26 +16,10 @@ function App() {
   return (
     <div className="min-h-screen bg-[#f6fbff]">
       <Header />
-      
-      <main className="pt-16">
-        <div className="w-full px-4 sm:px-6 lg:px-8 py-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-          >
-            <SearchBar />
-          </motion.div>
-
-          <div className="mt-8">
-            <JobList filters={filters} />
-          </div>
-
-          <div className="mt-8">
-          </div>
-        </div>
+      <main>
+        <SearchBar />
+        <JobList filters={filters} />
       </main>
-
       <footer className="bg-white border-t mt-12 py-6">
         <div className="w-full px-4 sm:px-6 lg:px-8">
           <div className="text-center text-gray-500">
