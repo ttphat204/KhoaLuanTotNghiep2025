@@ -38,3 +38,27 @@
 .read-the-docs {
   color: #888;
 }
+
+/* Custom Toastify styles */
+.Toastify__toast {
+  border-radius: 12px !important;
+  box-shadow: 0 4px 24px 0 rgba(44, 62, 255, 0.08), 0 1.5px 6px 0 rgba(44, 62, 255, 0.08);
+  font-family: 'Inter', 'Roboto', sans-serif;
+  font-size: 1rem;
+}
+.Toastify__toast--success {
+  background: linear-gradient(90deg, #4fdd8a 0%, #2C3EFF 100%) !important;
+  color: #fff !important;
+}
+.Toastify__toast--error {
+  background: linear-gradient(90deg, #ff6b6b 0%, #2C3EFF 100%) !important;
+  color: #fff !important;
+}
+.Toastify__toast--info {
+  background: linear-gradient(90deg, #2C3EFF 0%, #a1c4fd 100%) !important;
+  color: #fff !important;
+}
+.Toastify__toast--warning {
+  background: linear-gradient(90deg, #fbbf24 0%, #2C3EFF 100%) !important;
+  color: #fff !important;
+}

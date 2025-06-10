@@ -1,35 +1,44 @@
-import { useState } from 'react'
-import { motion } from 'framer-motion'
-import Header from './components/Header'
-import SearchBar from './components/SearchBar'
-import JobList from './components/JobList'
-import './App.css'
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Header from './components/Header';
+import JobList from './components/JobList';
+import SearchBar from './components/SearchBar';
+import Dashboard from './components/admin/Dashboard';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import './App.css';
 
 function App() {
-  const [filters, setFilters] = useState({
-    industry: '',
-    location: '',
-    workType: '',
-    salary: ''
-  })
-
   return (
-    <div className="min-h-screen bg-[#f6fbff]">
-      <Header />
-      <main>
-        <SearchBar />
-        <JobList filters={filters} />
-      </main>
-      <footer className="bg-white border-t mt-12 py-6">
-        <div className="w-full px-4 sm:px-6 lg:px-8">
-          <div className="text-center text-gray-500">
-            <p>© 2024 JobFinder. All rights reserved.</p>
-            <p className="mt-2">Powered by React & Tailwind CSS</p>
-          </div>
-        </div>
-      </footer>
-    </div>
-  )
+    <Router>
+      <Routes>
+        {/* Admin routes */}
+        <Route path="/admin" element={<Dashboard />} />
+        {/* Customer (user) routes */}
+        <Route
+          path="/*"
+          element={
+            <div>
+              <Header />
+              <div className="pt-20">
+                <SearchBar />
+                <JobList />
+              </div>
+            </div>
+          }
+        />
+      </Routes>
+      <ToastContainer
+        position="top-right"
+        autoClose={2000}
+        theme="colored"
+        hideProgressBar={false}
+        newestOnTop={true}
+        closeOnClick
+        pauseOnHover
+      />
+    </Router>
+  );
 }
 
-export default App
+export default App;

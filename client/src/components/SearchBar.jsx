@@ -112,7 +112,7 @@ const SearchBar = () => {
       <div className="relative w-full flex justify-center" style={{ marginTop: '-80px' }}>
         {/* Hiệu ứng đổ bóng phía trên card */}
         <div className="absolute -top-8 left-1/2 -translate-x-1/2 w-[90%] h-12 bg-cyan-400 opacity-60 blur-2xl rounded-t-2xl z-0"></div>
-        <div className="relative bg-white rounded-2xl flex flex-col p-0 max-w-6xl w-full z-50">
+        <div className="relative bg-white rounded-2xl shadow-xl flex flex-col p-0 max-w-6xl w-full z-50">
           {/* Hiệu ứng đổ màu nhẹ chỉ chiếm 20% phía trên card */}
           <div className="absolute left-0 top-0 w-full h-[20%] rounded-t-2xl bg-gradient-to-b from-cyan-100 via-white to-transparent opacity-70 blur-md pointer-events-none z-0"></div>
           <div className="relative z-10">
