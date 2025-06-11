@@ -13,7 +13,8 @@ const app = express();
 app.use(cors(corsOptions));
 app.use(express.json());
 
-mongoose.connect("mongodb://localhost:27017/khoaluan");
+mongoose.connect("mongodb+srv://khoaluan:qqkVBdbsUAYzX7tt@khoaluan.82p9uxu.mongodb.net/?retryWrites=true&w=majority&appName=khoaluan");
+
 
 const Job = require("./models/Job");
 
