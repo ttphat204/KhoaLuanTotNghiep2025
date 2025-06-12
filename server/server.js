@@ -50,6 +50,10 @@ app.post('/api/upload-logo', upload.single('logo'), (req, res) => {
 // Cho phép truy cập file tĩnh
 app.use('/uploads', express.static('uploads'));
 
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "success.html"));
+});
+
 app.listen(3000, () => {
   console.log("Server is running on port 3000");
 });

@@ -16,7 +16,7 @@ const JobList = ({ filters }) => {
 
   // Fetch jobs từ API khi component mount
   useEffect(() => {
-    fetch('http://localhost:3000/api/jobs')
+    fetch('https://be-khoaluan.vercel.app/api/jobs')
       .then(res => res.json())
       .then(data => setJobs(data))
       .catch(err => console.error('Error fetching jobs:', err));
