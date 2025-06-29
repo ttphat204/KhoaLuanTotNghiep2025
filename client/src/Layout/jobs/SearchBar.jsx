@@ -1,16 +1,16 @@
 import { useState, useRef, useEffect } from 'react';
 import { FaSearch, FaMapMarkerAlt, FaBriefcase } from 'react-icons/fa';
 import { AiFillStar } from 'react-icons/ai';
-import img1 from '../assets/images/1.png';
-import img6 from '../assets/images/6.png';
-import img12 from '../assets/images/12.png';
-import img13 from '../assets/images/13.png';
-import img17 from '../assets/images/17.png';
-import img26 from '../assets/images/26.png';
-import img34 from '../assets/images/34.png';
-import img53 from '../assets/images/53.png';
-import imgAll from '../assets/images/all.png';
-import bannerImg from '../assets/images/banner-cts-timdungviec-pc_174740689238.jpg';
+import img1 from '../../assets/images/1.png';
+import img6 from '../../assets/images/6.png';
+import img12 from '../../assets/images/12.png';
+import img13 from '../../assets/images/13.png';
+import img17 from '../../assets/images/17.png';
+import img26 from '../../assets/images/26.png';
+import img34 from '../../assets/images/34.png';
+import img53 from '../../assets/images/53.png';
+import imgAll from '../../assets/images/all.png';
+import bannerImg from '../../assets/images/banner-cts-timdungviec-pc_174740689238.jpg';
 
 const jobTags = [
   'Kế toán',

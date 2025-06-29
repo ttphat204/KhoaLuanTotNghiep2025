@@ -1,60 +1,42 @@
-const express = require("express");
-const cors = require("cors");
-const corsOptions = {
-  origin: "http://localhost:5173",
-};
-const mongoose = require("mongoose");
-const jobController = require('./controllers/jobController');
-const categoryController = require('./controllers/categoryController');
-const multer = require('multer');
-const path = require('path');
-
+const express = require('express');
+const cors = require('cors');
 const app = express();
-app.use(cors(corsOptions));
+const PORT = process.env.PORT || 3000;
+
+// Cấu hình CORS để cho phép tất cả origins
+app.use(cors({
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'x-auth-token']
+}));
+
 app.use(express.json());
 
-mongoose.connect("mongodb+srv://khoaluan:qqkVBdbsUAYzX7tt@khoaluan.82p9uxu.mongodb.net/?retryWrites=true&w=majority&appName=khoaluan");
+// Import và sử dụng các routes
+const authRouter = require('./routers/auth.router');
+const userRouter = require('./routers/user.router');
+const jobRouter = require('./routers/job.router');
+const companyRouter = require('./routers/company.router');
+const cvRouter = require('./routers/cv.router');
+const applicationRouter = require('./routers/application.router');
+const interviewRouter = require('./routers/interview.router');
+const notificationRouter = require('./routers/notification.router');
 
+// Sử dụng các routes
+app.use('/api/auth', authRouter);
+app.use('/api/user', userRouter);
+app.use('/api/job', jobRouter);
+app.use('/api/company', companyRouter);
+app.use('/api/cv', cvRouter);
+app.use('/api/application', applicationRouter);
+app.use('/api/interview', interviewRouter);
+app.use('/api/notification', notificationRouter);
 
-const Job = require("./models/Job");
-
-// Cấu hình nơi lưu file và tên file
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, 'uploads/');
-  },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + path.extname(file.originalname));
-  }
-});
-const upload = multer({ storage: storage });
-
-app.get("/api/jobs", jobController.getAllJobs);
-app.get("/api/jobs/:id", jobController.getJobById);
-app.post("/api/jobs", jobController.createJob);
-app.put("/api/jobs/:id", jobController.updateJob);
-app.delete("/api/jobs/:id", jobController.deleteJob);
-
-// Category routes
-app.get("/api/categories", categoryController.getAllCategories);
-app.post("/api/categories", categoryController.createCategory);
-app.put("/api/categories/:id", categoryController.updateCategory);
-app.delete("/api/categories/:id", categoryController.deleteCategory);
-
-// Route upload file logo
-app.post('/api/upload-logo', upload.single('logo'), (req, res) => {
-  if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
-  res.json({ logo: `http://localhost:3000/uploads/${req.file.filename}` });
+// Trang chủ
+app.get('/', (req, res) => {
+  res.send('<h2>Server đang chạy! API đã sẵn sàng sử dụng.</h2>');
 });
 
-// Cho phép truy cập file tĩnh
-app.use('/uploads', express.static('uploads'));
-
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "success.html"));
-});
-
-app.listen(3000, () => {
-  console.log("Server is running on port 3000");
-});
-
+app.listen(PORT, () => {
+  console.log(`Server listening on port ${PORT}`);
+}); 

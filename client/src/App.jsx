@@ -1,43 +1,118 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Header from './components/Header';
-import JobList from './components/JobList';
-import SearchBar from './components/SearchBar';
-import Dashboard from './components/admin/Dashboard';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider, useAuth } from './context/AuthContext';
+import HomePage from './Layout/shared/HomePage';
+import CandidateHome from './Layout/candidate/CandidateHome';
+import AdminDashboard from './Layout/admin/Dashboard';
+import EmployerDashboard from './Layout/employer/EmployerDashboard';
+import EmployerLayout from './Layout/employer/EmployerLayout';
+import EmployerLogin from './Layout/auth/EmployerLogin';
+import ProtectedRoute from './Layout/shared/ProtectedRoute';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './App.css';
 
+// Component để xử lý routing dựa trên authentication
+const AppRoutes = () => {
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+      </div>
+    );
+  }
+
+  return (
+    <Routes>
+      {/* Public routes - Guest users */}
+      <Route path="/" element={<HomePage />} />
+      <Route path="/employer/login" element={<EmployerLogin />} />
+
+      {/* Protected routes based on role */}
+      <Route
+        path="/admin/*"
+        element={
+          <ProtectedRoute allowedRoles={['admin']} redirectTo="/">
+            <AdminDashboard />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/candidate/*"
+        element={
+          <ProtectedRoute allowedRoles={['candidate']} redirectTo="/">
+            <Routes>
+              <Route path="/" element={<CandidateHome />} />
+              <Route path="/jobs" element={<div className="text-center py-10">Trang tìm việc làm</div>} />
+              <Route path="/profile" element={<div className="text-center py-10">Trang hồ sơ</div>} />
+              <Route path="/saved" element={<div className="text-center py-10">Việc làm đã lưu</div>} />
+              <Route path="/account" element={<div className="text-center py-10">Thông tin cá nhân</div>} />
+              <Route path="/settings" element={<div className="text-center py-10">Cài đặt</div>} />
+            </Routes>
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/employer/*"
+        element={
+          <ProtectedRoute allowedRoles={['employer']} redirectTo="/">
+            <EmployerLayout>
+              <Routes>
+                <Route path="/" element={<EmployerDashboard />} />
+                <Route path="/jobs" element={<div className="text-center py-10">Quản lý việc làm</div>} />
+                <Route path="/candidates" element={<div className="text-center py-10">Quản lý ứng viên</div>} />
+                <Route path="/applications" element={<div className="text-center py-10">Đơn ứng tuyển</div>} />
+                <Route path="/reports" element={<div className="text-center py-10">Báo cáo</div>} />
+                <Route path="/company" element={<div className="text-center py-10">Thông tin công ty</div>} />
+                <Route path="/settings" element={<div className="text-center py-10">Cài đặt</div>} />
+              </Routes>
+            </EmployerLayout>
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Redirect authenticated users to their appropriate dashboard */}
+      <Route
+        path="*"
+        element={
+          user ? (
+            <Navigate
+              to={
+                user.role === 'admin' ? '/admin' :
+                user.role === 'employer' ? '/employer' :
+                user.role === 'candidate' ? '/candidate' : '/'
+              }
+              replace
+            />
+          ) : (
+            <Navigate to="/" replace />
+          )
+        }
+      />
+    </Routes>
+  );
+};
+
 function App() {
   return (
-    <Router>
-      <Routes>
-        {/* Admin routes */}
-        <Route path="/admin" element={<Dashboard />} />
-        {/* Customer (user) routes */}
-        <Route
-          path="/*"
-          element={
-            <div>
-              <Header />
-              <div className="pt-20">
-                <SearchBar />
-                <JobList />
-              </div>
-            </div>
-          }
+    <AuthProvider>
+      <Router>
+        <AppRoutes />
+        <ToastContainer
+          position="top-right"
+          autoClose={2000}
+          theme="colored"
+          hideProgressBar={false}
+          newestOnTop={true}
+          closeOnClick
+          pauseOnHover
         />
-      </Routes>
-      <ToastContainer
-        position="top-right"
-        autoClose={2000}
-        theme="colored"
-        hideProgressBar={false}
-        newestOnTop={true}
-        closeOnClick
-        pauseOnHover
-      />
-    </Router>
+      </Router>
+    </AuthProvider>
   );
 }
 
