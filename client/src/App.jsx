@@ -7,9 +7,9 @@ import AdminDashboard from './Layout/admin/Dashboard';
 import EmployerDashboard from './Layout/employer/EmployerDashboard';
 import EmployerLayout from './Layout/employer/EmployerLayout';
 import EmployerLogin from './Layout/auth/EmployerLogin';
+import EmployerRegister from './Layout/auth/EmployerRegister';
 import ProtectedRoute from './Layout/shared/ProtectedRoute';
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import ToastContainer from './components/ToastContainer';
 import './App.css';
 
 // Component để xử lý routing dựa trên authentication
@@ -29,6 +29,7 @@ const AppRoutes = () => {
       {/* Public routes - Guest users */}
       <Route path="/" element={<HomePage />} />
       <Route path="/employer/login" element={<EmployerLogin />} />
+      <Route path="/employer/register" element={<EmployerRegister />} />
 
       {/* Protected routes based on role */}
       <Route
@@ -102,15 +103,7 @@ function App() {
     <AuthProvider>
       <Router>
         <AppRoutes />
-        <ToastContainer
-          position="top-right"
-          autoClose={2000}
-          theme="colored"
-          hideProgressBar={false}
-          newestOnTop={true}
-          closeOnClick
-          pauseOnHover
-        />
+        <ToastContainer />
       </Router>
     </AuthProvider>
   );

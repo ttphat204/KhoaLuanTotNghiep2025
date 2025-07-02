@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 
 const EmployerLogin = () => {
@@ -101,7 +101,7 @@ const EmployerLogin = () => {
         </div>
         <div className="mt-8 bg-gray-50 rounded-lg py-4 text-center text-gray-700">
           Bạn là nhà tuyển dụng mới?,{' '}
-          <a href="#" className="text-[#4B1CD6] font-bold hover:underline">Đăng ký tài khoản</a>
+          <Link to="/employer/register" className="text-[#4B1CD6] font-bold hover:underline">Đăng ký tài khoản</Link>
         </div>
       </div>
     </div>

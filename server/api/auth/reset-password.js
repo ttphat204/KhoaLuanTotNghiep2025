@@ -87,12 +87,8 @@ module.exports = async function handler(req, res) {
       });
     }
 
-    // Hash mật khẩu mới
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(newPassword, salt);
-
-    // Cập nhật mật khẩu và xóa token
-    user.password = hashedPassword;
+    // Cập nhật mật khẩu và xóa token (password sẽ được mã hóa tự động bởi middleware pre-save)
+    user.password = newPassword; // Không mã hóa ở đây, để middleware xử lý
     user.resetPasswordToken = undefined;
     user.resetPasswordExpires = undefined;
     await user.save();

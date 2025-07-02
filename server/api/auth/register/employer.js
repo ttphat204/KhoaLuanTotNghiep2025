@@ -19,28 +19,24 @@ module.exports = async function handler(req, res) {
     return;
   }
 
+  await dbConnect();
+
   // Handle GET request - Show API info and data
   if (req.method === 'GET') {
     try {
-      await dbConnect();
       const totalEmployers = await Auth.countDocuments({ role: 'employer' });
-      
-      // Lấy dữ liệu thực tế từ database
       const employers = await Auth.find({ role: 'employer' })
-        .select('-password') // Không trả về password
+        .select('-password')
         .sort({ createdAt: -1 })
-        .limit(10); // Giới hạn 10 records gần nhất
-      
-      // Lấy thông tin chi tiết từ Employers collection
+        .limit(10);
       const employerProfiles = await Employers.find()
         .sort({ createdAt: -1 })
         .limit(10);
-      
       return res.status(200).json({
         message: 'API Đăng ký Tài khoản Nhà tuyển dụng',
         method: 'POST',
         endpoint: '/api/auth/register/employer',
-        requiredFields: ['email', 'phone', 'password', 'companyName', 'address', 'industry', 'companySize'],
+        requiredFields: ['email', 'phone', 'password', 'companyName', 'companyAddress', 'city', 'district', 'ward', 'industry', 'companySize'],
         optionalFields: ['companyWebsite', 'companyDescription', 'foundedYear'],
         description: 'Đăng ký tài khoản mới cho nhà tuyển dụng',
         databaseStats: {
@@ -66,11 +62,15 @@ module.exports = async function handler(req, res) {
             companyEmail: profile.companyEmail,
             companyPhoneNumber: profile.companyPhoneNumber,
             companyAddress: profile.companyAddress,
+            city: profile.city,
+            district: profile.district,
+            ward: profile.ward,
             companyWebsite: profile.companyWebsite,
             companyDescription: profile.companyDescription,
             industry: profile.industry,
             companySize: profile.companySize,
             foundedYear: profile.foundedYear,
+            status: profile.status,
             createdAt: profile.createdAt,
             updatedAt: profile.updatedAt
           }))
@@ -80,7 +80,10 @@ module.exports = async function handler(req, res) {
           phone: '0987654321',
           password: 'password123',
           companyName: 'Công ty ABC',
-          address: 'TP.HCM',
+          companyAddress: '123 Đường ABC, Phường 1, Quận 1, TP.HCM',
+          city: 'Thành phố Hồ Chí Minh',
+          district: 'Quận 1',
+          ward: 'Phường Bến Nghé',
           industry: 'Công nghệ thông tin',
           companySize: 100,
           companyWebsite: 'https://company.com',
@@ -105,15 +108,16 @@ module.exports = async function handler(req, res) {
     });
   }
 
-  await dbConnect();
-  
   try {
     const { 
       email, 
       phone, 
       password, 
       companyName, 
-      address, 
+      companyAddress,
+      city,
+      district,
+      ward,
       industry, 
       companySize,
       companyWebsite,
@@ -122,7 +126,7 @@ module.exports = async function handler(req, res) {
     } = req.body;
 
     // Validation
-    if (!email || !phone || !password || !companyName || !address || !industry || !companySize) {
+    if (!email || !phone || !password || !companyName || !city || !district || !ward || !industry) {
       return res.status(400).json({
         success: false,
         message: 'Thiếu thông tin bắt buộc'
@@ -155,84 +159,63 @@ module.exports = async function handler(req, res) {
       });
     }
 
-    // Validate company size
-    if (companySize < 1) {
+    // Check if email or phone already exists in Auth
+    const existingAuth = await Auth.findOne({ $or: [ { email: email.toLowerCase() }, { phone } ] });
+    if (existingAuth) {
       return res.status(400).json({
         success: false,
-        message: 'Quy mô công ty phải lớn hơn 0'
+        message: 'Email hoặc số điện thoại đã tồn tại'
       });
     }
 
-    // Validate founded year
-    if (foundedYear && (foundedYear < 1900 || foundedYear > new Date().getFullYear())) {
-      return res.status(400).json({
-        success: false,
-        message: 'Năm thành lập không hợp lệ'
-      });
-    }
-
-    // Check if email already exists
-    const existingEmail = await Auth.findOne({ email: email.toLowerCase() });
-    if (existingEmail) {
-      return res.status(400).json({
-        success: false,
-        message: 'Email đã tồn tại'
-      });
-      }
-
-    // Check if phone already exists
-    const existingPhone = await Auth.findOne({ phone });
-    if (existingPhone) {
-      return res.status(400).json({
-        success: false,
-        message: 'Số điện thoại đã tồn tại'
-      });
-    }
-
-    // Create auth account
+    // Tạo tài khoản Auth (password sẽ được mã hóa tự động bởi middleware pre-save)
     const authUser = new Auth({
       role: 'employer',
       email: email.toLowerCase(),
       phone,
-      password,
+      password: password, // Không mã hóa ở đây, để middleware xử lý
       companyName,
-      address
+      address: `${city || ''}, ${district || ''}, ${ward || ''}`.replace(/^,\s*/, '').replace(/,\s*$/, '') || 'Chưa cập nhật',
+      status: 'inactive'
     });
-
     await authUser.save();
 
-    // Create employer profile
+    // Tạo profile Employers
     const employerProfile = new Employers({
       userId: authUser._id,
       companyName,
       companyEmail: email.toLowerCase(),
       companyPhoneNumber: phone,
-      companyAddress: address,
+      companyAddress: `${city || ''}, ${district || ''}, ${ward || ''}`.replace(/^,\s*/, '').replace(/,\s*$/, '') || 'Chưa cập nhật',
+      city: city || '',
+      district: district || '',
+      ward: ward || '',
       companyWebsite: companyWebsite || '',
       companyDescription: companyDescription || '',
       industry,
-      companySize,
-      foundedYear: foundedYear || null
+      companySize: companySize ? Number(companySize) : undefined,
+      foundedYear: foundedYear ? Number(foundedYear) : undefined,
+      status: 'pending',
+      createdAt: new Date(),
+      updatedAt: new Date()
     });
-
     await employerProfile.save();
-
-    // Return success response (without password)
-    const userResponse = authUser.toObject();
-    delete userResponse.password;
 
     return res.status(201).json({
       success: true,
-      message: 'Đăng ký tài khoản thành công',
+      message: 'Đăng ký thành công, vui lòng chờ admin duyệt!',
       data: {
-        user: userResponse,
-        employerProfile: {
-          id: employerProfile._id,
-          companyName: employerProfile.companyName
-        }
+        id: authUser._id,
+        email: authUser.email,
+        phone: authUser.phone,
+        companyName: authUser.companyName,
+        companyAddress: authUser.companyAddress,
+        city: authUser.city,
+        district: authUser.district,
+        ward: authUser.ward,
+        status: authUser.status
       }
     });
-    
   } catch (error) {
     console.error('Employer Registration Error:', error);
     return res.status(500).json({

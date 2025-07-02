@@ -16,14 +16,10 @@ class AuthController {
         return res.status(400).json({ message: "Email đã tồn tại" });
       }
 
-      // Mã hóa mật khẩu
-      const salt = await bcrypt.genSalt(10);
-      const hashedPassword = await bcrypt.hash(password, salt);
-
-      // Tạo tài khoản nhà tuyển dụng mới
+      // Tạo tài khoản nhà tuyển dụng mới (password sẽ được mã hóa tự động bởi middleware pre-save)
       const newEmployer = new Auth({
         email,
-        password: hashedPassword,
+        password, // Không mã hóa ở đây, để middleware xử lý
         role: "employer",
         companyName,
         phone,
@@ -51,14 +47,10 @@ class AuthController {
         return res.status(400).json({ message: "Số điện thoại đã tồn tại" });
       }
 
-      // Mã hóa mật khẩu
-      const salt = await bcrypt.genSalt(10);
-      const hashedPassword = await bcrypt.hash(password, salt);
-
-      // Tạo tài khoản ứng viên mới
+      // Tạo tài khoản ứng viên mới (password sẽ được mã hóa tự động bởi middleware pre-save)
       const newCandidate = new Auth({
         phone,
-        password: hashedPassword,
+        password, // Không mã hóa ở đây, để middleware xử lý
         role: "candidate",
         fullName,
         email,
@@ -246,12 +238,8 @@ class AuthController {
         });
       }
 
-      // Hash mật khẩu mới
-      const salt = await bcrypt.genSalt(10);
-      const hashedPassword = await bcrypt.hash(newPassword, salt);
-
-      // Cập nhật mật khẩu và xóa token
-      user.password = hashedPassword;
+      // Cập nhật mật khẩu và xóa token (password sẽ được mã hóa tự động bởi middleware pre-save)
+      user.password = newPassword; // Không mã hóa ở đây, để middleware xử lý
       user.resetPasswordToken = undefined;
       user.resetPasswordExpires = undefined;
       await user.save();

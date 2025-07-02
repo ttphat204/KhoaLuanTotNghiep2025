@@ -3,6 +3,7 @@ import { FaHome, FaUser, FaBox, FaChartBar, FaSignOutAlt, FaTags } from 'react-i
 
 const menu = [
   { key: 'dashboard', icon: <FaHome />, label: 'Dashboard' },
+      { key: 'pendingEmployers', icon: <FaUser />, label: 'Quản lý Employer' },
   { key: 'users', icon: <FaUser />, label: 'Users' },
   { key: 'products', icon: <FaBox />, label: 'Products' },
   { key: 'reports', icon: <FaChartBar />, label: 'Reports' },

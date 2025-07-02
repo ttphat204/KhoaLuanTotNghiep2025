@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import AdminLayout from './AdminLayout';
-import { toast } from 'react-toastify';
+import { showSuccess, showError, showLoading, updateLoading } from '../../utils/toast.jsx';
+import EmployerManagement from './EmployerManagement';
 
 const Dashboard = () => {
   const [active, setActive] = useState('dashboard');
@@ -26,6 +27,8 @@ const Dashboard = () => {
     switch (active) {
       case 'dashboard':
         return <div className="text-2xl font-bold">Welcome to Admin Dashboard!</div>;
+      case 'pendingEmployers':
+        return <EmployerManagement />;
       case 'users':
         return <div className="text-2xl font-bold">User Management</div>;
       case 'products':
@@ -50,9 +53,9 @@ const Dashboard = () => {
                 if (res.ok) {
                   setNewCategory('');
                   fetchCategories();
-                  toast.success('Thêm danh mục thành công!');
+                  showSuccess('Thêm danh mục thành công!');
                 } else {
-                  toast.error('Thêm danh mục thất bại!');
+                  showError('Thêm danh mục thất bại!');
                 }
               }}
             >
@@ -93,9 +96,9 @@ const Dashboard = () => {
                           setEditName('');
                           fetchCategories();
                           if (res.ok) {
-                            toast.success('Cập nhật danh mục thành công!');
+                            showSuccess('Cập nhật danh mục thành công!');
                           } else {
-                            toast.error('Cập nhật danh mục thất bại!');
+                            showError('Cập nhật danh mục thất bại!');
                           }
                         }}
                       >
@@ -132,9 +135,9 @@ const Dashboard = () => {
                             });
                             fetchCategories();
                             if (res.ok) {
-                              toast.success('Xóa danh mục thành công!');
+                              showSuccess('Xóa danh mục thành công!');
                             } else {
-                              toast.error('Xóa danh mục thất bại!');
+                              showError('Xóa danh mục thất bại!');
                             }
                           }}
                         >

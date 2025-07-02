@@ -132,13 +132,12 @@ module.exports = async function handler(req, res) {
       });
     }
 
-    // Create admin account
-    const hash = await bcrypt.hash(password, 10);
+    // Create admin account (password sẽ được mã hóa tự động bởi middleware pre-save)
     const adminUser = new Auth({
       role: 'admin',
       email: email.toLowerCase(),
       phone,
-      password,
+      password, // Không mã hóa ở đây, để middleware xử lý
       fullName,
       address,
       status: 'active',

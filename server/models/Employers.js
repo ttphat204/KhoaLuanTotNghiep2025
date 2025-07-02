@@ -28,9 +28,20 @@ const employerSchema = new mongoose.Schema(
       required: [true, "Số điện thoại công ty là bắt buộc"],
       trim: true,
     },
+    city: {
+      type: String,
+      trim: true,
+    },
+    district: {
+      type: String,
+      trim: true,
+    },
+    ward: {
+      type: String,
+      trim: true,
+    },
     companyAddress: {
       type: String,
-      required: [true, "Địa chỉ công ty là bắt buộc"],
       trim: true,
     },
     companyWebsite: {
@@ -47,12 +58,10 @@ const employerSchema = new mongoose.Schema(
     },
     industry: {
       type: String,
-      required: [true, "Ngành nghề là bắt buộc"],
       trim: true,
     },
     companySize: {
   type: Number,
-  required: [true, "Quy mô công ty là bắt buộc"],
   min: [1, "Quy mô công ty phải lớn hơn 0"],
 },
     foundedYear: {

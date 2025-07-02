@@ -8,6 +8,7 @@ const applicationRouter = require("./application.router");
 const companyRouter = require("./company.router");
 const notificationRouter = require("./notification.router");
 const interviewRouter = require("./interview.router");
+const adminRouter = require("./admin.router");
 
 // Mount routes
 router.use("/auth", authRouter);
@@ -18,5 +19,6 @@ router.use("/applications", applicationRouter);
 router.use("/companies", companyRouter);
 router.use("/notifications", notificationRouter);
 router.use("/interviews", interviewRouter);
+router.use("/admin", adminRouter);
 
 module.exports = router;

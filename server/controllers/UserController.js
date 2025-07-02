@@ -188,12 +188,8 @@ class UserController {
           .json({ message: "Mật khẩu hiện tại không đúng" });
       }
 
-      // Mã hóa mật khẩu mới
-      const salt = await bcrypt.genSalt(10);
-      const hashedNewPassword = await bcrypt.hash(newPassword, salt);
-
-      // Cập nhật mật khẩu
-      user.password = hashedNewPassword;
+      // Cập nhật mật khẩu (password sẽ được mã hóa tự động bởi middleware pre-save)
+      user.password = newPassword; // Không mã hóa ở đây, để middleware xử lý
       await user.save();
 
       res.json({ message: "Thay đổi mật khẩu thành công" });
