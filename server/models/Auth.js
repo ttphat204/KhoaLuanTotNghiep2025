@@ -120,8 +120,6 @@ authSchema.methods.comparePassword = async function (candidatePassword) {
 };
 
 // Indexes
-authSchema.index({ email: 1 });
-authSchema.index({ phone: 1 });
 authSchema.index({ role: 1 });
 authSchema.index({ status: 1 });
 

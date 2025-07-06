@@ -2,6 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { showSuccess, showError, showLoading, updateLoading, showInfo } from '../../utils/toast.jsx';
 
+const IMGUR_CLIENT_ID = '5460b1e0e6b7b7a'; // Thay bằng client id của bạn nếu cần
+const CLOUDINARY_UPLOAD_PRESET = 'YOUR_UPLOAD_PRESET'; // Thay bằng upload preset của bạn
+const CLOUDINARY_CLOUD_NAME = 'YOUR_CLOUD_NAME'; // Thay bằng cloud name của bạn
+
 const EmployerRegister = () => {
   const [form, setForm] = useState({
     email: '',
@@ -11,7 +15,8 @@ const EmployerRegister = () => {
     city: '',
     district: '',
     ward: '',
-    industry: ''
+    industry: '',
+    companyLogoUrl: ''
   });
   const [showPassword, setShowPassword] = useState(false);
   const [provinces, setProvinces] = useState([]);
@@ -106,10 +111,11 @@ const EmployerRegister = () => {
     const loadingToast = showLoading('Đang đăng ký tài khoản...');
     
     try {
+      const payload = { ...form };
       const res = await fetch('https://be-khoaluan.vercel.app/api/auth/register/employer', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form)
+        body: JSON.stringify(payload)
       });
       const data = await res.json();
       
@@ -129,7 +135,8 @@ const EmployerRegister = () => {
         city: '',
         district: '',
         ward: '',
-        industry: ''
+        industry: '',
+        companyLogoUrl: ''
       });
       
       // Reset dropdowns
@@ -142,6 +149,16 @@ const EmployerRegister = () => {
     } catch (err) {
       updateLoading(loadingToast, 'Lỗi kết nối máy chủ!', 'error');
     }
+  };
+
+  const handleLogoFile = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setForm(f => ({ ...f, companyLogoUrl: reader.result }));
+    };
+    reader.readAsDataURL(file); // Chuyển file thành base64
   };
 
   return (
@@ -192,6 +209,26 @@ const EmployerRegister = () => {
             <input name="companyName" placeholder="Điền tên công ty" value={form.companyName} onChange={handleChange} required className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-indigo-500"/>
           </div>
 
+          <div>
+            <label className="block font-semibold mb-1">Logo công ty</label>
+            <input
+              type="text"
+              name="companyLogoUrl"
+              value={form.companyLogoUrl}
+              onChange={e => setForm({ ...form, companyLogoUrl: e.target.value })}
+              className="w-full border rounded px-3 py-2 mb-2"
+              placeholder="Dán link ảnh logo công ty (nếu có)"
+            />
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleLogoFile}
+              className="mb-2"
+            />
+            {form.companyLogoUrl && (
+              <img src={form.companyLogoUrl} alt="Logo preview" className="h-16 mt-2 rounded border" />
+            )}
+          </div>
           
           <div>
             <label className="block font-semibold mb-1 text-gray-800">Tỉnh/Thành phố <span className="text-red-500">*</span></label>

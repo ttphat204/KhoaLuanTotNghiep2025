@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ccc; border-radius: 5px; }
+        button { padding: 10px 20px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 3px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        .result { margin-top: 10px; padding: 10px; background: #f8f9fa; border-radius: 3px; white-space: pre-wrap; }
+        .error { background: #f8d7da; color: #721c24; }
+        .success { background: #d4edda; color: #155724; }
+    </style>
+</head>
+<body>
+    <h1>API Test Tool</h1>
+    
+    <div class="test-section">
+        <h3>Test Job Management API</h3>
+        <input type="text" id="employerId" placeholder="Enter Employer ID" value="6867f73e2b8d41c28f44a646" style="width: 300px; padding: 5px;">
+        <button onclick="testGetJobs()">Test GET Jobs</button>
+        <div id="getJobsResult" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>Test Login API</h3>
+        <input type="email" id="email" placeholder="Email" style="width: 200px; padding: 5px; margin-right: 10px;">
+        <input type="password" id="password" placeholder="Password" style="width: 200px; padding: 5px; margin-right: 10px;">
+        <button onclick="testLogin()">Test Login</button>
+        <div id="loginResult" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>Test Categories API</h3>
+        <button onclick="testGetCategories()">Test GET Categories</button>
+        <div id="categoriesResult" class="result"></div>
+    </div>
+
+    <script>
+        async function testGetJobs() {
+            const employerId = document.getElementById('employerId').value;
+            const resultDiv = document.getElementById('getJobsResult');
+            
+            try {
+                resultDiv.textContent = 'Loading...';
+                resultDiv.className = 'result';
+                
+                const response = await fetch(`https://be-khoaluan.vercel.app/api/job/manage?employerId=${employerId}`);
+                const data = await response.json();
+                
+                resultDiv.textContent = `Status: ${response.status}\nHeaders: ${JSON.stringify(Object.fromEntries(response.headers.entries()), null, 2)}\nData: ${JSON.stringify(data, null, 2)}`;
+                resultDiv.className = response.ok ? 'result success' : 'result error';
+            } catch (error) {
+                resultDiv.textContent = `Error: ${error.message}`;
+                resultDiv.className = 'result error';
+            }
+        }
+
+        async function testLogin() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const resultDiv = document.getElementById('loginResult');
+            
+            if (!email || !password) {
+                resultDiv.textContent = 'Please enter email and password';
+                resultDiv.className = 'result error';
+                return;
+            }
+            
+            try {
+                resultDiv.textContent = 'Loading...';
+                resultDiv.className = 'result';
+                
+                const response = await fetch('https://be-khoaluan.vercel.app/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                const data = await response.json();
+                
+                resultDiv.textContent = `Status: ${response.status}\nData: ${JSON.stringify(data, null, 2)}`;
+                resultDiv.className = response.ok ? 'result success' : 'result error';
+            } catch (error) {
+                resultDiv.textContent = `Error: ${error.message}`;
+                resultDiv.className = 'result error';
+            }
+        }
+
+        async function testGetCategories() {
+            const resultDiv = document.getElementById('categoriesResult');
+            
+            try {
+                resultDiv.textContent = 'Loading...';
+                resultDiv.className = 'result';
+                
+                const response = await fetch('https://be-khoaluan.vercel.app/api/admin/category-management');
+                const data = await response.json();
+                
+                resultDiv.textContent = `Status: ${response.status}\nData: ${JSON.stringify(data, null, 2)}`;
+                resultDiv.className = response.ok ? 'result success' : 'result error';
+            } catch (error) {
+                resultDiv.textContent = `Error: ${error.message}`;
+                resultDiv.className = 'result error';
+            }
+        }
+    </script>
+</body>
+</html> 

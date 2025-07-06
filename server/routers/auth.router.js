@@ -37,19 +37,6 @@ const validateLogin = [
     .withMessage("Vai trò không hợp lệ"),
 ];
 
-const validateForgotPassword = [
-  body("role")
-    .isIn(["employer", "candidate"])
-    .withMessage("Vai trò không hợp lệ"),
-];
-
-const validateResetPassword = [
-  body("token").notEmpty().withMessage("Token không được để trống"),
-  body("newPassword")
-    .isLength({ min: 6 })
-    .withMessage("Mật khẩu mới phải có ít nhất 6 ký tự"),
-];
-
 // Routes
 // Đăng ký nhà tuyển dụng
 router.post(
@@ -67,20 +54,6 @@ router.post(
 
 // Đăng nhập
 router.post("/login", validateLogin, AuthController.login);
-
-// Quên mật khẩu
-router.post(
-  "/forgot-password",
-  validateForgotPassword,
-  AuthController.forgotPassword
-);
-
-// Đặt lại mật khẩu
-router.post(
-  "/reset-password",
-  validateResetPassword,
-  AuthController.resetPassword
-);
 
 // GET methods for viewing data
 router.get('/register/candidate', AuthController.getCandidateRegistrations);

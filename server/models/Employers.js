@@ -2,12 +2,7 @@ const mongoose = require("mongoose");
 
 const employerSchema = new mongoose.Schema(
   {
-    userId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: [true, "UserId là bắt buộc"],
-      unique: true,
-    },
+    _id: { type: mongoose.Schema.Types.ObjectId, ref: "Auth" },
     companyName: {
       type: String,
       required: [true, "Tên công ty là bắt buộc"],
@@ -61,14 +56,16 @@ const employerSchema = new mongoose.Schema(
       trim: true,
     },
     companySize: {
-  type: Number,
-  min: [1, "Quy mô công ty phải lớn hơn 0"],
-},
+      type: String,
+      min: [1, "Quy mô công ty phải lớn hơn 0"],
+    },
     foundedYear: {
-      type: Number,
+      type: String,
       min: [1900, "Năm thành lập không hợp lệ"],
       max: [new Date().getFullYear(), "Năm thành lập không hợp lệ"],
     },
+    status: { type: String, default: "inactive" },
+    rejectReason: String,
     createdAt: {
       type: Date,
       default: Date.now,

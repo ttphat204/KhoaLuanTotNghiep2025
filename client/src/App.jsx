@@ -6,10 +6,15 @@ import CandidateHome from './Layout/candidate/CandidateHome';
 import AdminDashboard from './Layout/admin/Dashboard';
 import EmployerDashboard from './Layout/employer/EmployerDashboard';
 import EmployerLayout from './Layout/employer/EmployerLayout';
+import JobDetail from './Layout/employer/JobDetail';
 import EmployerLogin from './Layout/auth/EmployerLogin';
 import EmployerRegister from './Layout/auth/EmployerRegister';
 import ProtectedRoute from './Layout/shared/ProtectedRoute';
 import ToastContainer from './components/ToastContainer';
+import EmployerProfile from './Layout/employer/EmployerProfile';
+import JobList from './Layout/jobs/JobList';
+import JobCategoryList from './Layout/jobs/JobCategoryList';
+import JobDetailPage from './Layout/jobs/JobDetailPage';
 import './App.css';
 
 // Component để xử lý routing dựa trên authentication
@@ -28,6 +33,9 @@ const AppRoutes = () => {
     <Routes>
       {/* Public routes - Guest users */}
       <Route path="/" element={<HomePage />} />
+      <Route path="/jobs" element={<JobList />} />
+      <Route path="/jobs/category/:slug" element={<JobCategoryList />} />
+      <Route path="/jobs/:jobId" element={<JobDetailPage />} />
       <Route path="/employer/login" element={<EmployerLogin />} />
       <Route path="/employer/register" element={<EmployerRegister />} />
 
@@ -64,12 +72,14 @@ const AppRoutes = () => {
             <EmployerLayout>
               <Routes>
                 <Route path="/" element={<EmployerDashboard />} />
-                <Route path="/jobs" element={<div className="text-center py-10">Quản lý việc làm</div>} />
+                <Route path="/jobs" element={<EmployerDashboard />} />
+                <Route path="/jobs/:jobId" element={<JobDetail />} />
                 <Route path="/candidates" element={<div className="text-center py-10">Quản lý ứng viên</div>} />
                 <Route path="/applications" element={<div className="text-center py-10">Đơn ứng tuyển</div>} />
                 <Route path="/reports" element={<div className="text-center py-10">Báo cáo</div>} />
                 <Route path="/company" element={<div className="text-center py-10">Thông tin công ty</div>} />
                 <Route path="/settings" element={<div className="text-center py-10">Cài đặt</div>} />
+                <Route path="/profile" element={<EmployerProfile />} />
               </Routes>
             </EmployerLayout>
           </ProtectedRoute>

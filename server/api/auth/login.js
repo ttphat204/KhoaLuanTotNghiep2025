@@ -2,6 +2,7 @@ const dbConnect = require('../../utils/dbConnect');
 const Auth = require('../../models/Auth');
 const Candidates = require('../../models/Candidates');
 const Employers = require('../../models/Employers');
+const jwt = require('jsonwebtoken');
 
 module.exports = async function handler(req, res) {
   // Enable CORS
@@ -10,7 +11,7 @@ module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS');
   res.setHeader(
     'Access-Control-Allow-Headers',
-    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
+    'Origin, X-Requested-With, Content-Type, Accept, Authorization'
   );
 
   // Handle preflight requests
@@ -229,9 +230,17 @@ module.exports = async function handler(req, res) {
     const userResponse = user.toObject();
     delete userResponse.password;
 
+    // Tạo JWT token
+    const token = jwt.sign(
+      { id: user._id, role: user.role },
+      process.env.JWT_SECRET || 'your_jwt_secret',
+      { expiresIn: '7d' }
+    );
+
     return res.status(200).json({
       success: true,
       message: 'Đăng nhập thành công',
+      token,
       data: {
         user: userResponse,
         profile: profileData

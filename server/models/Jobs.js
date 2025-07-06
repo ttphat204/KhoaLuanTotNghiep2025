@@ -4,8 +4,8 @@ const jobSchema = new mongoose.Schema(
   {
     employerId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Employer",
-      required: [true, "EmployerId là bắt buộc"],
+      ref: "Auth",
+      required: true,
     },
     jobTitle: {
       type: String,
@@ -23,6 +23,11 @@ const jobSchema = new mongoose.Schema(
         trim: true,
       },
     ],
+    jobRequirements: {
+      type: String,
+      required: [true, "Yêu cầu công việc là bắt buộc"],
+      trim: true,
+    },
     benefits: [
       {
         type: String,
@@ -44,9 +49,19 @@ const jobSchema = new mongoose.Schema(
       },
     },
     location: {
-      type: String,
-      required: [true, "Địa điểm làm việc là bắt buộc"],
-      trim: true,
+      province: {
+        type: String,
+        required: [true, "Tỉnh/Thành phố là bắt buộc"],
+        trim: true,
+      },
+      district: {
+        type: String,
+        trim: true,
+      },
+      addressDetail: {
+        type: String,
+        trim: true,
+      },
     },
     jobType: {
       type: String,
@@ -70,10 +85,18 @@ const jobSchema = new mongoose.Schema(
     experienceLevel: {
       type: String,
       required: [true, "Cấp độ kinh nghiệm là bắt buộc"],
-      enum: {
-        values: ["Entry-level", "Mid-level", "Senior", "Lead", "Manager"],
-        message: "Cấp độ kinh nghiệm không hợp lệ",
-      },
+      trim: true,
+    },
+    quantity: {
+      type: Number,
+      required: [true, "Số lượng tuyển dụng là bắt buộc"],
+      min: [1, "Số lượng tuyển dụng phải lớn hơn 0"],
+      default: 1,
+    },
+    level: {
+      type: String,
+      required: [true, "Cấp bậc công việc là bắt buộc"],
+      trim: true,
     },
     applicationDeadline: {
       type: Date,

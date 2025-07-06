@@ -176,6 +176,10 @@ const candidateSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    avatarUrl: {
+      type: String,
+      trim: true,
+    },
     createdAt: {
       type: Date,
       default: Date.now,

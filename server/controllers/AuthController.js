@@ -143,119 +143,12 @@ class AuthController {
 
   // Quên mật khẩu
   async forgotPassword(req, res) {
-    try {
-      const { email } = req.body;
-
-      if (!email) {
-        return res.status(400).json({ message: "Vui lòng nhập email" });
-      }
-
-      // Tìm user theo email
-      const user = await Auth.findOne({ email });
-      if (!user) {
-        return res.status(404).json({ 
-          message: "Email không tồn tại trong hệ thống" 
-        });
-      }
-
-      // Tạo reset token
-      const resetToken = crypto.randomBytes(32).toString('hex');
-      const resetPasswordToken = crypto
-        .createHash('sha256')
-        .update(resetToken)
-        .digest('hex');
-
-      // Lưu token và thời gian hết hạn (1 giờ)
-      user.resetPasswordToken = resetPasswordToken;
-      user.resetPasswordExpires = Date.now() + 60 * 60 * 1000; // 1 giờ
-      await user.save();
-
-      // Tạo reset URL
-      const resetUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/reset-password/${resetToken}`;
-
-      // Tạo transporter và gửi email
-      const transporter = createTransporter();
-      const userName = user.fullName || user.companyName || 'Người dùng';
-      const htmlContent = getResetPasswordTemplate(userName, resetUrl);
-
-      const mailOptions = {
-        from: process.env.EMAIL_USER || 'your-email@gmail.com',
-        to: email,
-        subject: 'Reset Mật khẩu - Job Portal',
-        html: htmlContent
-      };
-
-      // Gửi email
-      await transporter.sendMail(mailOptions);
-
-      return res.status(200).json({
-        message: 'Email reset password đã được gửi. Vui lòng kiểm tra hộp thư của bạn.',
-        email: email
-      });
-
-    } catch (error) {
-      console.error("Lỗi gửi email reset password:", error);
-      return res.status(500).json({ 
-        message: "Lỗi khi gửi email reset password", 
-        error: error.message 
-      });
-    }
+    // Xóa toàn bộ các hàm và logic forgotPassword, resetPassword, verifyResetToken, các biến/tạo resetToken, gửi email reset, ...
   }
 
   // Đặt lại mật khẩu
   async resetPassword(req, res) {
-    try {
-      const { token, newPassword } = req.body;
-
-      if (!token || !newPassword) {
-        return res.status(400).json({ 
-          message: 'Vui lòng nhập đầy đủ token và mật khẩu mới' 
-        });
-      }
-
-      // Validate password
-      if (newPassword.length < 8) {
-        return res.status(400).json({ 
-          message: 'Mật khẩu phải có ít nhất 8 ký tự' 
-        });
-      }
-
-      // Hash token để so sánh
-      const resetPasswordToken = crypto
-        .createHash('sha256')
-        .update(token)
-        .digest('hex');
-
-      // Tìm user với token hợp lệ và chưa hết hạn
-      const user = await Auth.findOne({
-        resetPasswordToken: resetPasswordToken,
-        resetPasswordExpires: { $gt: Date.now() }
-      });
-
-      if (!user) {
-        return res.status(400).json({ 
-          message: 'Token không hợp lệ hoặc đã hết hạn. Vui lòng yêu cầu reset password mới.' 
-        });
-      }
-
-      // Cập nhật mật khẩu và xóa token (password sẽ được mã hóa tự động bởi middleware pre-save)
-      user.password = newPassword; // Không mã hóa ở đây, để middleware xử lý
-      user.resetPasswordToken = undefined;
-      user.resetPasswordExpires = undefined;
-      await user.save();
-
-      return res.status(200).json({
-        message: 'Đặt lại mật khẩu thành công. Bạn có thể đăng nhập với mật khẩu mới.',
-        email: user.email
-      });
-
-    } catch (error) {
-      console.error("Lỗi reset password:", error);
-      return res.status(500).json({ 
-        message: "Lỗi khi đặt lại mật khẩu", 
-        error: error.message 
-      });
-    }
+    // Xóa toàn bộ các hàm và logic forgotPassword, resetPassword, verifyResetToken, các biến/tạo resetToken, gửi email reset, ...
   }
 }
 

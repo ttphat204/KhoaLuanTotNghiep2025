@@ -16,10 +16,11 @@ const EmployerLogin = () => {
     setLoading(true);
     setError('');
     try {
+      const loginPayload = { email, password };
       const res = await fetch('https://be-khoaluan.vercel.app/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify(loginPayload)
       });
       const data = await res.json();
       if (!res.ok) {
@@ -28,11 +29,18 @@ const EmployerLogin = () => {
         return;
       }
       const userData = data.user || data.data?.user || data.data;
+      const token = data.token || data.data?.token || data.accessToken;
+      if (!token) {
+        setError('Đăng nhập thất bại: không nhận được token!');
+        setLoading(false);
+        return;
+      }
       if (userData.role !== 'employer') {
         setError('Tài khoản không phải nhà tuyển dụng!');
         setLoading(false);
         return;
       }
+      localStorage.setItem('token', token); // Lưu token vào localStorage
       login(userData);
       navigate('/employer');
     } catch (err) {

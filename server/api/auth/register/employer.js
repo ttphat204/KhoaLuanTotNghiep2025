@@ -122,7 +122,8 @@ module.exports = async function handler(req, res) {
       companySize,
       companyWebsite,
       companyDescription,
-      foundedYear
+      foundedYear,
+      companyLogoUrl
     } = req.body;
 
     // Validation
@@ -168,21 +169,28 @@ module.exports = async function handler(req, res) {
       });
     }
 
-    // Tạo tài khoản Auth (password sẽ được mã hóa tự động bởi middleware pre-save)
-    const authUser = new Auth({
-      role: 'employer',
-      email: email.toLowerCase(),
-      phone,
-      password: password, // Không mã hóa ở đây, để middleware xử lý
-      companyName,
-      address: `${city || ''}, ${district || ''}, ${ward || ''}`.replace(/^,\s*/, '').replace(/,\s*$/, '') || 'Chưa cập nhật',
-      status: 'inactive'
-    });
-    await authUser.save();
+    let authUser;
+    try {
+      authUser = await Auth.create({
+        role: 'employer',
+        email: email.toLowerCase(),
+        phone,
+        password: password, // Không mã hóa ở đây, để middleware xử lý
+        companyName,
+        address: `${city || ''}, ${district || ''}, ${ward || ''}`.replace(/^,\s*/, '').replace(/,\s*$/, '') || 'Chưa cập nhật',
+        status: 'inactive'
+      });
+    } catch (err) {
+      return res.status(400).json({ success: false, message: 'Tạo tài khoản thất bại', error: err.message });
+    }
+    console.log('authUser:', authUser);
+    console.log('authUser._id:', authUser?._id);
+    if (!authUser || !authUser._id) {
+      return res.status(500).json({ success: false, message: 'Không tạo được tài khoản employer' });
+    }
 
-    // Tạo profile Employers
     const employerProfile = new Employers({
-      userId: authUser._id,
+      _id: authUser._id,
       companyName,
       companyEmail: email.toLowerCase(),
       companyPhoneNumber: phone,
@@ -195,6 +203,7 @@ module.exports = async function handler(req, res) {
       industry,
       companySize: companySize ? Number(companySize) : undefined,
       foundedYear: foundedYear ? Number(foundedYear) : undefined,
+      companyLogoUrl: companyLogoUrl || '',
       status: 'pending',
       createdAt: new Date(),
       updatedAt: new Date()

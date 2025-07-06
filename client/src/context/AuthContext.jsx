@@ -18,7 +18,8 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const savedUser = localStorage.getItem('user');
     if (savedUser) {
-      setUser(JSON.parse(savedUser));
+      const parsedUser = JSON.parse(savedUser);
+      setUser(parsedUser);
     }
     setLoading(false);
   }, []);
@@ -33,19 +34,17 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('user');
   };
 
-  const value = {
-    user,
-    login,
-    logout,
-    loading,
-    isAuthenticated: !!user,
-    isAdmin: user?.role === 'admin',
-    isCandidate: user?.role === 'candidate',
-    isEmployer: user?.role === 'employer',
-  };
-
   return (
-    <AuthContext.Provider value={value}>
+    <AuthContext.Provider value={{
+      user,
+      login,
+      logout,
+      loading,
+      isAuthenticated: !!user,
+      isAdmin: user?.role === 'admin',
+      isCandidate: user?.role === 'candidate',
+      isEmployer: user?.role === 'employer',
+    }}>
       {children}
     </AuthContext.Provider>
   );

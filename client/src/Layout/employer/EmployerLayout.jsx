@@ -112,7 +112,7 @@ const EmployerLayout = ({ children }) => {
       </motion.div>
 
       {/* Main content */}
-      <div className="lg:ml-64">
+      <div>
         {/* Top bar */}
         <div className="bg-white shadow-sm border-b">
           <div className="flex items-center justify-between px-4 py-3">
@@ -123,16 +123,14 @@ const EmployerLayout = ({ children }) => {
               <FaBars className="w-5 h-5" />
             </button>
             <div className="flex-1" />
-            <div className="flex items-center space-x-4">
-              <span className="text-sm text-gray-600">
-                Xin chào, {user?.name || 'Nhà tuyển dụng'}
-              </span>
-            </div>
+      {/* Xin chào ở góc phải trên cùng */}
+      <div className="flex justify-end items-center  pr-8">
+        <span className="text-gray-700">Xin chào, {user?.companyName || user?.name || 'Nhà tuyển dụng'}</span>
+      </div>
           </div>
         </div>
-
         {/* Page content */}
-        <main className="p-6">
+        <main>
           {children}
         </main>
       </div>

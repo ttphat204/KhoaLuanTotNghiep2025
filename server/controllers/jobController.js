@@ -8,7 +8,6 @@ class JobController {
   // Đăng tin tuyển dụng
   async createJob(req, res) {
     try {
-      const userId = req.user.userId;
       const {
         jobTitle,
         description,
@@ -16,6 +15,9 @@ class JobController {
         benefits,
         salaryRange,
         location,
+        province,
+        district,
+        addressDetail,
         jobType,
         categoryId,
         skillsRequired,
@@ -24,26 +26,26 @@ class JobController {
         isFeatured = false,
       } = req.body;
 
-      // Kiểm tra xem người dùng có phải là nhà tuyển dụng không
-      const authUser = await Auth.findById(userId);
-      if (!authUser || authUser.role !== "employer") {
-        return res.status(403).json({
-          message: "Chỉ nhà tuyển dụng mới có thể đăng tin tuyển dụng",
-        });
-      }
-
-      // Tìm thông tin nhà tuyển dụng
-      const employer = await Employers.findOne({ userId });
-      if (!employer) {
-        return res
-          .status(404)
-          .json({ message: "Không tìm thấy thông tin nhà tuyển dụng" });
-      }
+      // Sử dụng thông tin employer từ middleware
+      const employer = req.employer;
 
       // Kiểm tra danh mục tồn tại
       const category = await Categories.findById(categoryId);
       if (!category) {
-        return res.status(400).json({ message: "Danh mục không tồn tại" });
+        return res.status(400).json({ 
+          success: false,
+          message: "Danh mục không tồn tại" 
+        });
+      }
+
+      // Xử lý location: ưu tiên lấy object location, nếu không thì lấy từng trường riêng
+      let locationObj = location;
+      if (!locationObj || typeof locationObj !== 'object') {
+        locationObj = {
+          province,
+          district,
+          addressDetail,
+        };
       }
 
       // Tạo tin tuyển dụng mới
@@ -54,7 +56,7 @@ class JobController {
         requirements,
         benefits,
         salaryRange,
-        location,
+        location: locationObj,
         jobType,
         categoryId,
         skillsRequired,
@@ -67,42 +69,61 @@ class JobController {
       await newJob.save();
 
       res.status(201).json({
+        success: true,
         message: "Đăng tin tuyển dụng thành công",
-        job: newJob,
+        data: { job: newJob }
       });
     } catch (error) {
       console.error("Lỗi đăng tin tuyển dụng:", error);
-      res.status(500).json({ message: "Lỗi máy chủ" });
+      res.status(500).json({ 
+        success: false,
+        message: "Lỗi máy chủ" 
+      });
     }
   }
 
   // Lấy danh sách tin tuyển dụng của nhà tuyển dụng
   async getEmployerJobs(req, res) {
     try {
-      const userId = req.user.userId;
-      const { page = 1, limit = 10, status } = req.query;
+      const { 
+        page = 1, 
+        limit = 10, 
+        status, 
+        jobType, 
+        categoryId,
+        search,
+        sortBy = 'postedDate',
+        sortOrder = 'desc'
+      } = req.query;
 
-      // Kiểm tra xem người dùng có phải là nhà tuyển dụng không
-      const authUser = await Auth.findById(userId);
-      if (!authUser || authUser.role !== "employer") {
-        return res.status(403).json({
-          message: "Chỉ nhà tuyển dụng mới có thể xem tin tuyển dụng của mình",
-        });
-      }
-
-      // Tìm thông tin nhà tuyển dụng
-      const employer = await Employers.findOne({ userId });
-      if (!employer) {
-        return res
-          .status(404)
-          .json({ message: "Không tìm thấy thông tin nhà tuyển dụng" });
-      }
+      // Sử dụng thông tin employer từ middleware
+      const employer = req.employer;
 
       // Xây dựng query
       const query = { employerId: employer._id };
+      
       if (status) {
         query.status = status;
       }
+      
+      if (jobType) {
+        query.jobType = jobType;
+      }
+      
+      if (categoryId) {
+        query.categoryId = categoryId;
+      }
+      
+      if (search) {
+        query.$or = [
+          { jobTitle: { $regex: search, $options: 'i' } },
+          { description: { $regex: search, $options: 'i' } }
+        ];
+      }
+
+      // Xây dựng sort
+      const sort = {};
+      sort[sortBy] = sortOrder === 'desc' ? -1 : 1;
 
       // Tính toán skip
       const skip = (page - 1) * limit;
@@ -110,14 +131,32 @@ class JobController {
       // Lấy danh sách tin tuyển dụng
       const jobs = await Jobs.find(query)
         .populate("categoryId", "name")
-        .sort({ postedDate: -1 })
+        .sort(sort)
         .skip(skip)
         .limit(parseInt(limit));
 
       // Đếm tổng số tin tuyển dụng
       const total = await Jobs.countDocuments(query);
 
+      // Lấy thống kê theo trạng thái
+      const stats = await Jobs.aggregate([
+        { $match: { employerId: employer._id } },
+        {
+          $group: {
+            _id: "$status",
+            count: { $sum: 1 }
+          }
+        }
+      ]);
+
+      const statusStats = {};
+      stats.forEach(stat => {
+        statusStats[stat._id] = stat.count;
+      });
+
       res.json({
+        success: true,
+        data: {
         jobs,
         pagination: {
           currentPage: parseInt(page),
@@ -125,10 +164,175 @@ class JobController {
           totalItems: total,
           itemsPerPage: parseInt(limit),
         },
+          stats: statusStats,
+          employer: {
+            _id: employer._id,
+            companyName: employer.companyName,
+            companyLogoUrl: employer.companyLogoUrl
+          }
+        }
       });
     } catch (error) {
       console.error("Lỗi lấy danh sách tin tuyển dụng:", error);
-      res.status(500).json({ message: "Lỗi máy chủ" });
+      res.status(500).json({ 
+        success: false,
+        message: "Lỗi máy chủ" 
+      });
+    }
+  }
+
+  // Lấy chi tiết tin tuyển dụng của employer (có thêm thông tin ứng viên)
+  async getEmployerJobDetail(req, res) {
+    try {
+      // Sử dụng thông tin job từ middleware
+      const job = req.job;
+
+      res.json({
+        success: true,
+        data: { job }
+      });
+    } catch (error) {
+      console.error("Lỗi lấy chi tiết tin tuyển dụng:", error);
+      res.status(500).json({ 
+        success: false,
+        message: "Lỗi máy chủ" 
+      });
+    }
+  }
+
+  // Lấy thống kê tin tuyển dụng của employer
+  async getEmployerJobStats(req, res) {
+    try {
+      const { period = '30' } = req.query; // Số ngày để thống kê
+
+      // Sử dụng thông tin employer từ middleware
+      const employer = req.employer;
+
+      const daysAgo = new Date();
+      daysAgo.setDate(daysAgo.getDate() - parseInt(period));
+
+      // Thống kê theo trạng thái
+      const statusStats = await Jobs.aggregate([
+        { $match: { employerId: employer._id } },
+        {
+          $group: {
+            _id: "$status",
+            count: { $sum: 1 }
+          }
+        }
+      ]);
+
+      // Thống kê theo loại công việc
+      const jobTypeStats = await Jobs.aggregate([
+        { $match: { employerId: employer._id } },
+        {
+          $group: {
+            _id: "$jobType",
+            count: { $sum: 1 }
+          }
+        }
+      ]);
+
+      // Thống kê tin tuyển dụng mới trong khoảng thời gian
+      const recentJobs = await Jobs.countDocuments({
+        employerId: employer._id,
+        postedDate: { $gte: daysAgo }
+      });
+
+      // Tổng số lượt xem
+      const totalViews = await Jobs.aggregate([
+        { $match: { employerId: employer._id } },
+        {
+          $group: {
+            _id: null,
+            totalViews: { $sum: "$viewsCount" },
+            totalApplicants: { $sum: "$applicantsCount" }
+          }
+        }
+      ]);
+
+      // Tin tuyển dụng nổi bật
+      const featuredJobs = await Jobs.countDocuments({
+        employerId: employer._id,
+        isFeatured: true
+      });
+
+      res.json({
+        success: true,
+        data: {
+          statusStats: statusStats.reduce((acc, stat) => {
+            acc[stat._id] = stat.count;
+            return acc;
+          }, {}),
+          jobTypeStats: jobTypeStats.reduce((acc, stat) => {
+            acc[stat._id] = stat.count;
+            return acc;
+          }, {}),
+          recentJobs,
+          totalViews: totalViews[0]?.totalViews || 0,
+          totalApplicants: totalViews[0]?.totalApplicants || 0,
+          featuredJobs,
+          period: parseInt(period)
+        }
+      });
+    } catch (error) {
+      console.error("Lỗi lấy thống kê tin tuyển dụng:", error);
+      res.status(500).json({ 
+        success: false,
+        message: "Lỗi máy chủ" 
+      });
+    }
+  }
+
+  // Cập nhật trạng thái tin tuyển dụng
+  async updateJobStatus(req, res) {
+    try {
+      const { status } = req.body;
+
+      // Sử dụng thông tin job từ middleware
+      const job = req.job;
+
+      // Cập nhật trạng thái
+      job.status = status;
+      await job.save();
+
+      res.json({
+        success: true,
+        message: "Cập nhật trạng thái tin tuyển dụng thành công",
+        data: { job }
+      });
+    } catch (error) {
+      console.error("Lỗi cập nhật trạng thái tin tuyển dụng:", error);
+      res.status(500).json({ 
+        success: false,
+        message: "Lỗi máy chủ" 
+      });
+    }
+  }
+
+  // Cập nhật tin tuyển dụng nổi bật
+  async toggleFeaturedJob(req, res) {
+    try {
+      // Sử dụng thông tin job từ middleware
+      const job = req.job;
+
+      // Toggle trạng thái nổi bật
+      job.isFeatured = !job.isFeatured;
+      await job.save();
+
+      res.json({
+        success: true,
+        message: job.isFeatured 
+          ? "Đã đặt tin tuyển dụng làm nổi bật" 
+          : "Đã bỏ đặt tin tuyển dụng nổi bật",
+        data: { job }
+      });
+    } catch (error) {
+      console.error("Lỗi cập nhật tin tuyển dụng nổi bật:", error);
+      res.status(500).json({ 
+        success: false,
+        message: "Lỗi máy chủ" 
+      });
     }
   }
 
@@ -161,90 +365,68 @@ class JobController {
   // Cập nhật tin tuyển dụng
   async updateJob(req, res) {
     try {
-      const userId = req.user.userId;
-      const { jobId } = req.params;
       const updateData = req.body;
 
-      // Kiểm tra xem người dùng có phải là nhà tuyển dụng không
-      const authUser = await Auth.findById(userId);
-      if (!authUser || authUser.role !== "employer") {
-        return res.status(403).json({
-          message: "Chỉ nhà tuyển dụng mới có thể cập nhật tin tuyển dụng",
-        });
-      }
+      // Sử dụng thông tin job từ middleware
+      const job = req.job;
 
-      // Tìm thông tin nhà tuyển dụng
-      const employer = await Employers.findOne({ userId });
-      if (!employer) {
-        return res
-          .status(404)
-          .json({ message: "Không tìm thấy thông tin nhà tuyển dụng" });
-      }
-
-      // Tìm tin tuyển dụng
-      const job = await Jobs.findOne({
-        _id: jobId,
-        employerId: employer._id,
-      });
-
-      if (!job) {
-        return res
-          .status(404)
-          .json({ message: "Không tìm thấy tin tuyển dụng" });
+      // Xử lý location: ưu tiên lấy object location, nếu không thì lấy từng trường riêng
+      let locationObj = updateData.location;
+      if (!locationObj || typeof locationObj !== 'object') {
+        const { province, district, addressDetail } = updateData;
+        if (province || district || addressDetail) {
+          locationObj = {
+            ...(province && { province }),
+            ...(district && { district }),
+            ...(addressDetail && { addressDetail }),
+          };
+        }
       }
 
       // Cập nhật thông tin
       Object.assign(job, updateData);
+      if (locationObj) {
+        // Chỉ cập nhật các trường con của location nếu có truyền lên
+        job.location = {
+          ...job.location,
+          ...locationObj,
+        };
+      }
       await job.save();
 
       res.json({
+        success: true,
         message: "Cập nhật tin tuyển dụng thành công",
-        job,
+        data: { job }
       });
     } catch (error) {
       console.error("Lỗi cập nhật tin tuyển dụng:", error);
-      res.status(500).json({ message: "Lỗi máy chủ" });
+      res.status(500).json({ 
+        success: false,
+        message: "Lỗi máy chủ" 
+      });
     }
   }
 
   // Xóa tin tuyển dụng
   async deleteJob(req, res) {
     try {
-      const userId = req.user.userId;
-      const { jobId } = req.params;
+      // Sử dụng thông tin job từ middleware
+      const job = req.job;
 
-      // Kiểm tra xem người dùng có phải là nhà tuyển dụng không
-      const authUser = await Auth.findById(userId);
-      if (!authUser || authUser.role !== "employer") {
-        return res.status(403).json({
-          message: "Chỉ nhà tuyển dụng mới có thể xóa tin tuyển dụng",
-        });
-      }
+      // Xóa tin tuyển dụng
+      await job.deleteOne();
 
-      // Tìm thông tin nhà tuyển dụng
-      const employer = await Employers.findOne({ userId });
-      if (!employer) {
-        return res
-          .status(404)
-          .json({ message: "Không tìm thấy thông tin nhà tuyển dụng" });
-      }
-
-      // Tìm và xóa tin tuyển dụng
-      const job = await Jobs.findOneAndDelete({
-        _id: jobId,
-        employerId: employer._id,
+      res.json({ 
+        success: true,
+        message: "Xóa tin tuyển dụng thành công" 
       });
-
-      if (!job) {
-        return res
-          .status(404)
-          .json({ message: "Không tìm thấy tin tuyển dụng" });
-      }
-
-      res.json({ message: "Xóa tin tuyển dụng thành công" });
     } catch (error) {
       console.error("Lỗi xóa tin tuyển dụng:", error);
-      res.status(500).json({ message: "Lỗi máy chủ" });
+      res.status(500).json({ 
+        success: false,
+        message: "Lỗi máy chủ" 
+      });
     }
   }
 
@@ -646,6 +828,188 @@ class JobController {
     } catch (error) {
       console.error("Lỗi lấy thống kê tin tuyển dụng:", error);
       res.status(500).json({ message: "Lỗi máy chủ" });
+    }
+  }
+
+  // Lấy dashboard tổng hợp cho employer
+  async getEmployerDashboard(req, res) {
+    // Thêm header CORS cho route này
+    res.setHeader('Access-Control-Allow-Credentials', true);
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+    if (req.method === 'OPTIONS') {
+      res.status(200).end();
+      return;
+    }
+    try {
+      const employerId = req.user && req.user.id;
+      if (!employerId) {
+        return res.status(401).json({ success: false, message: 'Không xác thực employer.' });
+      }
+      // Lấy danh sách jobs của employer
+      const jobs = await Jobs.find({ employerId });
+      // Thống kê
+      const totalJobs = jobs.length;
+      const activeJobs = jobs.filter(j => j.status === 'Active').length;
+      const totalViews = jobs.reduce((sum, j) => sum + (j.viewsCount || 0), 0);
+      const totalApplicants = jobs.reduce((sum, j) => sum + (j.applicantsCount || 0), 0);
+      // Trả về dữ liệu
+      res.json({
+        success: true,
+        data: {
+          jobs: { list: jobs },
+          stats: {
+            totalJobs,
+            statusStats: { Active: activeJobs },
+            totalViews,
+            totalApplicants
+          },
+          highlights: {}
+        }
+      });
+    } catch (err) {
+      res.status(500).json({ success: false, message: 'Lỗi server', error: err.message });
+    }
+  }
+
+  // Lấy TẤT CẢ jobs của employer (không phân trang)
+  async getAllEmployerJobs(req, res) {
+    try {
+      const { 
+        status, 
+        jobType, 
+        categoryId,
+        search,
+        sortBy = 'postedDate',
+        sortOrder = 'desc'
+      } = req.query;
+
+      // Sử dụng thông tin employer từ middleware
+      const employer = req.employer;
+
+      // Xây dựng query
+      const query = { employerId: employer._id };
+      
+      if (status) {
+        query.status = status;
+      }
+      
+      if (jobType) {
+        query.jobType = jobType;
+      }
+      
+      if (categoryId) {
+        query.categoryId = categoryId;
+      }
+      
+      if (search) {
+        query.$or = [
+          { jobTitle: { $regex: search, $options: 'i' } },
+          { description: { $regex: search, $options: 'i' } }
+        ];
+      }
+
+      // Xây dựng sort
+      const sort = {};
+      sort[sortBy] = sortOrder === 'desc' ? -1 : 1;
+
+      // Lấy TẤT CẢ tin tuyển dụng (không phân trang)
+      const allJobs = await Jobs.find(query)
+        .populate("categoryId", "name")
+        .populate("employerId", "companyName companyLogoUrl")
+        .sort(sort);
+
+      // Đếm tổng số tin tuyển dụng
+      const totalJobs = allJobs.length;
+
+      // Thống kê theo trạng thái
+      const statusStats = await Jobs.aggregate([
+        { $match: { employerId: employer._id } },
+        {
+          $group: {
+            _id: "$status",
+            count: { $sum: 1 }
+          }
+        }
+      ]);
+
+      // Thống kê theo loại công việc
+      const jobTypeStats = await Jobs.aggregate([
+        { $match: { employerId: employer._id } },
+        {
+          $group: {
+            _id: "$jobType",
+            count: { $sum: 1 }
+          }
+        }
+      ]);
+
+      // Tổng số lượt xem và ứng viên
+      const totalViews = await Jobs.aggregate([
+        { $match: { employerId: employer._id } },
+        {
+          $group: {
+            _id: null,
+            totalViews: { $sum: "$viewsCount" },
+            totalApplicants: { $sum: "$applicantsCount" }
+          }
+        }
+      ]);
+
+      // Tin tuyển dụng nổi bật
+      const featuredJobs = await Jobs.countDocuments({
+        employerId: employer._id,
+        isFeatured: true
+      });
+
+      res.json({
+        success: true,
+        data: {
+          // Thông tin employer
+          employer: {
+            _id: employer._id,
+            companyName: employer.companyName,
+            companyLogoUrl: employer.companyLogoUrl,
+            companyDescription: employer.companyDescription
+          },
+          
+          // TẤT CẢ jobs
+          jobs: allJobs,
+          
+          // Thống kê tổng quan
+          stats: {
+            totalJobs,
+            statusStats: statusStats.reduce((acc, stat) => {
+              acc[stat._id] = stat.count;
+              return acc;
+            }, {}),
+            jobTypeStats: jobTypeStats.reduce((acc, stat) => {
+              acc[stat._id] = stat.count;
+              return acc;
+            }, {}),
+            totalViews: totalViews[0]?.totalViews || 0,
+            totalApplicants: totalViews[0]?.totalApplicants || 0,
+            featuredJobs
+          },
+          
+          // Thông tin filter đã áp dụng
+          filters: {
+            status,
+            jobType,
+            categoryId,
+            search,
+            sortBy,
+            sortOrder
+          }
+        }
+      });
+    } catch (error) {
+      console.error("Lỗi lấy tất cả tin tuyển dụng:", error);
+      res.status(500).json({ 
+        success: false,
+        message: "Lỗi máy chủ" 
+      });
     }
   }
 }

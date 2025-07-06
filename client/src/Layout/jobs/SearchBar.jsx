@@ -1,16 +1,17 @@
 import { useState, useRef, useEffect } from 'react';
 import { FaSearch, FaMapMarkerAlt, FaBriefcase } from 'react-icons/fa';
 import { AiFillStar } from 'react-icons/ai';
-import img1 from '../../assets/images/1.png';
-import img6 from '../../assets/images/6.png';
-import img12 from '../../assets/images/12.png';
-import img13 from '../../assets/images/13.png';
-import img17 from '../../assets/images/17.png';
-import img26 from '../../assets/images/26.png';
-import img34 from '../../assets/images/34.png';
-import img53 from '../../assets/images/53.png';
+import img1 from '../../assets/images/bsbl.png';
+import img2 from '../../assets/images/bhkd.png';
+import img3 from '../../assets/images/marketing.png';
+import img4 from '../../assets/images/khkt.png';
+import img5 from '../../assets/images/kiemtoan.png';
+import img6 from '../../assets/images/hc-tk.png';
+import img7 from '../../assets/images/kt.png';
+import img8 from '../../assets/images/tts.png';
 import imgAll from '../../assets/images/all.png';
 import bannerImg from '../../assets/images/banner-cts-timdungviec-pc_174740689238.jpg';
+import { useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 
 const jobTags = [
   'Kế toán',
@@ -39,17 +40,134 @@ const jobProfessions = [
   // ... thêm nghề khác nếu muốn
 ];
 
-const jobCategories = [
-  { icon: <img src={img6} alt="Bán sỉ - Bán lẻ - Quản lý cửa hàng" className="w-8 h-8" />, count: '3,107', label: 'Bán sỉ - Bán lẻ - Quản lý cửa hàng' },
-  { icon: <img src={img13} alt="Bán hàng - Kinh doanh" className="w-8 h-8" />, count: '7,376', label: 'Bán hàng - Kinh doanh' },
-  { icon: <img src={img12} alt="Marketing" className="w-8 h-8" />, count: '1,888', label: 'Marketing' },
-  { icon: <img src={img34} alt="Khoa học - Kỹ thuật" className="w-8 h-8" />, count: '1,756', label: 'Khoa học - Kỹ thuật' },
-  { icon: <img src={img26} alt="Kiểm toán" className="w-8 h-8" />, count: '1,150', label: 'Kiểm toán' },
-  { icon: <img src={img1} alt="Hành chính - Thư ký" className="w-8 h-8" />, count: '2,263', label: 'Hành chính - Thư ký' },
-  { icon: <img src={img17} alt="Kế toán" className="w-8 h-8" />, count: '2,375', label: 'Kế toán' },
-  { icon: <img src={img53} alt="Thực tập sinh" className="w-8 h-8" />, count: '544', label: 'Thực tập sinh' },
-  { icon: <img src={imgAll} alt="Tất cả các ngành" className="w-8 h-8" />, count: '', label: <span className="text-[#2c95ff] text-[1.25rem]" style={{fontSize: '16px', fontWeight: 'bold'}}>Tất cả các ngành</span>, all: true },
-];
+const CATEGORY_API = 'https://be-khoaluan.vercel.app/api/admin/category-management';
+const JOB_API = 'https://be-khoaluan.vercel.app/api/job/all';
+
+const categoryIcons = {
+  "thu-mua-kho-v-n-chu-i-cung-ng": img1,
+  "khoa-h-c-k-thu-t": img4,
+  "nh-n-s": img8,
+  "k-to-n": img7,
+  "b-n-s-b-n-l-qu-n-l-c-a-h-ng": img1,
+  "ch-m-s-c-kh-ch-h-ng": img3,
+  "h-nh-ch-nh-th-k": img6,
+  "b-n-h-ng-kinh-doanh": img2,
+  "all": imgAll
+};
+
+function DynamicJobCategories({ selected, setSelected }) {
+  const [categories, setCategories] = useState([]);
+  const [jobs, setJobs] = useState([]);
+  const [jobCountByCategory, setJobCountByCategory] = useState({});
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    fetch(CATEGORY_API)
+      .then(res => res.json())
+      .then(data => setCategories((data.categories || []).slice(0, 8)));
+    fetch(JOB_API + '?limit=1000')
+      .then(res => res.json())
+      .then(data => setJobs(data.data || data.jobs || []));
+  }, []);
+
+  useEffect(() => {
+    const count = {};
+    jobs.forEach(job => {
+      const catId = job.categoryId?._id || job.categoryId;
+      if (catId) count[catId] = (count[catId] || 0) + 1;
+    });
+    setJobCountByCategory(count);
+  }, [jobs]);
+
+  const getIcon = (cat) => {
+    const slug = cat.slug || cat.name?.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+    return categoryIcons[slug] || imgAll;
+  };
+
+  const handleCategoryClick = (cat) => {
+    if (cat === 'all') {
+      navigate('/jobs');
+    } else {
+      navigate(`/jobs/category/${cat.slug}`);
+    }
+  };
+
+  return (
+    <div className="flex flex-row gap-0 overflow-x-auto py-4 px-2 scrollbar-hide custom-scrollbar">
+      {categories.map(cat => (
+        <div
+          key={cat._id}
+          className={`flex flex-col items-center justify-between w-[140px] h-[170px] bg-white rounded-2xl border-2 transition-all duration-200 cursor-pointer
+            border-transparent hover:border-blue-400 hover:shadow-md hover:scale-105`}
+          onClick={() => handleCategoryClick(cat)}
+          style={{ minWidth: 110, maxWidth: 150 }}
+        >
+          <div className="flex flex-col items-center w-full mt-4 mb-2">
+            <div className="flex items-center justify-center w-16 h-16 rounded-full bg-blue-50">
+              <img src={getIcon(cat)} alt={cat.name} className="w-10 h-10 object-contain" />
+            </div>
+            <div className="text-blue-600 font-bold text-base mt-2">
+              {(jobCountByCategory[cat._id] || 0).toLocaleString()} <span className="text-xs font-normal text-gray-500">việc</span>
+            </div>
+          </div>
+          <div
+            className="text-gray-800 font-semibold text-sm text-center px-2"
+            style={{
+              display: '-webkit-box',
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: 'vertical',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              minHeight: '2.5em',
+              maxWidth: '120px',
+            }}
+            title={cat.name}
+          >
+            {cat.name}
+          </div>
+        </div>
+      ))}
+      {/* Card tất cả các ngành */}
+      <div
+        className={`flex flex-col items-center justify-between w-[140px] h-[170px] bg-white rounded-2xl border-2 transition-all duration-200 cursor-pointer
+          border-transparent hover:border-blue-400 hover:scale-105 text-blue-500`}
+        onClick={() => handleCategoryClick('all')}
+        style={{ minWidth: 110, maxWidth: 150 }}
+      >
+        <div className="flex flex-col items-center w-full mt-4 mb-2">
+          <div className="flex items-center justify-center w-16 h-16 rounded-full bg-blue-50">
+            <img src={imgAll} alt="Tất cả" className="w-10 h-10 object-contain" />
+          </div>
+          <div className="text-blue-600 font-bold text-base mt-2">
+            {jobs.length.toLocaleString()} <span className="text-xs font-normal text-gray-500">việc</span>
+          </div>
+        </div>
+        <div
+          className="text-gray-800 font-semibold text-sm text-center px-2"
+          style={{
+            display: '-webkit-box',
+            WebkitLineClamp: 2,
+            WebkitBoxOrient: 'vertical',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            minHeight: '2.5em',
+            maxWidth: '120px',
+          }}
+          title="Tất cả các ngành"
+        >
+          Tất cả các ngành
+        </div>
+      </div>
+      <style>{`
+        .custom-scrollbar::-webkit-scrollbar { display: none; }
+        .custom-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        @media (max-width: 640px) {
+          .custom-scrollbar > div, .custom-scrollbar > .flex { min-width: 110px !important; max-width: 120px !important; }
+        }
+      `}</style>
+    </div>
+  );
+}
 
 const SearchBar = () => {
   const [showDropdown, setShowDropdown] = useState(false);
@@ -60,6 +178,10 @@ const SearchBar = () => {
   const [showProvinceDropdown, setShowProvinceDropdown] = useState(false);
   const [selectedDistrict, setSelectedDistrict] = useState(null);
   const inputRef = useRef(null);
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const location = useLocation();
+  const [searchParams] = useSearchParams();
+  const categorySlug = searchParams.get('category');
 
   const handleProfessionToggle = (profession) => {
     setSelectedProfessions((prev) =>
@@ -75,6 +197,14 @@ const SearchBar = () => {
       .then((data) => setProvinces(data))
       .catch(() => setProvinces([]));
   }, []);
+
+  useEffect(() => {
+    if (categorySlug) {
+      setSelectedCategory(categorySlug);
+    } else {
+      setSelectedCategory('all');
+    }
+  }, [categorySlug]);
 
   return (
     <div className="relative w-full">
@@ -316,19 +446,8 @@ const SearchBar = () => {
             </div>
 
             {/* Job Categories Row */}
-            <div className="w-full px-4 pb-6">
-              <div className="flex flex-row flex-wrap justify-between items-stretch gap-2 md:gap-0 overflow-x-auto">
-                {jobCategories.map((cat, idx) => (
-                  <div
-                    key={idx}
-                    className={`flex flex-col items-center justify-center flex-1 min-w-[120px] max-w-[140px] py-2 px-1 bg-white rounded-2xl transition cursor-pointer border border-transparent hover:border-[#2c95ff] hover:shadow-lg ${cat.all ? 'text-blue-600 font-bold' : ''}`}
-                  >
-                    <div className="mb-1">{cat.icon}</div>
-                    {cat.count && <div className="font-bold text-lg" style={{color: '#2c95ff'}}>{cat.count} <span className="text-xs font-normal text-gray-500">việc</span></div>}
-                    <div className="text-sm text-gray-700 text-center mt-1 font-medium break-words w-full">{cat.label}</div>
-                  </div>
-                ))}
-              </div>
+            <div className="w-full px-4 pb-2">
+              <DynamicJobCategories selected={selectedCategory} setSelected={setSelectedCategory} />
             </div>
           </div>
         </div>

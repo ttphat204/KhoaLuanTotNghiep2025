@@ -6,6 +6,7 @@ const Applications = require('../../models/Applications');
 const Interviews = require('../../models/Interviews');
 const Notifications = require('../../models/Notifications');
 const EmployerRegistration = require('../../models/EmployerRegistration');
+const categoryManagement = require('./category-management');
 
 async function handler(req, res) {
   // Thêm header CORS
@@ -58,7 +59,7 @@ async function handler(req, res) {
           return res.status(404).json({ message: 'Không tìm thấy employer' });
         }
         
-        const employerProfile = await Employers.findOne({ userId: authUser._id });
+        const employerProfile = await Employers.findById(authUser._id);
         return res.json({
           id: authUser._id,
           email: authUser.email,
@@ -89,7 +90,7 @@ async function handler(req, res) {
       // Lấy thông tin chi tiết từ bảng Employers
       const employerDetails = await Promise.all(
         allEmployers.map(async (auth) => {
-          const profile = await Employers.findOne({ userId: auth._id });
+          const profile = await Employers.findById(auth._id);
           return {
             id: auth._id,
             email: auth.email,
@@ -136,7 +137,7 @@ async function handler(req, res) {
       if (!authUser) {
         return res.status(404).json({ message: 'Không tìm thấy tài khoản employer' });
       }
-      const employerProfile = await Employers.findOne({ userId: authUser._id });
+      const employerProfile = await Employers.findById(authUser._id);
       if (!employerProfile) {
         return res.status(404).json({ message: 'Không tìm thấy profile employer' });
       }
