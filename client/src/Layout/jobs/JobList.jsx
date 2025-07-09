@@ -5,7 +5,7 @@ import JobCard from './JobCard';
 const CATEGORY_API = 'https://be-khoaluan.vercel.app/api/admin/category-management';
 const JOB_API = 'https://be-khoaluan.vercel.app/api/job/all';
 
-const JobList = () => {
+const JobList = ({ keyword }) => {
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [categories, setCategories] = useState([]);
@@ -30,7 +30,10 @@ const JobList = () => {
   useEffect(() => {
     setLoading(true);
     let url = JOB_API;
-    if (selected !== 'all') url += `?categoryId=${selected}`;
+    const params = [];
+    if (selected !== 'all') params.push(`categoryId=${selected}`);
+    if (keyword && keyword.trim()) params.push(`keyword=${encodeURIComponent(keyword.trim())}`);
+    if (params.length > 0) url += '?' + params.join('&');
     fetch(url)
       .then(res => res.json())
       .then(data => {
@@ -42,7 +45,7 @@ const JobList = () => {
       })
       .catch(() => setJobs([]))
       .finally(() => setLoading(false));
-  }, [selected]);
+  }, [selected, keyword]);
 
   // Scroll ngang cho danh mục
   const handleScrollTags = (direction) => {

@@ -430,85 +430,28 @@ class JobController {
     }
   }
 
-  // Tìm kiếm nâng cao
+  // Tìm kiếm job theo keyword (jobTitle hoặc description)
   async searchJobs(req, res) {
     try {
-      const {
-        keyword,
-        location,
-        jobType,
-        categoryId,
-        experienceLevel,
-        salaryMin,
-        salaryMax,
-        skills,
-        page = 1,
-        limit = 10,
-        sortBy = "postedDate",
-        sortOrder = "desc",
-      } = req.query;
-
-      // Xây dựng query
+      const { keyword, page = 1, limit = 10 } = req.query;
       const query = { status: "Active" };
 
-      // Tìm kiếm theo từ khóa
-      if (keyword) {
+      // Nếu có keyword, tìm trong jobTitle hoặc description (giống Contains)
+      if (keyword && keyword.trim()) {
         query.$or = [
           { jobTitle: { $regex: keyword, $options: "i" } },
-          { description: { $regex: keyword, $options: "i" } },
-          { requirements: { $in: [new RegExp(keyword, "i")] } },
+          { description: { $regex: keyword, $options: "i" } }
         ];
       }
 
-      // Lọc theo địa điểm
-      if (location) {
-        query.location = { $regex: location, $options: "i" };
-      }
-
-      // Lọc theo loại công việc
-      if (jobType) {
-        query.jobType = jobType;
-      }
-
-      // Lọc theo danh mục
-      if (categoryId) {
-        query.categoryId = categoryId;
-      }
-
-      // Lọc theo cấp độ kinh nghiệm
-      if (experienceLevel) {
-        query.experienceLevel = experienceLevel;
-      }
-
-      // Lọc theo mức lương
-      if (salaryMin || salaryMax) {
-        query.salaryRange = {};
-        if (salaryMin) query.salaryRange.min = { $gte: parseInt(salaryMin) };
-        if (salaryMax) query.salaryRange.max = { $lte: parseInt(salaryMax) };
-      }
-
-      // Lọc theo kỹ năng
-      if (skills) {
-        const skillsArray = skills.split(",").map((skill) => skill.trim());
-        query.skillsRequired = { $in: skillsArray };
-      }
-
-      // Tính toán skip
       const skip = (page - 1) * limit;
-
-      // Sắp xếp
-      const sortOptions = {};
-      sortOptions[sortBy] = sortOrder === "desc" ? -1 : 1;
-
-      // Lấy danh sách tin tuyển dụng
       const jobs = await Jobs.find(query)
         .populate("employerId", "companyName companyLogoUrl")
         .populate("categoryId", "name")
-        .sort(sortOptions)
+        .sort({ postedDate: -1 })
         .skip(skip)
         .limit(parseInt(limit));
 
-      // Đếm tổng số kết quả
       const total = await Jobs.countDocuments(query);
 
       res.json({
@@ -519,16 +462,7 @@ class JobController {
           totalItems: total,
           itemsPerPage: parseInt(limit),
         },
-        filters: {
-          keyword,
-          location,
-          jobType,
-          categoryId,
-          experienceLevel,
-          salaryMin,
-          salaryMax,
-          skills,
-        },
+        filters: { keyword }
       });
     } catch (error) {
       console.error("Lỗi tìm kiếm tin tuyển dụng:", error);

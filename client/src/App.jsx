@@ -15,6 +15,7 @@ import EmployerProfile from './Layout/employer/EmployerProfile';
 import JobList from './Layout/jobs/JobList';
 import JobCategoryList from './Layout/jobs/JobCategoryList';
 import JobDetailPage from './Layout/jobs/JobDetailPage';
+import JobSearchResultPage from './Layout/jobs/JobSearchResultPage';
 import './App.css';
 
 // Component để xử lý routing dựa trên authentication
@@ -36,6 +37,7 @@ const AppRoutes = () => {
       <Route path="/jobs" element={<JobList />} />
       <Route path="/jobs/category/:slug" element={<JobCategoryList />} />
       <Route path="/jobs/:jobId" element={<JobDetailPage />} />
+      <Route path="/jobs/search" element={<JobSearchResultPage />} />
       <Route path="/employer/login" element={<EmployerLogin />} />
       <Route path="/employer/register" element={<EmployerRegister />} />
 

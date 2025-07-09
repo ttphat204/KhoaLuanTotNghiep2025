@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { FaSearch, FaMapMarkerAlt, FaBriefcase } from 'react-icons/fa';
-import { AiFillStar } from 'react-icons/ai';
+import { AiFillStar, AiOutlineClockCircle } from 'react-icons/ai';
 import img1 from '../../assets/images/bsbl.png';
 import img2 from '../../assets/images/bhkd.png';
 import img3 from '../../assets/images/marketing.png';
@@ -169,7 +169,43 @@ function DynamicJobCategories({ selected, setSelected }) {
   );
 }
 
-const SearchBar = () => {
+// Hook quản lý từ khóa gần đây và phổ biến
+function useSearchKeywords(keyRecent = 'recent_job_searches', keyCount = 'search_keyword_counts', maxRecent = 5, minPopular = 3) {
+  const [recent, setRecent] = useState([]);
+  const [popular, setPopular] = useState([]);
+  useEffect(() => {
+    const data = localStorage.getItem(keyRecent);
+    if (data) setRecent(JSON.parse(data));
+    const countData = localStorage.getItem(keyCount);
+    if (countData) {
+      const counts = JSON.parse(countData);
+      const pop = Object.entries(counts)
+        .filter(([k, v]) => v >= minPopular)
+        .map(([k]) => k);
+      setPopular(pop);
+    }
+  }, [keyRecent, keyCount]);
+  const addSearch = (term) => {
+    if (!term || !term.trim()) return;
+    // Gần đây
+    let arr = [term, ...recent.filter((t) => t !== term)];
+    if (arr.length > maxRecent) arr = arr.slice(0, maxRecent);
+    setRecent(arr);
+    localStorage.setItem(keyRecent, JSON.stringify(arr));
+    // Đếm số lần
+    let counts = {};
+    try { counts = JSON.parse(localStorage.getItem(keyCount)) || {}; } catch { counts = {}; }
+    counts[term] = (counts[term] || 0) + 1;
+    localStorage.setItem(keyCount, JSON.stringify(counts));
+    // Cập nhật phổ biến
+    if (counts[term] >= minPopular && !popular.includes(term)) {
+      setPopular([term, ...popular]);
+    }
+  };
+  return [recent, popular, addSearch];
+}
+
+const SearchBar = ({ setKeyword }) => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [showProfessionDropdown, setShowProfessionDropdown] = useState(false);
   const [selectedProfessions, setSelectedProfessions] = useState([]);
@@ -182,6 +218,8 @@ const SearchBar = () => {
   const location = useLocation();
   const [searchParams] = useSearchParams();
   const categorySlug = searchParams.get('category');
+  const [recentSearches, popularKeywordsDynamic, addRecentSearch] = useSearchKeywords();
+  const navigate = useNavigate();
 
   const handleProfessionToggle = (profession) => {
     setSelectedProfessions((prev) =>
@@ -205,6 +243,15 @@ const SearchBar = () => {
       setSelectedCategory('all');
     }
   }, [categorySlug]);
+
+  const handleSearch = () => {
+    if (inputRef.current && inputRef.current.value.trim()) {
+      const keyword = inputRef.current.value.trim();
+      addRecentSearch(keyword);
+      setShowDropdown(false);
+      navigate(`/jobs/search?keyword=${encodeURIComponent(keyword)}`);
+    }
+  };
 
   return (
     <div className="relative w-full">
@@ -242,15 +289,15 @@ const SearchBar = () => {
       <div className="relative w-full flex justify-center" style={{ marginTop: '-80px' }}>
         {/* Hiệu ứng đổ bóng phía trên card */}
         <div className="absolute -top-8 left-1/2 -translate-x-1/2 w-[90%] h-12 bg-cyan-400 opacity-60 blur-2xl rounded-t-2xl z-0"></div>
-        <div className="relative bg-white rounded-2xl shadow-xl flex flex-col p-0 max-w-6xl w-full z-50">
+        <div className="relative bg-white rounded-2xl shadow-xl flex flex-col p-0 max-w-6xl w-full z-50 border-2 border-blue-200">
           {/* Hiệu ứng đổ màu nhẹ chỉ chiếm 20% phía trên card */}
           <div className="absolute left-0 top-0 w-full h-[20%] rounded-t-2xl bg-gradient-to-b from-cyan-100 via-white to-transparent opacity-70 blur-md pointer-events-none z-0"></div>
           <div className="relative z-10">
             {/* Search Row - Redesigned */}
-            <div className="flex flex-col gap-0 p-6">
-              <div className="flex flex-col md:flex-row items-stretch gap-0 w-full">
+            <div className="flex flex-col gap-0 p-6 pb-0">
+              <div className="flex flex-col md:flex-row items-stretch gap-0 w-full bg-white rounded-full shadow-lg border-2 border-blue-200 focus-within:border-blue-400 transition-all duration-200">
                 {/* Vị trí */}
-                <div className="flex-1 flex items-center border-b md:border-b-0 md:border-r border-gray-200 pr-4 relative">
+                <div className="flex-1 flex items-center px-5 h-16 bg-transparent rounded-l-full focus-within:bg-blue-50 transition-all duration-200 relative">
                   <FaSearch className="text-gray-400 mr-2 text-lg" />
                   <input
                     ref={inputRef}
@@ -263,38 +310,76 @@ const SearchBar = () => {
                       setShowProvinceDropdown(false);
                     }}
                     onBlur={() => setTimeout(() => setShowDropdown(false), 150)}
+                    onKeyDown={e => {
+                      if (e.key === 'Enter') {
+                        handleSearch();
+                      }
+                    }}
                   />
                   {/* Dropdown và glow */}
                   {showDropdown && (
                     <>
-                      {/* Glow trắng bo góc, blur lớn, chỉ quanh dropdown, sát input */}
-                      <div className="absolute left-0 top-[110%] w-full z-40 pointer-events-none">
-                        <div className="w-full h-full rounded-2xl bg-white opacity-80 blur-lg"></div>
+                      <div className="absolute left-0 top-full w-full z-50 mt-3">
+                        <div className="w-full bg-white rounded-2xl shadow-2xl p-0 animate-fadeIn">
+                          {/* Tìm kiếm gần đây */}
+                          {recentSearches.length > 0 && (
+                            <>
+                              <div className="flex items-center gap-2 px-6 pt-6 pb-2">
+                                <AiOutlineClockCircle className="text-blue-400 text-2xl" />
+                                <span className="font-extrabold text-xl bg-gradient-to-r from-blue-500 to-cyan-400 bg-clip-text text-transparent drop-shadow">Tìm kiếm gần đây</span>
+                              </div>
+                              <ul className="px-2 pb-2">
+                                {recentSearches.map((kw, idx) => (
+                                  <li
+                                    key={idx}
+                                    className="flex items-center gap-3 py-3 px-4 my-2 rounded-xl cursor-pointer text-lg font-semibold text-gray-800 transition-all duration-150 hover:bg-blue-50"
+                                    onMouseDown={() => {
+                                      inputRef.current.value = kw;
+                                      setShowDropdown(false);
+                                    }}
+                                  >
+                                    <AiOutlineClockCircle className="text-blue-400 text-xl" />
+                                    <span className="truncate">{kw}</span>
+                                  </li>
+                                ))}
+                              </ul>
+                            </>
+                          )}
+                          {/* Từ khóa phổ biến */}
+                          {popularKeywordsDynamic.length > 0 && (
+                            <>
+                              <div className="flex items-center gap-2 px-6 pt-6 pb-2">
+                                <AiFillStar className="text-yellow-400 text-2xl" />
+                                <span className="font-extrabold text-xl bg-gradient-to-r from-blue-500 to-cyan-400 bg-clip-text text-transparent drop-shadow">Từ khóa phổ biến</span>
                       </div>
-                      {/* Dropdown gợi ý, sát input, bo góc lớn, shadow vừa phải */}
-                      <div className="absolute left-0 top-[110%] w-full bg-white rounded-2xl shadow-2xl z-50 p-6">
-                        <div className="font-bold text-blue-500 mb-2 text-lg">Từ khóa phổ biến</div>
-                        <ul>
-                          {popularKeywords.map((kw, idx) => (
+                              <ul className="px-2 pb-4">
+                                {popularKeywordsDynamic.map((kw, idx) => (
                             <li
                               key={idx}
-                              className="flex items-center gap-2 py-2 px-2 hover:bg-gray-100 rounded-lg cursor-pointer text-base"
+                                    className="flex items-center gap-3 py-3 px-4 my-2 rounded-xl cursor-pointer text-lg font-semibold text-gray-800 transition-all duration-150 hover:bg-blue-50"
                               onMouseDown={() => {
                                 inputRef.current.value = kw;
                                 setShowDropdown(false);
                               }}
                             >
-                              <AiFillStar className="text-yellow-400 text-lg" />
-                              <span className="font-medium text-gray-800">{kw}</span>
+                                    <AiFillStar className="text-yellow-400 text-xl" />
+                                    <span className="truncate">{kw}</span>
                             </li>
                           ))}
                         </ul>
+                            </>
+                          )}
+                        </div>
+                        <style>{`
+                          @keyframes fadeIn { from { opacity: 0; transform: translateY(10px);} to { opacity: 1; transform: none; } }
+                          .animate-fadeIn { animation: fadeIn 0.25s ease; }
+                        `}</style>
                       </div>
                     </>
                   )}
                 </div>
                 {/* Nghề nghiệp - custom dropdown */}
-                <div className="flex items-center bg-white border-t md:border-t-0 border-b-0 border-l-0 border-r border-gray-200 px-4 h-14 min-w-[260px] shadow-sm relative w-full max-w-xs">
+                <div className="flex items-center px-5 h-16 bg-transparent border-l border-gray-100 focus-within:bg-blue-50 transition-all duration-200">
                   <FaBriefcase className="text-gray-400 mr-2 text-lg" />
                   <div
                     className="w-full cursor-pointer select-none text-base flex items-center justify-between"
@@ -343,7 +428,7 @@ const SearchBar = () => {
                   )}
                 </div>
                 {/* Tỉnh thành - fetch API */}
-                <div className="flex items-center bg-white border-t md:border-t-0 border-b-0 border-l-0 border-r border-gray-200 px-4 h-14 min-w-[220px] shadow-sm relative w-full max-w-xs">
+                <div className="flex items-center px-5 h-16 bg-transparent border-l border-gray-100 focus-within:bg-blue-50 transition-all duration-200">
                   <FaMapMarkerAlt className="text-gray-400 mr-2 text-lg" />
                   <div
                     className="w-full cursor-pointer select-none text-base flex items-center justify-between"
@@ -429,24 +514,18 @@ const SearchBar = () => {
                   )}
                 </div>
                 {/* Button */}
-                <button className="flex items-center gap-2 bg-[#4B1CD6] hover:bg-[#3a13b3] text-white font-bold px-8 h-14 rounded-r-xl text-base shadow-lg transition-all duration-200 w-full md:w-auto justify-center ml-0 md:ml-2 mt-2 md:mt-0">
+                <button
+                  className="flex items-center gap-2 bg-[#4B1CD6] hover:bg-[#3a13b3] text-white font-bold px-8 h-16 rounded-r-full text-base shadow-lg transition-all duration-200 w-full md:w-auto justify-center ml-0 md:ml-2 mt-2 md:mt-0 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  onClick={handleSearch}
+                >
                   <FaSearch className="text-lg" />
                   Tìm việc
                 </button>
               </div>
             </div>
 
-            {/* Job Tags */}
-            <div className="flex flex-wrap gap-2 px-6 pb-2">
-              {jobTags.map((tag, idx) => (
-                <span key={idx} className="bg-blue-50 text-blue-600 px-3 py-1 rounded-full text-sm font-medium cursor-pointer hover:bg-blue-100 transition flex items-center gap-1">
-                  <span className="text-blue-400 text-base">↗</span> {tag}
-                </span>
-              ))}
-            </div>
-
             {/* Job Categories Row */}
-            <div className="w-full px-4 pb-2">
+            <div className="w-full px-4 pt-0 pb-0">
               <DynamicJobCategories selected={selectedCategory} setSelected={setSelectedCategory} />
             </div>
           </div>
