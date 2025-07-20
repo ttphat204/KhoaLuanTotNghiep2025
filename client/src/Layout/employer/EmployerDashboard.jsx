@@ -1,586 +1,657 @@
 import React, { useState, useEffect } from 'react';
-import { FaBriefcase, FaUsers, FaEye, FaFileAlt, FaPlus, FaEdit, FaTrash, FaEyeSlash, FaStar, FaChartBar, FaBuilding } from 'react-icons/fa';
+import { FaUsers, FaBriefcase, FaFileAlt, FaChartLine, FaCalendarAlt } from 'react-icons/fa';
 import { useAuth } from '../../context/AuthContext';
-import JobCreateForm from '../jobs/JobCreateForm';
-import EmployerStats from './EmployerStats';
-import { useNavigate } from 'react-router-dom';
-import EmployerProfile from './EmployerProfile';
+import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement, PointElement, LineElement, Filler } from 'chart.js';
+import { Bar, Doughnut, Line } from 'react-chartjs-2';
+
+// Register Chart.js components
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+  ArcElement,
+  PointElement,
+  LineElement,
+  Filler
+);
+
+const InfoBox = ({ icon, label, value, color, link }) => (
+  <div className={`flex items-center gap-3 rounded-xl p-4 mb-3`} style={{ background: color }}>
+    <span className="text-2xl">{icon}</span>
+    <div>
+      <div className="font-semibold text-gray-700">{label}</div>
+      {link ? (
+        <a href={link} target="_blank" rel="noopener noreferrer" className="text-blue-700 font-medium hover:underline">{value}</a>
+      ) : (
+        <div className="text-gray-800 font-medium">{value}</div>
+      )}
+    </div>
+  </div>
+);
+
+// Component biểu đồ cột
+const BarChart = ({ data, title, color = "indigo" }) => {
+  const getColorByType = (type) => {
+    const colors = {
+      purple: {
+        bg: 'rgba(139, 92, 246, 0.8)',
+        border: 'rgba(139, 92, 246, 1)',
+        hover: 'rgba(139, 92, 246, 0.9)'
+      },
+      green: {
+        bg: 'rgba(16, 185, 129, 0.8)',
+        border: 'rgba(16, 185, 129, 1)',
+        hover: 'rgba(16, 185, 129, 0.9)'
+      },
+      blue: {
+        bg: 'rgba(59, 130, 246, 0.8)',
+        border: 'rgba(59, 130, 246, 1)',
+        hover: 'rgba(59, 130, 246, 0.9)'
+      },
+      indigo: {
+        bg: 'rgba(99, 102, 241, 0.8)',
+        border: 'rgba(99, 102, 241, 1)',
+        hover: 'rgba(99, 102, 241, 0.9)'
+      }
+    };
+    return colors[color] || colors.indigo;
+  };
+
+  const colors = getColorByType(color);
+  
+  const chartData = {
+    labels: data.map(item => item.label),
+    datasets: [
+      {
+        label: title,
+        data: data.map(item => item.value),
+        backgroundColor: colors.bg,
+        borderColor: colors.border,
+        borderWidth: 2,
+        borderRadius: 8,
+        borderSkipped: false,
+        hoverBackgroundColor: colors.hover,
+      },
+    ],
+  };
+
+  const options = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        display: false,
+      },
+      title: {
+        display: true,
+        text: title,
+        font: {
+          size: 16,
+          weight: 'bold',
+        },
+        color: '#374151',
+      },
+      tooltip: {
+        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+        titleColor: '#fff',
+        bodyColor: '#fff',
+        borderColor: colors.border,
+        borderWidth: 1,
+        cornerRadius: 8,
+        displayColors: false,
+        callbacks: {
+          label: function(context) {
+            return `Số đơn: ${context.parsed.y}`;
+          }
+        }
+      },
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+        grid: {
+          color: 'rgba(0, 0, 0, 0.1)',
+        },
+        ticks: {
+          color: '#6B7280',
+          stepSize: 1,
+        },
+      },
+      x: {
+        grid: {
+          display: false,
+        },
+        ticks: {
+          color: '#6B7280',
+        },
+      },
+    },
+  };
+
+  return (
+    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+      <div style={{ height: '300px' }}>
+        <Bar data={chartData} options={options} />
+      </div>
+    </div>
+  );
+};
+
+// Component biểu đồ tròn
+const DoughnutChart = ({ data, title }) => {
+  const colors = [
+    'rgba(99, 102, 241, 0.8)',
+    'rgba(139, 92, 246, 0.8)',
+    'rgba(16, 185, 129, 0.8)',
+    'rgba(245, 158, 11, 0.8)',
+    'rgba(239, 68, 68, 0.8)',
+    'rgba(236, 72, 153, 0.8)',
+  ];
+
+  const chartData = {
+    labels: data.map(item => item.label),
+    datasets: [
+      {
+        data: data.map(item => item.value),
+        backgroundColor: colors.slice(0, data.length),
+        borderColor: colors.slice(0, data.length).map(color => color.replace('0.8', '1')),
+        borderWidth: 2,
+        cutout: '60%',
+      },
+    ],
+  };
+
+  const options = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: 'bottom',
+        labels: {
+          padding: 20,
+          usePointStyle: true,
+          color: '#6B7280',
+          font: {
+            size: 12,
+          },
+        },
+      },
+      title: {
+        display: true,
+        text: title,
+        font: {
+          size: 16,
+          weight: 'bold',
+        },
+        color: '#374151',
+      },
+      tooltip: {
+        callbacks: {
+          label: function(context) {
+            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+            const percentage = ((context.parsed / total) * 100).toFixed(1);
+            return `${context.label}: ${context.parsed} (${percentage}%)`;
+          }
+        }
+      }
+    },
+  };
+
+  return (
+    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+      <div style={{ height: '350px' }}>
+        <Doughnut data={chartData} options={options} />
+      </div>
+    </div>
+  );
+};
+
+// Component biểu đồ đường
+const LineChart = ({ data, title, color = "blue" }) => {
+  const getColorByType = (type) => {
+    const colors = {
+      blue: {
+        border: 'rgba(59, 130, 246, 1)',
+        bg: 'rgba(59, 130, 246, 0.1)',
+        point: 'rgba(59, 130, 246, 1)'
+      },
+      purple: {
+        border: 'rgba(139, 92, 246, 1)',
+        bg: 'rgba(139, 92, 246, 0.1)',
+        point: 'rgba(139, 92, 246, 1)'
+      },
+      green: {
+        border: 'rgba(16, 185, 129, 1)',
+        bg: 'rgba(16, 185, 129, 0.1)',
+        point: 'rgba(16, 185, 129, 1)'
+      }
+    };
+    return colors[color] || colors.blue;
+  };
+
+  const colors = getColorByType(color);
+  
+  const chartData = {
+    labels: data.map(item => item.label),
+    datasets: [
+      {
+        label: title,
+        data: data.map(item => item.value),
+        borderColor: colors.border,
+        backgroundColor: colors.bg,
+        borderWidth: 3,
+        fill: true,
+        tension: 0.4,
+        pointBackgroundColor: colors.point,
+        pointBorderColor: '#fff',
+        pointBorderWidth: 2,
+        pointRadius: 6,
+        pointHoverRadius: 8,
+      },
+    ],
+  };
+
+  const options = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        display: false,
+      },
+      title: {
+        display: true,
+        text: title,
+        font: {
+          size: 16,
+          weight: 'bold',
+        },
+        color: '#374151',
+      },
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+        grid: {
+          color: 'rgba(0, 0, 0, 0.1)',
+        },
+        ticks: {
+          color: '#6B7280',
+        },
+      },
+      x: {
+        grid: {
+          color: 'rgba(0, 0, 0, 0.1)',
+        },
+        ticks: {
+          color: '#6B7280',
+        },
+      },
+    },
+  };
+
+  return (
+    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+      <div style={{ height: '300px' }}>
+        <Line data={chartData} options={options} />
+      </div>
+    </div>
+  );
+};
+
+// Component thống kê tổng quan
+const StatsOverview = ({ stats }) => (
+  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl p-6 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+      <div className="flex items-center justify-between">
+        <div>
+          <p className="text-blue-100 text-sm font-medium">Tổng việc làm</p>
+          <p className="text-3xl font-bold">{stats.totalJobs}</p>
+          <p className="text-blue-200 text-xs mt-1">Tin đã đăng</p>
+        </div>
+        <FaBriefcase className="text-4xl text-blue-200" />
+      </div>
+    </div>
+    
+    <div className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl p-6 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+      <div className="flex items-center justify-between">
+        <div>
+          <p className="text-purple-100 text-sm font-medium">Đơn ứng tuyển</p>
+          <p className="text-3xl font-bold">{stats.totalApplications}</p>
+          <p className="text-purple-200 text-xs mt-1">CV đã nhận</p>
+        </div>
+        <FaFileAlt className="text-4xl text-purple-200" />
+      </div>
+    </div>
+    
+    <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-xl p-6 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+      <div className="flex items-center justify-between">
+        <div>
+          <p className="text-green-100 text-sm font-medium">Đã tuyển</p>
+          <p className="text-3xl font-bold">{stats.hiredCount}</p>
+          <p className="text-green-200 text-xs mt-1">Thành công</p>
+        </div>
+        <FaUsers className="text-4xl text-green-200" />
+      </div>
+    </div>
+    
+    <div className="bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl p-6 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+      <div className="flex items-center justify-between">
+        <div>
+          <p className="text-orange-100 text-sm font-medium">Tỷ lệ thành công</p>
+          <p className="text-3xl font-bold">{stats.successRate}%</p>
+          <p className="text-orange-200 text-xs mt-1">Hiệu quả</p>
+        </div>
+        <FaChartLine className="text-4xl text-orange-200" />
+      </div>
+    </div>
+  </div>
+);
+
+// Component thống kê chi tiết
+const DetailedStats = ({ chartData }) => (
+  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+      <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+        <FaCalendarAlt className="text-indigo-500" />
+        Thống kê tháng này
+      </h3>
+      <div className="space-y-3">
+        {chartData.applicationsByMonth.slice(-1).map((item, index) => (
+          <div key={index} className="flex items-center justify-between">
+            <span className="text-gray-600">{item.label}</span>
+            <span className="text-2xl font-bold text-indigo-600">{item.value}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+    
+    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+      <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+        <FaUsers className="text-green-500" />
+        Trạng thái hiện tại
+      </h3>
+      <div className="space-y-2">
+        {chartData.applicationsByStatus.slice(0, 3).map((item, index) => (
+          <div key={index} className="flex items-center justify-between">
+            <span className="text-sm text-gray-600">{item.label}</span>
+            <span className="text-sm font-semibold text-gray-800">{item.value}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+    
+    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+      <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+        <FaBriefcase className="text-purple-500" />
+        Việc làm hot nhất
+      </h3>
+      <div className="space-y-2">
+        {chartData.topJobs.slice(0, 3).map((item, index) => (
+          <div key={index} className="flex items-center justify-between">
+            <span className="text-sm text-gray-600 truncate">{item.label}</span>
+            <span className="text-sm font-semibold text-gray-800">{item.value}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+);
 
 const EmployerDashboard = () => {
   const { user } = useAuth();
-  const navigate = useNavigate();
-  const [showCreateForm, setShowCreateForm] = useState(false);
-  const [jobs, setJobs] = useState([]);
+  const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({
     totalJobs: 0,
-    activeJobs: 0,
-    totalViews: 0,
-    totalApplicants: 0
+    totalApplications: 0,
+    hiredCount: 0,
+    successRate: 0
   });
-  const [filter, setFilter] = useState({
-    status: "",
-    jobType: "",
-    search: ""
+  const [chartData, setChartData] = useState({
+    applicationsByStatus: [],
+    applicationsByMonth: [],
+    topJobs: []
   });
-  const [categories, setCategories] = useState([]);
-  const [activeTab, setActiveTab] = useState('jobs'); // 'jobs' or 'stats'
-  const [editingJob, setEditingJob] = useState(null);
-  const [jobToDelete, setJobToDelete] = useState(null);
-  const [message, setMessage] = useState('');
-  const [showProfileModal, setShowProfileModal] = useState(false);
-  const [employerProfile, setEmployerProfile] = useState(null);
 
-  // Lấy danh sách jobs và thống kê từ API mới
-  const fetchEmployerData = async () => {
-    try {
+  useEffect(() => {
+    if (user && user._id) {
       setLoading(true);
-      if (!user || !user._id) {
-        setJobs([]);
-        setStats({ totalJobs: 0, activeJobs: 0, totalViews: 0, totalApplicants: 0 });
-        return;
+      fetchDashboardData();
+    }
+  }, [user]);
+
+  const fetchDashboardData = async () => {
+    try {
+      // Fetch profile
+      const profileRes = await fetch(`https://be-khoaluan.vercel.app/api/employer/profile?employerId=${user._id}`);
+      const profileData = await profileRes.json();
+      if (profileData.success) setProfile(profileData.data);
+
+      // Fetch jobs
+      const jobsRes = await fetch('https://be-khoa-luan2.vercel.app/api/jobs/all');
+      const jobsData = await jobsRes.json();
+      const jobs = jobsData.success ? jobsData.data : [];
+
+      // Fetch applications
+      const appsRes = await fetch('https://be-khoa-luan2.vercel.app/api/application/all');
+      const appsData = await appsRes.json();
+      const applications = appsData.success ? appsData.data : [];
+
+      // Calculate stats
+      const totalJobs = jobs.length;
+      const totalApplications = applications.length;
+      const hiredCount = applications.filter(app => app.status === 'Hired').length;
+      const successRate = totalApplications > 0 ? Math.round((hiredCount / totalApplications) * 100) : 0;
+
+      setStats({ totalJobs, totalApplications, hiredCount, successRate });
+
+      // Prepare chart data
+      const statusCounts = {};
+      const monthCounts = {};
+      const jobCounts = {};
+
+      // Status mapping for Vietnamese
+      const statusLabels = {
+        'Pending': 'Chờ xử lý',
+        'Reviewed': 'Đã xem xét',
+        'Interviewing': 'Đang phỏng vấn',
+        'Offer': 'Đã đề nghị',
+        'Rejected': 'Đã từ chối',
+        'Hired': 'Đã tuyển'
+      };
+
+      applications.forEach(app => {
+        // Status counts with Vietnamese labels
+        const status = app.status || 'Pending';
+        const statusLabel = statusLabels[status] || status;
+        statusCounts[statusLabel] = (statusCounts[statusLabel] || 0) + 1;
+
+        // Month counts - get last 6 months
+        const date = new Date(app.createdAt || app.appliedAt || Date.now());
+        if (!isNaN(date.getTime())) {
+          const month = date.toLocaleDateString('vi-VN', { month: 'short' });
+          monthCounts[month] = (monthCounts[month] || 0) + 1;
+        }
+
+        // Job counts
+        const jobTitle = app.jobTitle || 'Không xác định';
+        jobCounts[jobTitle] = (jobCounts[jobTitle] || 0) + 1;
+      });
+
+      // Generate last 6 months data
+      const currentDate = new Date();
+      const last6Months = [];
+      for (let i = 5; i >= 0; i--) {
+        const date = new Date(currentDate.getFullYear(), currentDate.getMonth() - i, 1);
+        const month = date.toLocaleDateString('vi-VN', { month: 'short' });
+        last6Months.push(month);
       }
-      const apiUrl = `https://be-khoaluan.vercel.app/api/job/manage?employerId=${user._id}`;
-      const response = await fetch(apiUrl);
-      const data = await response.json();
-      if (response.ok && data.success !== false) {
-        setJobs(data.jobs || data.data || []);
-        setStats({
-          totalJobs: (data.jobs || data.data || []).length,
-          activeJobs: (data.jobs || data.data || []).filter(j => j.status === 'Active').length,
-          totalViews: (data.jobs || data.data || []).reduce((sum, j) => sum + (j.viewsCount || 0), 0),
-          totalApplicants: (data.jobs || data.data || []).reduce((sum, j) => sum + (j.applicantsCount || 0), 0)
-        });
-      } else {
-        setJobs([]);
-        setStats({ totalJobs: 0, activeJobs: 0, totalViews: 0, totalApplicants: 0 });
-      }
+
+      // Create month counts with actual data or default to 0
+      const sortedMonthCounts = {};
+      last6Months.forEach(month => {
+        sortedMonthCounts[month] = monthCounts[month] || 0;
+      });
+
+      setChartData({
+        applicationsByStatus: Object.entries(statusCounts).map(([status, count]) => ({
+          label: status,
+          value: count
+        })),
+        applicationsByMonth: Object.entries(sortedMonthCounts).map(([month, count]) => ({
+          label: month,
+          value: count
+        })),
+        topJobs: Object.entries(jobCounts)
+          .sort(([,a], [,b]) => b - a)
+          .slice(0, 5)
+          .map(([job, count]) => ({
+            label: job.length > 30 ? job.substring(0, 30) + '...' : job,
+            value: count
+          }))
+      });
+
     } catch (error) {
-      setJobs([]);
-      setStats({ totalJobs: 0, activeJobs: 0, totalViews: 0, totalApplicants: 0 });
+      console.error('Error fetching dashboard data:', error);
     } finally {
       setLoading(false);
     }
   };
 
-  // Lấy danh mục ngành nghề khi load dashboard
-  useEffect(() => {
-      fetch('https://be-khoaluan.vercel.app/api/admin/category-management')
-        .then(res => res.json())
-        .then(data => setCategories(data.categories || []))
-        .catch(() => setCategories([]));
-  }, []);
-
-  useEffect(() => {
-    if (user && user.role === 'employer') {
-      fetchEmployerData();
-    }
-  }, [user]);
-
-  // Lấy profile employer khi load dashboard
-  useEffect(() => {
-    if (user && user._id) {
-      fetch(`https://be-khoaluan.vercel.app/api/employer/profile?employerId=${user._id}`)
-        .then(res => res.json())
-        .then(data => {
-          if (data.success) setEmployerProfile(data.data);
-          else setEmployerProfile(null);
-        })
-        .catch(() => setEmployerProfile(null));
-    }
-  }, [user]);
-
-  const handleCreateJob = async (formData) => {
-    try {
-      console.log('Form data received:', formData);
-      if (!user || !user._id) {
-        alert("Không tìm thấy employerId. Vui lòng đăng nhập lại.");
-        return;
-      }
-      
-      // Kiểm tra các trường bắt buộc
-      const requiredFields = ['jobTitle', 'description', 'jobRequirements', 'experienceLevel', 'quantity', 'level', 'jobType', 'categoryId', 'applicationDeadline', 'province', 'salaryMin', 'salaryMax'];
-      const missingFields = requiredFields.filter(field => !formData[field]);
-      if (missingFields.length > 0) {
-        console.log('Missing fields:', missingFields);
-        alert(`Thiếu các trường: ${missingFields.join(', ')}`);
-        return;
-      }
-      const payload = {
-        employerId: user._id,
-        jobTitle: formData.jobTitle,
-        description: formData.description || "",
-        jobRequirements: formData.jobRequirements || "",
-        requirements: formData.requirements || [],
-        benefits: formData.benefits || [],
-        salaryRange: {
-          min: Number(formData.salaryMin) * 1000000,
-          max: Number(formData.salaryMax) * 1000000,
-          currency: "VND"
-        },
-        location: {
-          province: formData.province,
-          district: formData.district,
-          addressDetail: formData.addressDetail
-        },
-        jobType: formData.jobType,
-        categoryId: formData.categoryId,
-        skillsRequired: formData.skillsRequired || [],
-        experienceLevel: formData.experienceLevel,
-        quantity: Number(formData.quantity) || 1,
-        level: formData.level || "",
-        applicationDeadline: formData.applicationDeadline,
-        isFeatured: false
-      };
-      console.log('Payload being sent:', payload);
-      const response = await fetch("https://be-khoaluan.vercel.app/api/job/manage", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-      });
-      const data = await response.json();
-      console.log('Response:', data);
-      if (response.ok && data.success !== false) {
-        alert("Tạo tin tuyển dụng thành công!");
-        setShowCreateForm(false);
-        fetchEmployerData();
-      } else {
-        alert(data.message || "Có lỗi xảy ra!");
-      }
-    } catch (err) {
-      alert("Lỗi kết nối server!");
-    }
-  };
-
-  const handleUpdateJobStatus = async (jobId, newStatus) => {
-    try {
-      const token = localStorage.getItem('token');
-      const response = await fetch(`https://be-khoaluan.vercel.app/api/jobs/${jobId}/status`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
-        },
-        body: JSON.stringify({ status: newStatus })
-      });
-
-      if (response.ok) {
-        fetchEmployerData(); // Refresh lại dữ liệu
-      } else {
-        alert("Có lỗi khi cập nhật trạng thái!");
-      }
-    } catch (error) {
-      alert("Lỗi kết nối!");
-    }
-  };
-
-  const handleToggleFeatured = async (jobId) => {
-    try {
-      const token = localStorage.getItem('token');
-      const response = await fetch(`https://be-khoaluan.vercel.app/api/jobs/${jobId}/featured`, {
-        method: "PATCH",
-        headers: {
-          "Authorization": `Bearer ${token}`
-        }
-      });
-
-      if (response.ok) {
-        fetchEmployerData(); // Refresh lại dữ liệu
-      } else {
-        alert("Có lỗi khi cập nhật tin nổi bật!");
-      }
-    } catch (error) {
-      alert("Lỗi kết nối!");
-    }
-  };
-
-  const handleDeleteJob = async (jobId) => {
-    try {
-      const response = await fetch('https://be-khoaluan.vercel.app/api/job/manage', {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ jobId, employerId: user._id })
-      });
-      const data = await response.json();
-      if (data.success) {
-        setJobToDelete(null);
-        fetchEmployerData();
-        setMessage('Đã xóa thành công!');
-        setTimeout(() => setMessage(''), 2000);
-      } else {
-        alert(data.message || 'Có lỗi khi xóa!');
-      }
-    } catch (err) {
-      alert('Lỗi kết nối server!');
-    }
-  };
-
-  const handleEditJob = async (jobId, updatedFields) => {
-    try {
-      const response = await fetch('https://be-khoaluan.vercel.app/api/job/manage', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ jobId, employerId: user._id, ...updatedFields })
-      });
-      const data = await response.json();
-      if (data.success) {
-        alert('Đã cập nhật thành công!');
-        setEditingJob(null);
-        fetchEmployerData();
-      } else {
-        alert(data.message || 'Có lỗi khi cập nhật!');
-      }
-    } catch (err) {
-      alert('Lỗi kết nối server!');
-    }
-  };
-
-  const formatSalary = (min, max) => {
-    const formatNumber = (num) => {
-      return (num / 1000000).toFixed(1) + 'M';
-    };
-    return `${formatNumber(min)} - ${formatNumber(max)} VND`;
-  };
-
-  const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString('vi-VN');
-  };
-
-  const getStatusBadge = (status) => {
-    const statusConfig = {
-      'Active': { color: 'bg-green-100 text-green-800', text: 'Đang hoạt động' },
-      'Closed': { color: 'bg-red-100 text-red-800', text: 'Đã đóng' },
-      'Draft': { color: 'bg-gray-100 text-gray-800', text: 'Bản nháp' },
-      'Archived': { color: 'bg-yellow-100 text-yellow-800', text: 'Đã lưu trữ' }
-    };
-    
-    const config = statusConfig[status] || statusConfig['Draft'];
-  return (
-      <span className={`px-2 py-1 rounded-full text-xs font-medium ${config.color}`}>
-        {config.text}
-      </span>
-    );
-  };
-
-  const getJobTypeBadge = (jobType) => {
-    const typeConfig = {
-      'Full-time': { color: 'bg-blue-100 text-blue-800', text: 'Toàn thời gian' },
-      'Part-time': { color: 'bg-purple-100 text-purple-800', text: 'Bán thời gian' },
-      'Remote': { color: 'bg-green-100 text-green-800', text: 'Làm từ xa' },
-      'Internship': { color: 'bg-orange-100 text-orange-800', text: 'Thực tập' },
-      'Contract': { color: 'bg-indigo-100 text-indigo-800', text: 'Hợp đồng' }
-    };
-    
-    const config = typeConfig[jobType] || typeConfig['Full-time'];
-    return (
-      <span className={`px-2 py-1 rounded-full text-xs font-medium ${config.color}`}>
-        {config.text}
-      </span>
-    );
-  };
-
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-700"></div>
+      <div className="min-h-screen w-full bg-white">
+        {/* Header gradient skeleton */}
+        <div className="w-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-b-3xl px-8 py-8 flex flex-col items-center gap-2 relative">
+          <div className="flex flex-col items-center flex-1">
+            <div className="h-8 bg-white/20 rounded-lg animate-pulse mb-2" style={{ width: '300px' }}></div>
+            <div className="h-4 bg-white/20 rounded animate-pulse" style={{ width: '250px' }}></div>
+          </div>
+        </div>
+        
+        {/* Loading content */}
+        <div className="w-full px-8 mt-8">
+          <div className="flex items-center justify-center py-16">
+            <div className="text-center">
+              {/* Animated spinner */}
+              <div className="relative mb-6">
+                <div className="animate-spin rounded-full h-16 w-16 border-4 border-indigo-200 border-t-indigo-600 mx-auto"></div>
+                <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-purple-500 animate-spin" style={{ animationDuration: '1.5s' }}></div>
+                <div className="absolute inset-2 rounded-full border-4 border-transparent border-t-pink-500 animate-spin" style={{ animationDuration: '2s' }}></div>
+              </div>
+              
+              {/* Loading text with animation */}
+              <div className="space-y-2">
+                <p className="text-lg font-semibold text-gray-700 animate-pulse">Đang tải thông tin công ty...</p>
+                <p className="text-sm text-gray-500">Vui lòng chờ trong giây lát</p>
+              </div>
+              
+              {/* Loading dots */}
+              <div className="flex justify-center mt-4 space-x-1">
+                <div className="w-2 h-2 bg-indigo-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                <div className="w-2 h-2 bg-purple-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                <div className="w-2 h-2 bg-pink-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+              </div>
+            </div>
+          </div>
+          
+          
+        </div>
+      </div>
+    );
+  }
+  if (!profile) {
+    return (
+      <div className="min-h-screen w-full bg-white">
+        {/* Header gradient */}
+        <div className="w-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-b-3xl px-8 py-8 flex flex-col items-center gap-2 relative">
+          <div className="flex flex-col items-center flex-1">
+            <div className="text-3xl md:text-4xl font-bold text-white drop-shadow-lg leading-tight mb-1">Dashboard</div>
+            <div className="text-white text-base drop-shadow">Quản lý thông tin công ty & tuyển dụng</div>
+          </div>
+        </div>
+        
+        {/* Error content */}
+        <div className="w-full px-8 mt-8">
+          <div className="flex items-center justify-center py-16">
+            <div className="text-center max-w-md">
+              {/* Error icon */}
+              <div className="mb-6">
+                <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto">
+                  <svg className="w-10 h-10 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                  </svg>
+                </div>
+              </div>
+              
+              {/* Error text */}
+              <div className="space-y-3">
+                <h3 className="text-xl font-bold text-gray-800">Không tìm thấy thông tin công ty</h3>
+                <p className="text-gray-600">Vui lòng cập nhật thông tin công ty để sử dụng đầy đủ tính năng</p>
+              </div>
+              
+              {/* Action button */}
+              <div className="mt-6">
+                <button
+                  className="px-8 py-3 rounded-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold text-lg shadow-md hover:from-indigo-700 hover:to-purple-700 transition-all transform hover:scale-105"
+                  onClick={() => setShowEdit(true)}
+                >
+                  Cập nhật thông tin ngay
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="bg-gray-50 min-h-screen w-full">
-      <div className="max-w-4xl mx-auto px-4 py-8">
-        {/* Avatar + Thông tin công ty */}
-        <div className="flex flex-col items-center">
-          <div className="relative">
-            {employerProfile?.companyLogoUrl ? (
-              <img
-                src={employerProfile.companyLogoUrl}
-                alt="Logo công ty"
-                className="w-24 h-24 rounded-full object-cover border-4 border-purple-200 shadow"
-              />
-            ) : (
-              <div className="w-24 h-24 rounded-full bg-purple-100 flex items-center justify-center border-4 border-purple-200 shadow">
-                <FaBuilding className="text-4xl text-purple-400" />
-              </div>
-            )}
-          </div>
-          <div className="mt-4 text-center">
-            <div className="text-xl font-bold text-gray-900">{employerProfile?.companyName || "Tên công ty"}</div>
-            <div className="text-gray-500">{employerProfile?.companyEmail || "Email công ty"}</div>
-          </div>
+    <div className="min-h-screen w-full bg-white">
+      {/* Header gradient */}
+      <div className="w-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-b-3xl px-8 py-8 flex flex-col items-center gap-2 relative">
+        <div className="flex flex-col items-center flex-1">
+          <div className="text-3xl md:text-4xl font-bold text-white drop-shadow-lg leading-tight mb-1">{profile.companyName}</div>
+          <div className="text-white text-base drop-shadow">Quản lý thông tin công ty & tuyển dụng</div>
         </div>
-        {/* Header */}
-        <div className="mb-8 flex flex-col md:flex-row justify-between items-center">
-          <div className="mb-4 md:mb-0">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2 text-center md:text-left">Dashboard</h1>
-            <p className="text-gray-600 text-center md:text-left">Quản lý tin tuyển dụng của bạn</p>
-          </div>
-          <button
-            className="bg-gray-100 hover:bg-gray-200 text-purple-700 font-semibold px-6 py-2 rounded shadow-md transition mb-2 md:mb-0"
-            onClick={() => setShowProfileModal(true)}
-          >
-            Cập nhật tài khoản
-          </button>
-        </div>
-
-        {/* Tabs */}
-        <div className="flex space-x-1 bg-white rounded-lg p-1 mb-6 shadow-sm">
-          <button
-            onClick={() => setActiveTab('jobs')}
-            className={`flex-1 py-2 px-4 rounded-md font-medium transition-colors ${
-              activeTab === 'jobs'
-                ? 'bg-purple-700 text-white'
-                : 'text-gray-600 hover:text-gray-900'
-            }`}
-          >
-            <FaBriefcase className="inline mr-2" />
-            Danh sách tin tuyển dụng
-          </button>
-          <button
-            onClick={() => setActiveTab('stats')}
-            className={`flex-1 py-2 px-4 rounded-md font-medium transition-colors ${
-              activeTab === 'stats'
-                ? 'bg-purple-700 text-white'
-                : 'text-gray-600 hover:text-gray-900'
-            }`}
-          >
-            <FaChartBar className="inline mr-2" />
-            Thống kê & Báo cáo
-          </button>
-        </div>
-
-        <div>
-        {activeTab === 'stats' ? (
-          <EmployerStats />
-        ) : (
-          <>
-            {/* Action Bar */}
-            <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
-              <button
-                className="bg-purple-700 text-white px-6 py-3 rounded-lg font-semibold flex items-center gap-2 hover:bg-purple-800 transition-colors shadow-md"
-                onClick={() => setShowCreateForm(true)}
-              >
-                <FaPlus /> Đăng tin mới
-              </button>
-
-              <div className="flex flex-col md:flex-row gap-2 md:gap-4 w-full md:w-auto">
-                <input
-                  type="text"
-                  placeholder="Tìm kiếm tin tuyển dụng..."
-                  className="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 w-full md:w-56"
-                  value={filter.search}
-                  onChange={(e) => setFilter({...filter, search: e.target.value})}
-                />
-                <select
-                  className="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 w-full md:w-44"
-                  value={filter.status}
-                  onChange={(e) => setFilter({...filter, status: e.target.value})}
-                >
-                  <option value="">Tất cả trạng thái</option>
-                  <option value="Active">Đang hoạt động</option>
-                  <option value="Closed">Đã đóng</option>
-                  <option value="Draft">Bản nháp</option>
-                  <option value="Archived">Đã lưu trữ</option>
-                </select>
-                <select
-                  className="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 w-full md:w-44"
-                  value={filter.jobType}
-                  onChange={(e) => setFilter({...filter, jobType: e.target.value})}
-                >
-                  <option value="">Tất cả loại</option>
-                  <option value="Full-time">Toàn thời gian</option>
-                  <option value="Part-time">Bán thời gian</option>
-                  <option value="Remote">Làm từ xa</option>
-                  <option value="Internship">Thực tập</option>
-                  <option value="Contract">Hợp đồng</option>
-                </select>
-              </div>
-            </div>
-
-            {/* Jobs Table */}
-            <div className="bg-white rounded-lg shadow overflow-hidden">
-              <div className="px-6 py-4 border-b border-gray-200">
-                <h2 className="text-lg font-semibold text-gray-900">Danh sách tin tuyển dụng</h2>
-              </div>
-
-              {jobs.length === 0 ? (
-                <div className="text-center py-12">
-                  <div className="text-gray-400 mb-4">
-                    <FaBriefcase className="text-6xl mx-auto" />
-                  </div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">Chưa có tin tuyển dụng nào</h3>
-                  <p className="text-gray-500 mb-4">Bắt đầu đăng tin tuyển dụng đầu tiên của bạn</p>
-                  <button
-                    className="bg-purple-700 text-white px-6 py-2 rounded-lg hover:bg-purple-800"
-                    onClick={() => setShowCreateForm(true)}
-                  >
-                    Đăng tin ngay
-                  </button>
-                </div>
-              ) : (
-                <div className="overflow-x-auto">
-                  <table className="w-full">
-                    <thead className="bg-gray-50">
-                      <tr>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Tin tuyển dụng
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Trạng thái
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Lượt xem
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Ứng viên
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Ngày đăng
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Hành động
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
-                      {jobs.map((job) => (
-                        <tr key={job._id} className="hover:bg-gray-50">
-                          <td className="px-6 py-4">
-                            <div className="flex items-center">
-                              <div className="flex-shrink-0">
-                                {job.isFeatured && (
-                                  <FaStar className="text-yellow-500 text-sm" />
-                                )}
-                              </div>
-                              <div className="ml-2">
-                                <div className="font-semibold text-gray-900">{job.jobTitle}</div>
-                                <div className="text-xs text-gray-500">{job.categoryId?.name || ''}</div>
-                              </div>
-                            </div>
-                          </td>
-                          <td className="px-6 py-4">{getStatusBadge(job.status)}</td>
-                          <td className="px-6 py-4">{job.viewsCount || 0}</td>
-                          <td className="px-6 py-4">{job.applicantsCount || 0}</td>
-                          <td className="px-6 py-4">{formatDate(job.createdAt)}</td>
-                          <td className="px-6 py-4">
-                            <div className="flex space-x-2">
-                              <button
-                                className="text-blue-600 hover:text-blue-900"
-                                onClick={() => handleToggleFeatured(job._id)}
-                                title={job.isFeatured ? "Bỏ nổi bật" : "Đặt nổi bật"}
-                              >
-                                <FaStar className={job.isFeatured ? "text-yellow-500" : "text-gray-400"} />
-                              </button>
-                              <button
-                                className="text-green-600 hover:text-green-900"
-                                onClick={() => handleUpdateJobStatus(job._id, job.status === 'Active' ? 'Closed' : 'Active')}
-                                title={job.status === 'Active' ? "Tạm dừng" : "Kích hoạt"}
-                              >
-                                {job.status === 'Active' ? <FaEyeSlash /> : <FaEye />}
-                              </button>
-                              <button
-                                className="text-purple-600 hover:text-purple-900"
-                                title="Chỉnh sửa"
-                                onClick={() => setEditingJob(job)}
-                              >
-                                <FaEdit />
-                              </button>
-                              <button
-                                className="text-red-600 hover:text-red-900"
-                                onClick={() => setJobToDelete(job)}
-                                title="Xóa"
-                              >
-                                <FaTrash />
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-            </div>
-          </>
-        )}
-        </div>
-
-        {/* Modal tạo tin */}
-        {showCreateForm && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-2xl shadow-2xl p-6 relative max-w-4xl w-full max-h-screen overflow-y-auto">
-              <button
-                className="absolute top-4 right-4 text-gray-500 hover:text-gray-800 text-2xl"
-                onClick={() => setShowCreateForm(false)}
-              >
-                &times;
-              </button>
-              <JobCreateForm onSubmit={handleCreateJob} categories={categories} />
-            </div>
-          </div>
-        )}
-
-        {/* Modal sửa tin */}
-        {editingJob && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-2xl shadow-2xl p-6 relative max-w-4xl w-full max-h-screen overflow-y-auto">
-              <button
-                className="absolute top-4 right-4 text-gray-500 hover:text-gray-800 text-2xl"
-                onClick={() => setEditingJob(null)}
-              >
-                &times;
-              </button>
-              <JobCreateForm onSubmit={(updatedFields) => handleEditJob(editingJob._id, updatedFields)} categories={categories} />
-            </div>
-          </div>
-        )}
-
-        {/* Modal xác nhận xóa */}
-        {jobToDelete && (
-          <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-            <div className="bg-white rounded-xl p-6 shadow-lg max-w-sm w-full">
-              <h2 className="text-lg font-semibold mb-4">Xác nhận xóa</h2>
-              <p>Bạn có chắc chắn muốn xóa tin tuyển dụng <b>{jobToDelete.jobTitle}</b>?</p>
-              <div className="flex justify-end gap-2 mt-6">
-                <button
-                  className="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300"
-                  onClick={() => setJobToDelete(null)}
-                >
-                  Hủy
-                </button>
-                <button
-                  className="px-4 py-2 rounded bg-red-600 text-white hover:bg-red-700"
-                  onClick={() => handleDeleteJob(jobToDelete._id)}
-                >
-                  Xóa
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {message && (
-          <div className="bg-green-100 text-green-800 px-4 py-2 rounded mb-4 text-center">
-            {message}
-          </div>
-        )}
-
-        {showProfileModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30">
-            <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-lg relative">
-              <button
-                onClick={() => setShowProfileModal(false)}
-                className="absolute top-2 right-2 text-gray-500 hover:text-red-500 text-2xl font-bold"
-                aria-label="Đóng"
-              >
-                &times;
-              </button>
-              <EmployerProfile onSuccess={() => setShowProfileModal(false)} />
-            </div>
-          </div>
-        )}
       </div>
+
+      {/* Content */}
+      <div className="w-full px-8 mt-8">
+        {/* Stats Overview */}
+        <StatsOverview stats={stats} />
+
+        {/* Charts Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+          <DoughnutChart 
+            data={chartData.applicationsByStatus} 
+            title="Phân bố trạng thái ứng viên" 
+          />
+          <LineChart 
+            data={chartData.applicationsByMonth} 
+            title="Xu hướng đơn ứng tuyển theo tháng" 
+            color="blue" 
+          />
+        </div>
+
+        {/* Top Jobs Chart */}
+        <div className="mb-8">
+          <BarChart 
+            data={chartData.topJobs} 
+            title="Top 5 việc làm được ứng tuyển nhiều nhất" 
+            color="green" 
+          />
+        </div>
+
+        {/* Detailed Stats */}
+        <DetailedStats chartData={chartData} />
+
+
+      </div>
+
     </div>
   );
 };

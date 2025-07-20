@@ -13,49 +13,59 @@ const JobApplications = () => {
     status: '',
     search: ''
   });
+  const [selectedApplication, setSelectedApplication] = useState(null);
+  const [showCoverLetter, setShowCoverLetter] = useState(false);
 
   useEffect(() => {
-    fetchJobAndApplications();
+    console.log('JobApplications component mounted with jobId:', jobId);
+    if (jobId) {
+      fetchJobAndApplications();
+    } else {
+      setError('Không tìm thấy ID công việc');
+      setLoading(false);
+    }
   }, [jobId]);
 
   const fetchJobAndApplications = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('token');
-      if (!token) {
-        setError('Vui lòng đăng nhập lại');
+      
+      // Kiểm tra jobId
+      if (!jobId) {
+        setError('Không tìm thấy ID công việc');
         return;
       }
 
-      // Fetch job details
-      const jobResponse = await fetch(`https://be-khoaluan.vercel.app/api/jobs/employer/jobs/${jobId}`, {
+      console.log('Fetching job and applications for jobId:', jobId);
+
+      // Fetch job details từ API mới
+      const jobResponse = await fetch(`https://be-khoa-luan2.vercel.app/api/job/${jobId}`, {
         method: 'GET',
         headers: {
-          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         }
       });
 
       const jobData = await jobResponse.json();
       if (jobResponse.ok && jobData.success) {
-        setJob(jobData.data.job);
+        setJob(jobData.data);
       } else {
+        console.error('Lỗi khi lấy thông tin job:', jobData.message);
         setError('Không tìm thấy tin tuyển dụng');
         return;
       }
 
-      // Fetch applications
-      const applicationsResponse = await fetch(`https://be-khoaluan.vercel.app/api/applications/job/${jobId}`, {
+      // Fetch applications từ API mới
+      const applicationsResponse = await fetch(`https://be-khoa-luan2.vercel.app/api/application/job/${jobId}`, {
         method: 'GET',
         headers: {
-          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         }
       });
 
       const applicationsData = await applicationsResponse.json();
       if (applicationsResponse.ok && applicationsData.success) {
-        setApplications(applicationsData.data.applications || []);
+        setApplications(applicationsData.data || []);
       } else {
         console.error('Lỗi khi lấy danh sách ứng viên:', applicationsData.message);
         setApplications([]);
@@ -120,13 +130,15 @@ const JobApplications = () => {
 
   const getStatusBadge = (status) => {
     const statusConfig = {
-      'pending': { color: 'bg-yellow-100 text-yellow-800', text: 'Chờ xử lý' },
-      'accepted': { color: 'bg-green-100 text-green-800', text: 'Đã chấp nhận' },
-      'rejected': { color: 'bg-red-100 text-red-800', text: 'Đã từ chối' },
-      'interviewed': { color: 'bg-blue-100 text-blue-800', text: 'Đã phỏng vấn' }
+      'Pending': { color: 'bg-yellow-100 text-yellow-800', text: 'Chờ xử lý' },
+      'Reviewed': { color: 'bg-blue-100 text-blue-800', text: 'Đã xem xét' },
+      'Interviewing': { color: 'bg-purple-100 text-purple-800', text: 'Đang phỏng vấn' },
+      'Offer': { color: 'bg-green-100 text-green-800', text: 'Đã đề nghị' },
+      'Rejected': { color: 'bg-red-100 text-red-800', text: 'Đã từ chối' },
+      'Hired': { color: 'bg-emerald-100 text-emerald-800', text: 'Đã tuyển' }
     };
     
-    const config = statusConfig[status] || statusConfig['pending'];
+    const config = statusConfig[status] || statusConfig['Pending'];
     return (
       <span className={`px-2 py-1 rounded-full text-xs font-medium ${config.color}`}>
         {config.text}
@@ -185,11 +197,13 @@ const JobApplications = () => {
         
         {job && (
           <div className="mb-6">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Ứng viên cho: {job.jobTitle}</h1>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+              Ứng viên cho: {job.jobTitle || job.title}
+            </h1>
             <div className="flex items-center gap-4 text-gray-600">
               <span className="flex items-center">
                 <FaCalendar className="mr-1" />
-                {formatDate(job.postedDate)}
+                {formatDate(job.postedDate || job.createdAt)}
               </span>
               <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">
                 {applications.length} ứng viên
@@ -262,6 +276,9 @@ const JobApplications = () => {
                     Trạng thái
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    CV
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Hành động
                   </th>
                 </tr>
@@ -280,10 +297,10 @@ const JobApplications = () => {
                         </div>
                         <div className="ml-4">
                           <div className="text-sm font-medium text-gray-900">
-                            {application.candidateName || 'Chưa có tên'}
+                            {application.candidateName || application.candidate?.fullName || 'Chưa có tên'}
                           </div>
                           <div className="text-sm text-gray-500">
-                            {application.candidateEmail || 'Chưa có email'}
+                            {application.candidateEmail || application.candidate?.email || 'Chưa có email'}
                           </div>
                         </div>
                       </div>
@@ -292,27 +309,45 @@ const JobApplications = () => {
                       <div className="text-sm text-gray-900">
                         <div className="flex items-center mb-1">
                           <FaEnvelope className="mr-2 text-gray-400" />
-                          {application.candidateEmail || 'N/A'}
+                          {application.candidateEmail || application.candidate?.email || 'N/A'}
                         </div>
-                        {application.candidatePhone && (
+                        {(application.candidatePhone || application.candidate?.phoneNumber) && (
                           <div className="flex items-center">
                             <FaPhone className="mr-2 text-gray-400" />
-                            {application.candidatePhone}
+                            {application.candidatePhone || application.candidate?.phoneNumber}
                           </div>
                         )}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {formatDate(application.appliedDate)}
+                      {formatDate(application.applicationDate)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       {getStatusBadge(application.status)}
                     </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <div className="flex flex-col gap-1">
+                        {application.cvFromProfile ? (
+                          <span className="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs">
+                            CV từ hồ sơ
+                          </span>
+                        ) : (
+                          <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs">
+                            CV riêng
+                          </span>
+                        )}
+                        {application.coverLetter && (
+                          <span className="px-2 py-1 bg-purple-100 text-purple-800 rounded-full text-xs">
+                            Có tin nhắn
+                          </span>
+                        )}
+                      </div>
+                    </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <div className="flex space-x-2">
-                        {application.cvUrl && (
+                        {(application.cvUrl || application.resume?.fileUrl) && (
                           <button
-                            onClick={() => handleDownloadCV(application.cvUrl)}
+                            onClick={() => handleDownloadCV(application.cvUrl || application.resume?.fileUrl)}
                             className="text-blue-600 hover:text-blue-900"
                             title="Tải CV"
                           >
@@ -339,12 +374,18 @@ const JobApplications = () => {
                           </>
                         )}
                         
-                        <button
-                          className="text-purple-600 hover:text-purple-900"
-                          title="Xem chi tiết"
-                        >
-                          <FaEye />
-                        </button>
+                        {application.coverLetter && (
+                          <button
+                            onClick={() => {
+                              setSelectedApplication(application);
+                              setShowCoverLetter(true);
+                            }}
+                            className="text-purple-600 hover:text-purple-900"
+                            title="Xem tin nhắn"
+                          >
+                            <FaEye />
+                          </button>
+                        )}
                       </div>
                     </td>
                   </tr>
@@ -354,6 +395,52 @@ const JobApplications = () => {
           </div>
         )}
       </div>
+
+      {/* Cover Letter Modal */}
+      {showCoverLetter && selectedApplication && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-2xl w-full max-h-[80vh] overflow-y-auto">
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-gray-900">
+                  Tin nhắn từ {selectedApplication.candidateName || selectedApplication.candidate?.fullName}
+                </h3>
+                <button
+                  onClick={() => {
+                    setShowCoverLetter(false);
+                    setSelectedApplication(null);
+                  }}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <FaTimes className="w-5 h-5" />
+                </button>
+              </div>
+              
+              <div className="bg-gray-50 rounded-lg p-4 mb-4">
+                <div className="text-sm text-gray-600 mb-2">
+                  <strong>Ứng viên:</strong> {selectedApplication.candidateName || selectedApplication.candidate?.fullName}
+                </div>
+                <div className="text-sm text-gray-600 mb-2">
+                  <strong>Email:</strong> {selectedApplication.candidateEmail || selectedApplication.candidate?.email}
+                </div>
+                <div className="text-sm text-gray-600 mb-2">
+                  <strong>Điện thoại:</strong> {selectedApplication.candidatePhone || selectedApplication.candidate?.phoneNumber || 'N/A'}
+                </div>
+                <div className="text-sm text-gray-600">
+                  <strong>Ngày nộp:</strong> {formatDate(selectedApplication.applicationDate)}
+                </div>
+              </div>
+              
+              <div className="border-t pt-4">
+                <h4 className="font-medium text-gray-900 mb-2">Tin nhắn:</h4>
+                <div className="bg-white border rounded-lg p-4 text-gray-700 whitespace-pre-wrap">
+                  {selectedApplication.coverLetter || 'Không có tin nhắn'}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

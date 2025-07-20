@@ -180,6 +180,10 @@ const candidateSchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
+    cvUrl: {
+      type: String,
+      trim: true,
+    },
     createdAt: {
       type: Date,
       default: Date.now,

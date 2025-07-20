@@ -186,49 +186,61 @@ module.exports = async function handler(req, res) {
     // Get additional profile data based on role
     let profileData = null;
     
-    if (user.role === 'candidate') {
-      const candidateProfile = await Candidates.findOne({ userId: user._id });
-      if (candidateProfile) {
-        profileData = {
-          id: candidateProfile._id,
-          fullName: candidateProfile.fullName,
-          phoneNumber: candidateProfile.phoneNumber,
-          city: candidateProfile.city,
-          district: candidateProfile.district,
-          ward: candidateProfile.ward,
-          specificAddress: candidateProfile.specificAddress,
-          dateOfBirth: candidateProfile.dateOfBirth,
-          gender: candidateProfile.gender,
-          bio: candidateProfile.bio,
-          skills: candidateProfile.skills,
-          expectedSalary: candidateProfile.expectedSalary,
-          preferredJobTypes: candidateProfile.preferredJobTypes,
-          preferredLocations: candidateProfile.preferredLocations,
-          isAvailable: candidateProfile.isAvailable,
-          isPublic: candidateProfile.isPublic
-        };
+    try {
+      if (user.role === 'candidate') {
+        const candidateProfile = await Candidates.findOne({ userId: user._id });
+        if (candidateProfile) {
+          profileData = {
+            id: candidateProfile._id,
+            fullName: candidateProfile.fullName,
+            phoneNumber: candidateProfile.phoneNumber,
+            city: candidateProfile.city,
+            district: candidateProfile.district,
+            ward: candidateProfile.ward,
+            specificAddress: candidateProfile.specificAddress,
+            dateOfBirth: candidateProfile.dateOfBirth,
+            gender: candidateProfile.gender,
+            bio: candidateProfile.bio,
+            skills: candidateProfile.skills,
+            expectedSalary: candidateProfile.expectedSalary,
+            preferredJobTypes: candidateProfile.preferredJobTypes,
+            preferredLocations: candidateProfile.preferredLocations,
+            isAvailable: candidateProfile.isAvailable,
+            isPublic: candidateProfile.isPublic,
+            avatarUrl: candidateProfile.avatarUrl
+          };
+        }
+      } else if (user.role === 'employer') {
+        const employerProfile = await Employers.findOne({ userId: user._id });
+        if (employerProfile) {
+          profileData = {
+            id: employerProfile._id,
+            companyName: employerProfile.companyName,
+            companyEmail: employerProfile.companyEmail,
+            companyPhoneNumber: employerProfile.companyPhoneNumber,
+            companyAddress: employerProfile.companyAddress,
+            companyWebsite: employerProfile.companyWebsite,
+            companyDescription: employerProfile.companyDescription,
+            industry: employerProfile.industry,
+            companySize: employerProfile.companySize,
+            foundedYear: employerProfile.foundedYear,
+            companyLogoUrl: employerProfile.companyLogoUrl
+          };
+        }
       }
-    } else if (user.role === 'employer') {
-      const employerProfile = await Employers.findOne({ userId: user._id });
-      if (employerProfile) {
-        profileData = {
-          id: employerProfile._id,
-          companyName: employerProfile.companyName,
-          companyEmail: employerProfile.companyEmail,
-          companyPhoneNumber: employerProfile.companyPhoneNumber,
-          companyAddress: employerProfile.companyAddress,
-          companyWebsite: employerProfile.companyWebsite,
-          companyDescription: employerProfile.companyDescription,
-          industry: employerProfile.industry,
-          companySize: employerProfile.companySize,
-          foundedYear: employerProfile.foundedYear
-        };
-      }
+    } catch (profileError) {
+      console.error('Error fetching profile data:', profileError);
+      // Continue without profile data if there's an error
     }
 
     // Create user response (without password)
     const userResponse = user.toObject();
     delete userResponse.password;
+
+    // Merge profile data into user response
+    if (profileData) {
+      Object.assign(userResponse, profileData);
+    }
 
     // Tạo JWT token
     const token = jwt.sign(
@@ -237,14 +249,18 @@ module.exports = async function handler(req, res) {
       { expiresIn: '7d' }
     );
 
+    // Log response for debugging
+    console.log('Login response:', {
+      success: true,
+      message: 'Đăng nhập thành công',
+      user: userResponse
+    });
+
     return res.status(200).json({
       success: true,
       message: 'Đăng nhập thành công',
       token,
-      data: {
-        user: userResponse,
-        profile: profileData
-      }
+      user: userResponse
     });
 
   } catch (error) {

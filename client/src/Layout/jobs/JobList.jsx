@@ -1,125 +1,121 @@
-import { useEffect, useState, useRef } from 'react';
-import { motion } from 'framer-motion';
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import Header from '../shared/Header';
+import Footer from '../../components/Footer';
 import JobCard from './JobCard';
+import SearchBar from './SearchBar';
 
-const CATEGORY_API = 'https://be-khoaluan.vercel.app/api/admin/category-management';
-const JOB_API = 'https://be-khoaluan.vercel.app/api/job/all';
-
-const JobList = ({ keyword }) => {
+const JobList = ({ keyword = '' }) => {
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [categories, setCategories] = useState([]);
-  const [selected, setSelected] = useState('all');
-  const container = {
-    hidden: { opacity: 0 },
-    show: {
-      opacity: 1,
-      transition: { staggerChildren: 0.1 }
+  const [error, setError] = useState(null);
+  const [searchKeyword, setSearchKeyword] = useState(keyword);
+
+  useEffect(() => {
+    fetchJobs();
+  }, [searchKeyword]);
+
+  const fetchJobs = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(`/api/jobs/all?keyword=${searchKeyword}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch jobs');
+      }
+      const data = await response.json();
+      setJobs(data);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
     }
   };
-  const tagScrollRef = useRef(null);
 
-  // Lấy danh mục động từ API
-  useEffect(() => {
-    fetch(CATEGORY_API)
-      .then(res => res.json())
-      .then(data => setCategories(data.categories || []));
-  }, []);
+  if (loading) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <Header />
+        <main className="flex-1 pt-20">
+          <div className="max-w-7xl mx-auto px-4 py-8">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
+              <p className="mt-4 text-gray-600">Đang tải danh sách việc làm...</p>
+            </div>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
-  // Fetch jobs theo danh mục
-  useEffect(() => {
-    setLoading(true);
-    let url = JOB_API;
-    const params = [];
-    if (selected !== 'all') params.push(`categoryId=${selected}`);
-    if (keyword && keyword.trim()) params.push(`keyword=${encodeURIComponent(keyword.trim())}`);
-    if (params.length > 0) url += '?' + params.join('&');
-    fetch(url)
-      .then(res => res.json())
-      .then(data => {
-        if (data && (data.success || data.jobs)) {
-          setJobs(data.data || data.jobs || []);
-        } else {
-          setJobs([]);
-        }
-      })
-      .catch(() => setJobs([]))
-      .finally(() => setLoading(false));
-  }, [selected, keyword]);
-
-  // Scroll ngang cho danh mục
-  const handleScrollTags = (direction) => {
-    if (tagScrollRef.current) {
-      tagScrollRef.current.scrollBy({
-        left: direction === 'next' ? 200 : -200,
-        behavior: 'smooth',
-      });
-    }
-  };
+  if (error) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <Header />
+        <main className="flex-1 pt-20">
+          <div className="max-w-7xl mx-auto px-4 py-8">
+            <div className="text-center">
+              <p className="text-red-600">Lỗi: {error}</p>
+              <button 
+                onClick={fetchJobs}
+                className="mt-4 bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700"
+              >
+                Thử lại
+              </button>
+            </div>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
-    <div className="w-full bg-[#e8effc] mt-8">
-      <div className="max-w-7xl mx-auto px-4 pt-4">
-        {/* Tiêu đề và filter tags */}
-        <div className="flex flex-col gap-4 mb-2">
-          <div className="flex items-center gap-2 text-3xl font-bold text-gray-800">
-            <span className="text-4xl">🔥</span>
-            Việc làm tuyển gấp
+    <div className="min-h-screen flex flex-col">
+      <Header />
+      <main className="flex-1 pt-20">
+        <div className="max-w-7xl mx-auto px-4 py-8">
+          {/* Search Bar */}
+          <SearchBar setKeyword={setSearchKeyword} />
+          
+          {/* Job List Header */}
+          <div className="flex justify-between items-center mb-6">
+            <h1 className="text-3xl font-bold text-gray-900">
+              {searchKeyword ? `Kết quả tìm kiếm cho "${searchKeyword}"` : 'Tất cả việc làm'}
+            </h1>
+            <p className="text-gray-600">
+              {jobs.length} việc làm được tìm thấy
+            </p>
           </div>
-          <div className="flex items-center gap-2 mb-2">
-            {/* Nút prev */}
-            <button
-              className="flex items-center justify-center w-9 h-9 rounded-full bg-[#f4f1fd] text-[#a78bfa] hover:bg-[#ede9fe] transition mr-1 shrink-0"
-              onClick={() => handleScrollTags('prev')}
-              type="button"
-              aria-label="Xem danh mục trước"
-            >
-              <svg width="22" height="22" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7"/></svg>
-            </button>
-            <div className="flex items-center gap-2 flex-nowrap whitespace-nowrap scrollbar-hide overflow-x-hidden w-full" ref={tagScrollRef}>
-              <button
-                className={`font-semibold px-4 py-1.5 text-sm rounded-[2rem] shadow-sm transition whitespace-nowrap ${selected === 'all' ? 'bg-[#7c3aed] text-white' : 'bg-[#f4f1fd] text-[#7c3aed] hover:bg-[#ede9fe]'}`}
-                onClick={() => setSelected('all')}
-                aria-label="Tất cả việc làm"
-              >Tất cả</button>
-              {categories.map(cat => (
-                <button
-                  key={cat._id}
-                  className={`font-semibold px-4 py-1.5 text-sm rounded-[2rem] shadow-sm transition whitespace-nowrap ${selected === cat._id ? 'bg-[#7c3aed] text-white' : 'bg-[#f4f1fd] text-[#7c3aed] hover:bg-[#ede9fe]'}`}
-                  onClick={() => setSelected(cat._id)}
-                  aria-label={cat.name}
-                >{cat.name}</button>
+
+          {/* Job Cards */}
+          {jobs.length === 0 ? (
+            <div className="text-center py-12">
+              <div className="text-gray-400 mb-4">
+                <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">
+                Không tìm thấy việc làm
+              </h3>
+              <p className="text-gray-600">
+                {searchKeyword 
+                  ? `Không có việc làm nào phù hợp với từ khóa "${searchKeyword}"`
+                  : 'Hiện tại chưa có việc làm nào được đăng tải'
+                }
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {jobs.map((job) => (
+                <JobCard key={job._id} job={job} />
               ))}
             </div>
-            {/* Nút next */}
-            <button
-              className="flex items-center justify-center w-9 h-9 rounded-full bg-[#f4f1fd] text-[#a78bfa] hover:bg-[#ede9fe] transition ml-1 shrink-0"
-              onClick={() => handleScrollTags('next')}
-              type="button"
-              aria-label="Xem danh mục tiếp"
-            >
-              <svg width="22" height="22" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7"/></svg>
-            </button>
-          </div>
-        </div>
-      </div>
-      {loading ? (
-        <div className="text-center py-8">Đang tải danh sách việc làm...</div>
-      ) : (
-        <motion.div
-          variants={container}
-          initial="hidden"
-          animate="show"
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-w-7xl mx-auto px-4 py-4"
-        >
-          {jobs.length === 0 && (
-            <div className="col-span-3 text-center text-gray-500 py-8">Không có công việc nào.</div>
           )}
-          {jobs.map((job, idx) => (
-            <JobCard key={job._id || idx} job={job} />
-          ))}
-        </motion.div>
-      )}
+        </div>
+      </main>
+      <Footer />
     </div>
   );
 };

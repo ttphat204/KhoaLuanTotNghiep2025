@@ -3,6 +3,12 @@ const mongoose = require("mongoose");
 const employerSchema = new mongoose.Schema(
   {
     _id: { type: mongoose.Schema.Types.ObjectId, ref: "Auth" },
+    userId: { 
+      type: mongoose.Schema.Types.ObjectId, 
+      ref: "Auth",
+      required: true,
+      unique: true
+    },
     companyName: {
       type: String,
       required: [true, "Tên công ty là bắt buộc"],
@@ -81,7 +87,6 @@ const employerSchema = new mongoose.Schema(
 );
 
 // Indexes
-// employerSchema.index({ userId: 1 }); // Đã unique ở schema, không cần dòng này
 employerSchema.index({ companyName: "text" });
 employerSchema.index({ industry: 1 });
 employerSchema.index({ companySize: 1 });

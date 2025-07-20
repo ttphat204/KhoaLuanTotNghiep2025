@@ -1,10 +1,11 @@
 import { motion } from 'framer-motion';
-import { FaSearch, FaUser, FaBell, FaBriefcase, FaSignOutAlt } from 'react-icons/fa';
-import { useState } from 'react';
+import { FaSearch, FaUser, FaBell, FaBriefcase, FaSignOutAlt, FaHome, FaBuilding, FaBookOpen } from 'react-icons/fa';
+import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import LoginModal from '../auth/LoginModal';
 import RegisterModal from '../auth/RegisterModal';
+import UserProfileDropdown from '../../components/UserProfileDropdown';
 
 const Header = () => {
   const [showLoginModal, setShowLoginModal] = useState(false);
@@ -12,10 +13,60 @@ const Header = () => {
   const { user, isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
 
-  // Debug: log user object và role lấy từ context
-  if (user) {
-    console.log('User role:', user.role);
-  }
+  // Đảm bảo modal không mở tự động khi component mount
+  useEffect(() => {
+    // Reset modal state khi component mount
+    setShowLoginModal(false);
+    setShowRegisterModal(false);
+    
+    // Kiểm tra URL parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const showLogin = urlParams.get('showLogin');
+    const showRegister = urlParams.get('showRegister');
+    
+    // Chỉ mở modal nếu có URL parameter và user chưa đăng nhập
+    if (showLogin === 'true' && !isAuthenticated) {
+      setShowLoginModal(true);
+    } else if (showRegister === 'true' && !isAuthenticated) {
+      setShowRegisterModal(true);
+    }
+  }, [isAuthenticated]);
+
+  // Thêm event listener để đóng modal khi click outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (showLoginModal || showRegisterModal) {
+        const modal = event.target.closest('.modal-content');
+        if (!modal) {
+          setShowLoginModal(false);
+          setShowRegisterModal(false);
+        }
+      }
+    };
+
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape' && (showLoginModal || showRegisterModal)) {
+        setShowLoginModal(false);
+        setShowRegisterModal(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('keydown', handleKeyDown);
+    
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [showLoginModal, showRegisterModal]);
+
+  // Nếu user đã đăng nhập nhưng modal vẫn mở, đóng modal
+  useEffect(() => {
+    if (isAuthenticated && (showLoginModal || showRegisterModal)) {
+      setShowLoginModal(false);
+      setShowRegisterModal(false);
+    }
+  }, [showLoginModal, showRegisterModal, isAuthenticated]);
 
   const handleLogout = () => {
     logout();
@@ -38,82 +89,84 @@ const Header = () => {
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-[999] bg-white shadow-md">
+    <header className="fixed top-0 left-0 right-0 z-[999] bg-white/95 backdrop-blur-md shadow-lg border-b border-gray-100">
       <div className="w-full px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center h-16">
+        <div className="flex items-center h-20">
           {/* Logo */}
-          <div className="flex-shrink-0">
+          <motion.div 
+            className="flex-shrink-0"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
             <h1 
-              className="text-2xl font-bold text-indigo-600 cursor-pointer hover:text-indigo-700 transition-colors"
+              className="text-3xl font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent cursor-pointer hover:from-indigo-700 hover:via-purple-700 hover:to-pink-700 transition-all duration-300"
               onClick={handleLogoClick}
             >
               JobFinder
             </h1>
-          </div>
+          </motion.div>
 
           {/* Navigation */}
-          <nav className="hidden md:flex space-x-2 ml-8">
-            <a
+          <nav className="hidden md:flex space-x-1 ml-12">
+            <motion.a
               href="#"
-              className="text-gray-700 px-3 py-2 text-sm font-medium rounded-lg border border-transparent transition-all duration-200 hover:border-indigo-500 hover:bg-indigo-50 hover:text-indigo-600"
+              className="flex items-center gap-2 text-gray-700 px-4 py-3 text-sm font-medium rounded-xl border border-transparent transition-all duration-300 hover:border-indigo-200 hover:bg-gradient-to-r hover:from-indigo-50 hover:to-purple-50 hover:text-indigo-600 hover:shadow-md"
+              whileHover={{ y: -2 }}
+              whileTap={{ y: 0 }}
             >
-              Việc làm
-            </a>
-            <a
+              <FaHome className="w-4 h-4" />
+              <span>Việc làm</span>
+            </motion.a>
+            <motion.a
               href="#"
-              className="text-gray-700 px-3 py-2 text-sm font-medium rounded-lg border border-transparent transition-all duration-200 hover:border-indigo-500 hover:bg-indigo-50 hover:text-indigo-600"
+              className="flex items-center gap-2 text-gray-700 px-4 py-3 text-sm font-medium rounded-xl border border-transparent transition-all duration-300 hover:border-indigo-200 hover:bg-gradient-to-r hover:from-indigo-50 hover:to-purple-50 hover:text-indigo-600 hover:shadow-md"
+              whileHover={{ y: -2 }}
+              whileTap={{ y: 0 }}
             >
-              Công ty
-            </a>
-            <a
+              <FaBuilding className="w-4 h-4" />
+              <span>Công ty</span>
+            </motion.a>
+            <motion.a
               href="#"
-              className="text-gray-700 px-3 py-2 text-sm font-medium rounded-lg border border-transparent transition-all duration-200 hover:border-indigo-500 hover:bg-indigo-50 hover:text-indigo-600"
+              className="flex items-center gap-2 text-gray-700 px-4 py-3 text-sm font-medium rounded-xl border border-transparent transition-all duration-300 hover:border-indigo-200 hover:bg-gradient-to-r hover:from-indigo-50 hover:to-purple-50 hover:text-indigo-600 hover:shadow-md"
+              whileHover={{ y: -2 }}
+              whileTap={{ y: 0 }}
             >
-              Cẩm nang
-            </a>
+              <FaBookOpen className="w-4 h-4" />
+              <span>Cẩm nang</span>
+            </motion.a>
           </nav>
 
           {/* Right side buttons */}
-          <div className="flex items-center gap-2 ml-auto">
+          <div className="flex items-center gap-3 ml-auto">
             {isAuthenticated ? (
-              // User is logged in
-              <div className="flex items-center gap-3">
-                {isAuthenticated && getWelcomeText() && (
-                  <div className="hidden md:flex items-center gap-2 text-sm text-gray-600">
-                    <FaUser className="w-4 h-4" />
-                    <span>Xin chào, {getWelcomeText()}</span>
-                  </div>
-                )}
-                <button
-                  onClick={handleLogout}
-                  className="flex items-center gap-2 px-3 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                  title="Đăng xuất"
-                >
-                  <FaSignOutAlt className="w-4 h-4" />
-                  <span className="hidden sm:inline">Đăng xuất</span>
-                </button>
-              </div>
+              // User is logged in - Show UserProfileDropdown
+              <UserProfileDropdown />
             ) : (
               // User is not logged in
-              <>
-                <button
-                  className="h-12 px-4 flex flex-col items-start justify-center rounded-lg border-2 border-[#4B1CD6] bg-white text-[#4B1CD6] hover:bg-[#ede9fe] hover:text-[#4B1CD6] transition-all duration-200 focus:outline-none"
+              <div className="flex items-center gap-3">
+                <motion.button
+                  className="h-14 px-6 flex flex-col items-start justify-center rounded-xl border-2 border-indigo-500 bg-white text-indigo-600 hover:bg-gradient-to-r hover:from-indigo-50 hover:to-purple-50 hover:border-indigo-600 hover:shadow-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-200"
                   onClick={() => setShowLoginModal(true)}
+                  whileHover={{ y: -2, scale: 1.02 }}
+                  whileTap={{ y: 0, scale: 0.98 }}
                 >
-                  <span className="text-xs font-bold">Người tìm việc</span>
+                  <span className="text-xs font-bold text-gray-600">Người tìm việc</span>
                   <span className="text-base font-bold leading-tight">Đăng ký/Đăng nhập</span>
-                </button>
-                <button
-                  className="h-12 px-4 flex items-center gap-2 rounded-lg bg-[#4B1CD6] hover:bg-[#3a13b3] border border-transparent transition-all duration-200 text-white focus:outline-none"
+                </motion.button>
+                <motion.button
+                  className="h-14 px-6 flex items-center gap-3 rounded-xl bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 hover:from-indigo-700 hover:via-purple-700 hover:to-pink-700 border border-transparent transition-all duration-300 text-white focus:outline-none focus:ring-2 focus:ring-purple-200 shadow-lg hover:shadow-xl"
                   onClick={() => navigate('/employer/login')}
+                  whileHover={{ y: -2, scale: 1.02 }}
+                  whileTap={{ y: 0, scale: 0.98 }}
                 >
-                  <FaBriefcase className="text-[#2c95ff] w-6 h-6 mr-1" />
+                  <FaBriefcase className="text-white w-5 h-5" />
                   <div className="flex flex-col items-start leading-tight">
-                    <span className="text-xs font-bold uppercase">Dành cho</span>
+                    <span className="text-xs font-bold uppercase text-indigo-100">Dành cho</span>
                     <span className="text-base font-bold">Nhà Tuyển Dụng</span>
                   </div>
-                </button>
-              </>
+                </motion.button>
+              </div>
             )}
           </div>
         </div>

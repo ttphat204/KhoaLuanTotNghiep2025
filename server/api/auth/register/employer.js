@@ -191,6 +191,7 @@ module.exports = async function handler(req, res) {
 
     const employerProfile = new Employers({
       _id: authUser._id,
+      userId: authUser._id, // Thêm userId
       companyName,
       companyEmail: email.toLowerCase(),
       companyPhoneNumber: phone,

@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { FaSearch, FaMapMarkerAlt, FaBriefcase } from 'react-icons/fa';
+import { FaSearch, FaMapMarkerAlt } from 'react-icons/fa';
 import { AiFillStar, AiOutlineClockCircle } from 'react-icons/ai';
 import img1 from '../../assets/images/bsbl.png';
 import img2 from '../../assets/images/bhkd.png';
@@ -206,13 +206,13 @@ function useSearchKeywords(keyRecent = 'recent_job_searches', keyCount = 'search
 }
 
 const SearchBar = ({ setKeyword }) => {
-  const [showDropdown, setShowDropdown] = useState(false);
-  const [showProfessionDropdown, setShowProfessionDropdown] = useState(false);
-  const [selectedProfessions, setSelectedProfessions] = useState([]);
+
   const [provinces, setProvinces] = useState([]);
   const [selectedProvince, setSelectedProvince] = useState(null);
   const [showProvinceDropdown, setShowProvinceDropdown] = useState(false);
   const [selectedDistrict, setSelectedDistrict] = useState(null);
+  const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
+  const locationRef = useRef(null);
   const inputRef = useRef(null);
   const [selectedCategory, setSelectedCategory] = useState('all');
   const location = useLocation();
@@ -221,13 +221,7 @@ const SearchBar = ({ setKeyword }) => {
   const [recentSearches, popularKeywordsDynamic, addRecentSearch] = useSearchKeywords();
   const navigate = useNavigate();
 
-  const handleProfessionToggle = (profession) => {
-    setSelectedProfessions((prev) =>
-      prev.includes(profession)
-        ? prev.filter((p) => p !== profession)
-        : [...prev, profession]
-    );
-  };
+
 
   useEffect(() => {
     fetch('https://provinces.open-api.vn/api/?depth=2')
@@ -245,57 +239,57 @@ const SearchBar = ({ setKeyword }) => {
   }, [categorySlug]);
 
   const handleSearch = () => {
-    if (inputRef.current && inputRef.current.value.trim()) {
-      const keyword = inputRef.current.value.trim();
+    const keyword = inputRef.current?.value?.trim() || '';
+    const location = selectedProvince && selectedDistrict
+      ? `${selectedProvince.name.replace('Tỉnh ', '').replace('Thành phố ', '')}, ${selectedDistrict.name.replace('Quận ', '').replace('Huyện ', '').replace('Thị xã ', '').replace('Thành phố ', '')}`
+      : selectedProvince
+        ? selectedProvince.name.replace('Tỉnh ', '').replace('Thành phố ', '')
+        : 'Toàn quốc';
+    
+    // Tạo URL với cả keyword và location
+    const searchParams = new URLSearchParams();
+    if (keyword) {
+      searchParams.append('keyword', keyword);
       addRecentSearch(keyword);
-      setShowDropdown(false);
-      navigate(`/jobs/search?keyword=${encodeURIComponent(keyword)}`);
     }
+    if (location && location !== 'Toàn quốc') {
+      searchParams.append('location', location);
+    }
+    
+    setShowProvinceDropdown(false);
+    navigate(`/jobs/search?${searchParams.toString()}`);
+  };
+
+  const handleLocationClick = () => {
+    setShowProvinceDropdown((v) => !v);
   };
 
   return (
-    <div className="relative w-full">
-      {/* Banner */}
-      <div className="w-screen h-[320px] flex items-center justify-center relative overflow-hidden left-1/2 -translate-x-1/2">
-        <img
-          src={bannerImg}
-          alt="Banner"
-          className="absolute inset-0 w-screen h-full object-contain object-center z-0"
-          style={{ imageRendering: 'auto' }}
-        />
-      </div>
+    <>
 
-      {/* Overlay tối toàn màn hình khi dropdown từ khóa mở */}
-      {showDropdown && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-60 z-40"
-          onClick={() => setShowDropdown(false)}
-          tabIndex={-1}
-        />
-      )}
-      {/* Overlay cho dropdown nghề nghiệp và tỉnh thành (nền trong suốt) */}
-      {(showProfessionDropdown || showProvinceDropdown) && !showDropdown && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-0 z-40"
-          onClick={() => {
-            setShowProfessionDropdown(false);
-            setShowProvinceDropdown(false);
-          }}
-          tabIndex={-1}
-        />
-      )}
 
-      {/* Search Box + Tags + Categories */}
+      <div className="relative w-full">
+        {/* Banner */}
+        <div className="w-screen h-[320px] flex items-center justify-center relative overflow-hidden left-1/2 -translate-x-1/2">
+          <img
+            src={bannerImg}
+            alt="Banner"
+            className="absolute inset-0 w-screen h-full object-contain object-center z-0"
+            style={{ imageRendering: 'auto' }}
+          />
+        </div>
+
+        {/* Search Box + Tags + Categories */}
       <div className="relative w-full flex justify-center" style={{ marginTop: '-80px' }}>
         {/* Hiệu ứng đổ bóng phía trên card */}
         <div className="absolute -top-8 left-1/2 -translate-x-1/2 w-[90%] h-12 bg-cyan-400 opacity-60 blur-2xl rounded-t-2xl z-0"></div>
-        <div className="relative bg-white rounded-2xl shadow-xl flex flex-col p-0 max-w-6xl w-full z-50 border-2 border-blue-200">
+        <div className="relative bg-white rounded-2xl shadow-xl flex flex-col p-0 max-w-7xl w-full z-50 border-2 border-blue-200">
           {/* Hiệu ứng đổ màu nhẹ chỉ chiếm 20% phía trên card */}
           <div className="absolute left-0 top-0 w-full h-[20%] rounded-t-2xl bg-gradient-to-b from-cyan-100 via-white to-transparent opacity-70 blur-md pointer-events-none z-0"></div>
           <div className="relative z-10">
             {/* Search Row - Redesigned */}
-            <div className="flex flex-col gap-0 p-6 pb-0">
-              <div className="flex flex-col md:flex-row items-stretch gap-0 w-full bg-white rounded-full shadow-lg border-2 border-blue-200 focus-within:border-blue-400 transition-all duration-200">
+            <div className="flex flex-col gap-0 p-6 pb-0 relative">
+              <div className="flex flex-col md:flex-row items-stretch gap-0 w-full bg-white rounded-full shadow-lg border-2 border-blue-200 focus-within:border-blue-400 transition-all duration-200 relative overflow-visible z-[999999]">
                 {/* Vị trí */}
                 <div className="flex-1 flex items-center px-5 h-16 bg-transparent rounded-l-full focus-within:bg-blue-50 transition-all duration-200 relative">
                   <FaSearch className="text-gray-400 mr-2 text-lg" />
@@ -304,139 +298,23 @@ const SearchBar = ({ setKeyword }) => {
                     type="text"
                     placeholder="Nhập vị trí muốn ứng tuyển"
                     className="w-full bg-transparent outline-none text-base placeholder-gray-400"
-                    onFocus={() => {
-                      setShowDropdown(true);
-                      setShowProfessionDropdown(false);
-                      setShowProvinceDropdown(false);
-                    }}
-                    onBlur={() => setTimeout(() => setShowDropdown(false), 150)}
                     onKeyDown={e => {
                       if (e.key === 'Enter') {
                         handleSearch();
                       }
                     }}
                   />
-                  {/* Dropdown và glow */}
-                  {showDropdown && (
-                    <>
-                      <div className="absolute left-0 top-full w-full z-50 mt-3">
-                        <div className="w-full bg-white rounded-2xl shadow-2xl p-0 animate-fadeIn">
-                          {/* Tìm kiếm gần đây */}
-                          {recentSearches.length > 0 && (
-                            <>
-                              <div className="flex items-center gap-2 px-6 pt-6 pb-2">
-                                <AiOutlineClockCircle className="text-blue-400 text-2xl" />
-                                <span className="font-extrabold text-xl bg-gradient-to-r from-blue-500 to-cyan-400 bg-clip-text text-transparent drop-shadow">Tìm kiếm gần đây</span>
-                              </div>
-                              <ul className="px-2 pb-2">
-                                {recentSearches.map((kw, idx) => (
-                                  <li
-                                    key={idx}
-                                    className="flex items-center gap-3 py-3 px-4 my-2 rounded-xl cursor-pointer text-lg font-semibold text-gray-800 transition-all duration-150 hover:bg-blue-50"
-                                    onMouseDown={() => {
-                                      inputRef.current.value = kw;
-                                      setShowDropdown(false);
-                                    }}
-                                  >
-                                    <AiOutlineClockCircle className="text-blue-400 text-xl" />
-                                    <span className="truncate">{kw}</span>
-                                  </li>
-                                ))}
-                              </ul>
-                            </>
-                          )}
-                          {/* Từ khóa phổ biến */}
-                          {popularKeywordsDynamic.length > 0 && (
-                            <>
-                              <div className="flex items-center gap-2 px-6 pt-6 pb-2">
-                                <AiFillStar className="text-yellow-400 text-2xl" />
-                                <span className="font-extrabold text-xl bg-gradient-to-r from-blue-500 to-cyan-400 bg-clip-text text-transparent drop-shadow">Từ khóa phổ biến</span>
-                      </div>
-                              <ul className="px-2 pb-4">
-                                {popularKeywordsDynamic.map((kw, idx) => (
-                            <li
-                              key={idx}
-                                    className="flex items-center gap-3 py-3 px-4 my-2 rounded-xl cursor-pointer text-lg font-semibold text-gray-800 transition-all duration-150 hover:bg-blue-50"
-                              onMouseDown={() => {
-                                inputRef.current.value = kw;
-                                setShowDropdown(false);
-                              }}
-                            >
-                                    <AiFillStar className="text-yellow-400 text-xl" />
-                                    <span className="truncate">{kw}</span>
-                            </li>
-                          ))}
-                        </ul>
-                            </>
-                          )}
-                        </div>
-                        <style>{`
-                          @keyframes fadeIn { from { opacity: 0; transform: translateY(10px);} to { opacity: 1; transform: none; } }
-                          .animate-fadeIn { animation: fadeIn 0.25s ease; }
-                        `}</style>
-                      </div>
-                    </>
-                  )}
                 </div>
-                {/* Nghề nghiệp - custom dropdown */}
-                <div className="flex items-center px-5 h-16 bg-transparent border-l border-gray-100 focus-within:bg-blue-50 transition-all duration-200">
-                  <FaBriefcase className="text-gray-400 mr-2 text-lg" />
-                  <div
-                    className="w-full cursor-pointer select-none text-base flex items-center justify-between"
-                    onClick={() => {
-                      setShowProfessionDropdown((v) => !v);
-                      setShowDropdown(false);
-                      setShowProvinceDropdown(false);
-                    }}
-                  >
-                    <span className="flex gap-1 items-center w-full">
-                      {selectedProfessions.length === 0 && (
-                        <span className="truncate text-gray-700">Lọc theo nghề nghiệp</span>
-                      )}
-                      {selectedProfessions.length === 1 && (
-                        <span className="bg-gray-100 text-gray-800 px-2 py-0.5 rounded-full text-sm font-medium truncate max-w-[120px] block">{selectedProfessions[0]}</span>
-                      )}
-                      {selectedProfessions.length > 1 && (
-                        <>
-                          <span className="bg-gray-100 text-gray-800 px-2 py-0.5 rounded-full text-sm font-medium truncate max-w-[100px]">{selectedProfessions[0]}</span>
-                          <span className="bg-gray-200 text-gray-700 px-2 py-0.5 rounded-full text-xs font-semibold">+{selectedProfessions.length - 1}</span>
-                        </>
-                      )}
-                    </span>
-                    <svg className="ml-2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" /></svg>
-                  </div>
-                  {showProfessionDropdown && (
-                    <div className="absolute left-0 top-[110%] w-full bg-white rounded-2xl shadow-2xl z-50 p-4 max-h-[400px] overflow-y-auto border border-gray-100">
-                      <div className="flex items-center mb-2">
-                        <span className="uppercase text-xs font-bold text-gray-400 tracking-wider">Nghề nổi bật</span>
-                        <div className="flex-1 border-t border-gray-200 ml-2"></div>
-                      </div>
-                      <div>
-                        {jobProfessions.map((prof, idx) => (
-                          <label key={idx} className="flex items-center gap-2 py-2 cursor-pointer select-none">
-                            <input
-                              type="checkbox"
-                              checked={selectedProfessions.includes(prof)}
-                              onChange={() => handleProfessionToggle(prof)}
-                              className="form-checkbox rounded-none border-2 border-blue-400 w-5 h-5 text-blue-500 focus:ring-0"
-                            />
-                            <span className="font-semibold text-base text-gray-800">{prof}</span>
-                          </label>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
+
                 {/* Tỉnh thành - fetch API */}
-                <div className="flex items-center px-5 h-16 bg-transparent border-l border-gray-100 focus-within:bg-blue-50 transition-all duration-200">
+                <div 
+                  ref={locationRef}
+                  className="flex items-center px-5 h-16 bg-transparent border-l border-gray-100 focus-within:bg-blue-50 transition-all duration-200 relative overflow-visible z-[999999]"
+                >
                   <FaMapMarkerAlt className="text-gray-400 mr-2 text-lg" />
                   <div
                     className="w-full cursor-pointer select-none text-base flex items-center justify-between"
-                    onClick={() => {
-                      setShowProvinceDropdown((v) => !v);
-                      setShowDropdown(false);
-                      setShowProfessionDropdown(false);
-                    }}
+                    onClick={handleLocationClick}
                   >
                     <span className="truncate text-gray-700">
                       {selectedProvince && selectedDistrict
@@ -447,70 +325,89 @@ const SearchBar = ({ setKeyword }) => {
                     </span>
                     <svg className="ml-2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" /></svg>
                   </div>
+
+                  {/* Dropdown */}
                   {showProvinceDropdown && (
-                    <div className="absolute left-0 top-[110%] w-full bg-white rounded-2xl shadow-2xl z-50 p-0 max-h-[400px] overflow-y-auto border border-gray-100">
-                      {/* Danh sách tỉnh/thành hoặc quận/huyện */}
-                      {selectedProvince == null ? (
-                        <>
-                          <div className="sticky top-0 bg-white z-10 border-b border-gray-100 p-3 font-semibold text-base">Toàn quốc</div>
-                          <div className="divide-y divide-gray-50">
-                            <div
-                              className="px-4 py-3 hover:bg-gray-100 cursor-pointer text-base"
-                              onClick={() => {
-                                setSelectedProvince(null);
-                                setSelectedDistrict(null);
-                                setShowProvinceDropdown(false);
-                              }}
-                            >Toàn quốc</div>
-                            {provinces.map((province) => (
+                    <>
+                      {/* Overlay để đóng dropdown khi click outside */}
+                      <div
+                        className="fixed inset-0 bg-transparent z-[999998]"
+                        onClick={() => setShowProvinceDropdown(false)}
+                      />
+                      <div 
+                        className="absolute w-80 bg-white rounded-2xl shadow-2xl z-[999999] p-0 max-h-[200px] overflow-y-auto border border-gray-100"
+                        style={{
+                          top: '100%',
+                          right: '0',
+                          marginTop: '8px'
+                        }}
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        {/* Danh sách tỉnh/thành hoặc quận/huyện */}
+                        {selectedProvince == null ? (
+                          <>
+                            <div className="divide-y divide-gray-50">
                               <div
-                                key={province.code}
-                                className="flex items-center justify-between px-4 py-3 hover:bg-gray-100 cursor-pointer text-base"
-                                onClick={() => {
-                                  setSelectedProvince(province);
+                                className="px-4 py-3 hover:bg-gray-100 cursor-pointer text-base"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setSelectedProvince(null);
+                                  setSelectedDistrict(null);
+                                  setShowProvinceDropdown(false);
+                                }}
+                              >Toàn quốc</div>
+                              {provinces.map((province) => (
+                                <div
+                                  key={province.code}
+                                  className="flex items-center justify-between px-4 py-3 hover:bg-gray-100 cursor-pointer text-base"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setSelectedProvince(province);
+                                    setSelectedDistrict(null);
+                                  }}
+                                >
+                                  <span>{province.name.replace('Tỉnh ', '').replace('Thành phố ', 'TP.')}</span>
+                                  <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
+                                </div>
+                              ))}
+                            </div>
+                          </>
+                        ) : (
+                          <>
+                            <div className="sticky top-0 bg-white z-10 border-b border-gray-100 p-3 flex items-center gap-2">
+                              <button
+                                className="text-gray-500 hover:text-blue-500 focus:outline-none"
+                                onClick={e => {
+                                  e.stopPropagation();
+                                  setSelectedProvince(null);
                                   setSelectedDistrict(null);
                                 }}
                               >
-                                <span>{province.name.replace('Tỉnh ', '').replace('Thành phố ', 'TP.')}</span>
-                                <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
-                              </div>
-                            ))}
-                          </div>
-                        </>
-                      ) : (
-                        <>
-                          <div className="sticky top-0 bg-white z-10 border-b border-gray-100 p-3 flex items-center gap-2">
-                            <button
-                              className="text-gray-500 hover:text-blue-500 focus:outline-none"
-                              onClick={e => {
-                                e.stopPropagation();
-                                setSelectedProvince(null);
-                                setSelectedDistrict(null);
-                              }}
-                            >
-                              <svg className="w-5 h-5 inline-block mr-1" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
-                              <span className="align-middle">Tỉnh/thành phố</span>
-                            </button>
-                          </div>
-                          <div className="divide-y divide-gray-50">
-                            {selectedProvince.districts && selectedProvince.districts.length > 0 ? (
-                              selectedProvince.districts.map((district) => (
-                                <div
-                                  key={district.code}
-                                  className="px-4 py-3 hover:bg-gray-100 cursor-pointer text-base"
-                                  onClick={() => {
-                                    setSelectedDistrict(district);
-                                    setShowProvinceDropdown(false);
-                                  }}
-                                >{district.name.replace('Quận ', '').replace('Huyện ', '').replace('Thị xã ', '').replace('Thành phố ', '')}</div>
-                              ))
-                            ) : (
-                              <div className="px-4 py-3 text-gray-400">Không có quận/huyện</div>
-                            )}
-                          </div>
-                        </>
-                      )}
-                    </div>
+                                <svg className="w-5 h-5 inline-block mr-1" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
+                                <span className="align-middle">Tỉnh/thành phố</span>
+                              </button>
+                            </div>
+                            <div className="divide-y divide-gray-50">
+                              {selectedProvince.districts && selectedProvince.districts.length > 0 ? (
+                                selectedProvince.districts.map((district) => (
+                                  <div
+                                    key={district.code}
+                                    className="px-4 py-3 hover:bg-gray-100 cursor-pointer text-base"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setSelectedDistrict(district);
+                                      setShowProvinceDropdown(false);
+                                    }}
+                                  >{district.name.replace('Quận ', '').replace('Huyện ', '').replace('Thị xã ', '').replace('Thành phố ', '')}</div>
+                                ))
+                              ) : (
+                                <div className="px-4 py-3 text-gray-400">Không có quận/huyện</div>
+                              )}
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    </>
                   )}
                 </div>
                 {/* Button */}
@@ -522,6 +419,8 @@ const SearchBar = ({ setKeyword }) => {
                   Tìm việc
                 </button>
               </div>
+              
+
             </div>
 
             {/* Job Categories Row */}
@@ -532,6 +431,7 @@ const SearchBar = ({ setKeyword }) => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 

@@ -1,30 +1,69 @@
 const express = require('express');
 const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
 const router = express.Router();
 
-// Đảm bảo thư mục uploads tồn tại
-const uploadDir = path.join(__dirname, '../../uploads');
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
-}
+console.log('Upload API loaded');
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, uploadDir);
+// Cấu hình multer với memory storage
+const storage = multer.memoryStorage();
+
+const upload = multer({
+  storage: storage,
+  limits: {
+    fileSize: 10 * 1024 * 1024, // 10MB
   },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + '-' + file.originalname);
+  fileFilter: (req, file, cb) => {
+    // Cho phép tất cả các loại file
+    cb(null, true);
   }
 });
-const upload = multer({ storage: storage });
 
-router.post('/', upload.single('image'), (req, res) => {
-  if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
-  // Trả về đường dẫn file (cần cấu hình static cho /uploads)
-  const url = `/uploads/${req.file.filename}`;
-  res.json({ url });
+// Route POST cho upload
+router.post('/', upload.single('file'), (req, res) => {
+  console.log('Upload request received');
+  
+  try {
+    // Kiểm tra file
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        message: 'Không có file được upload'
+      });
+    }
+
+    // Chuyển file thành base64
+    const base64String = req.file.buffer.toString('base64');
+    const mimeType = req.file.mimetype;
+    const dataUrl = `data:${mimeType};base64,${base64String}`;
+
+    // Trả về URL base64
+    res.json({
+      success: true,
+      message: 'Upload thành công',
+      url: dataUrl,
+      fileName: req.file.originalname,
+      fileSize: req.file.size,
+      mimeType: mimeType
+    });
+    
+  } catch (error) {
+    console.error('Upload error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Lỗi khi upload file',
+      error: error.message
+    });
+  }
+});
+
+// Error handling
+router.use((error, req, res, next) => {
+  console.error('Upload middleware error:', error);
+  
+  res.status(400).json({
+    success: false,
+    message: error.message || 'Lỗi upload file'
+  });
 });
 
 module.exports = router; 

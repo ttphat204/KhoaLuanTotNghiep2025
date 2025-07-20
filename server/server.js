@@ -15,8 +15,11 @@ app.use(cors({
 app.options('*', cors()); // Đảm bảo trả về phản hồi hợp lệ cho mọi preflight request
 
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // Import và sử dụng các routes
+const uploadLogoRouter = require('./api/upload/logo');
+const candidateProfileRouter = require('./api/candidate/profile');
 const authRouter = require('./routers/auth.router');
 const userRouter = require('./routers/user.router');
 const jobRouter = require('./routers/job.router');
@@ -26,9 +29,10 @@ const applicationRouter = require('./routers/application.router');
 const interviewRouter = require('./routers/interview.router');
 const notificationRouter = require('./routers/notification.router');
 const adminRouter = require('./routers/admin.router');
-const uploadLogoRouter = require('./api/upload/logo');
 
-// Sử dụng các routes
+// Sử dụng các routes - đặt upload lên đầu
+app.use('/api/upload/logo', uploadLogoRouter);
+app.use('/api/candidate/profile', candidateProfileRouter);
 app.use('/api/auth', authRouter);
 app.use('/api/user', userRouter);
 app.use('/api/job', jobRouter);
@@ -38,7 +42,6 @@ app.use('/api/application', applicationRouter);
 app.use('/api/interview', interviewRouter);
 app.use('/api/notification', notificationRouter);
 app.use('/api/admin', adminRouter);
-app.use('/api/upload/logo', uploadLogoRouter);
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Trang chủ

@@ -1,26 +1,15 @@
-import React, { useState } from 'react';
+import React from 'react';
 import Header from './Header';
-import SearchBar from '../jobs/SearchBar';
-import JobList from '../jobs/JobList';
+import Footer from '../../components/Footer';
 
 const CommonLayout = ({ children }) => {
-  const [keyword, setKeyword] = useState('');
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
+    <div className="min-h-screen flex flex-col">
       <Header />
-      
-      {/* Main content with top margin for fixed header */}
-      <main className="pt-16">
-        {/* SearchBar component */}
-        <SearchBar setKeyword={setKeyword} />
-        
-        {/* JobList component */}
-        <JobList keyword={keyword} />
-        
-        {/* Additional content can be passed as children */}
+      <main className="flex-1">
         {children}
       </main>
+      <Footer />
     </div>
   );
 };

@@ -1,117 +1,139 @@
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import Header from '../shared/Header';
+import { showSuccess, showError } from '../../utils/toast';
 
 const EmployerLogin = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState('');
+  const [formData, setFormData] = useState({
+    email: '',
+    password: ''
+  });
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
   const { login } = useAuth();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError('');
+
     try {
-      const loginPayload = { email, password };
-      const res = await fetch('https://be-khoaluan.vercel.app/api/auth/login', {
+      const response = await fetch('https://be-khoaluan.vercel.app/api/auth/login', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(loginPayload)
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
       });
-      const data = await res.json();
-      if (!res.ok) {
-        setError(data.message || 'Đăng nhập thất bại!');
-        setLoading(false);
-        return;
+
+      const data = await response.json();
+
+      if (data.success) {
+        // Lưu user là data.data.user, token là data.token
+        login(data.data.user);
+        showSuccess('Đăng nhập thành công!');
+        navigate('/employer');
+      } else {
+        showError(data.message || 'Đăng nhập thất bại');
       }
-      const userData = data.user || data.data?.user || data.data;
-      const token = data.token || data.data?.token || data.accessToken;
-      if (!token) {
-        setError('Đăng nhập thất bại: không nhận được token!');
-        setLoading(false);
-        return;
-      }
-      if (userData.role !== 'employer') {
-        setError('Tài khoản không phải nhà tuyển dụng!');
-        setLoading(false);
-        return;
-      }
-      localStorage.setItem('token', token); // Lưu token vào localStorage
-      login(userData);
-      navigate('/employer');
-    } catch (err) {
-      setError('Lỗi kết nối đến máy chủ!');
+    } catch (error) {
+      showError('Lỗi kết nối server');
     } finally {
       setLoading(false);
     }
   };
 
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="bg-white rounded-xl shadow-xl p-10 w-full max-w-lg">
-        <h2 className="text-2xl font-bold mb-6 text-gray-900">Nhà tuyển dụng đăng nhập</h2>
-        <form onSubmit={handleSubmit} className="space-y-6">
+    <div className="min-h-screen flex flex-col">
+      <Header />
+      <main className="flex-1 flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-md w-full space-y-8">
           <div>
-            <label className="block font-semibold mb-1 text-gray-800">
-              Địa chỉ email <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="email"
-              className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:border-indigo-500"
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-              required
-              disabled={loading}
-            />
+            <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+              Đăng nhập nhà tuyển dụng
+            </h2>
+            <p className="mt-2 text-center text-sm text-gray-600">
+              Hoặc{' '}
+              <a href="/employer/register" className="font-medium text-indigo-600 hover:text-indigo-500">
+                đăng ký tài khoản mới
+              </a>
+            </p>
           </div>
-          <div>
-            <label className="block font-semibold mb-1 text-gray-800">
-              Mật khẩu <span className="text-red-500">*</span>
-            </label>
-            <div className="relative">
-              <input
-                type={showPassword ? 'text' : 'password'}
-                className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:border-indigo-500 pr-10"
-                value={password}
-                onChange={e => setPassword(e.target.value)}
-                required
-                disabled={loading}
-              />
+          <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+            <div className="rounded-md shadow-sm -space-y-px">
+              <div>
+                <label htmlFor="email" className="sr-only">
+                  Email
+                </label>
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  autoComplete="email"
+                  required
+                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                  placeholder="Email"
+                  value={formData.email}
+                  onChange={handleChange}
+                />
+              </div>
+              <div>
+                <label htmlFor="password" className="sr-only">
+                  Mật khẩu
+                </label>
+                <input
+                  id="password"
+                  name="password"
+                  type="password"
+                  autoComplete="current-password"
+                  required
+                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                  placeholder="Mật khẩu"
+                  value={formData.password}
+                  onChange={handleChange}
+                />
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between">
+              <div className="flex items-center">
+                <input
+                  id="remember-me"
+                  name="remember-me"
+                  type="checkbox"
+                  className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                />
+                <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900">
+                  Ghi nhớ đăng nhập
+                </label>
+              </div>
+
+              <div className="text-sm">
+                <a href="/forgot-password" className="font-medium text-indigo-600 hover:text-indigo-500">
+                  Quên mật khẩu?
+                </a>
+              </div>
+            </div>
+
+            <div>
               <button
-                type="button"
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
-                onClick={() => setShowPassword(v => !v)}
-                tabIndex={-1}
+                type="submit"
+                disabled={loading}
+                className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
               >
-                {showPassword ? (
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-5.523 0-10-4.477-10-10 0-1.657.336-3.234.938-4.675M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-                ) : (
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-                )}
+                {loading ? 'Đang đăng nhập...' : 'Đăng nhập'}
               </button>
             </div>
-          </div>
-          {error && <div className="text-red-600 text-sm mb-2">{error}</div>}
-          <button
-            type="submit"
-            className="w-full bg-[#4B1CD6] text-white font-bold py-3 rounded-lg hover:bg-[#3a13b3] transition-colors"
-            disabled={loading}
-          >
-            {loading ? 'Đang đăng nhập...' : 'Đăng nhập'}
-          </button>
-        </form>
-        <div className="text-center mt-4">
-          <a href="#" className="text-[#4B1CD6] font-semibold hover:underline">Quên mật khẩu?</a>
+          </form>
         </div>
-        <div className="mt-8 bg-gray-50 rounded-lg py-4 text-center text-gray-700">
-          Bạn là nhà tuyển dụng mới?,{' '}
-          <Link to="/employer/register" className="text-[#4B1CD6] font-bold hover:underline">Đăng ký tài khoản</Link>
-        </div>
-      </div>
+      </main>
     </div>
   );
 };

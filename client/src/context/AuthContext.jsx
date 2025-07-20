@@ -34,11 +34,19 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('user');
   };
 
+  // Cập nhật thông tin user với profile đầy đủ
+  const updateUserProfile = (profileData) => {
+    const updatedUser = { ...user, ...profileData };
+    setUser(updatedUser);
+    localStorage.setItem('user', JSON.stringify(updatedUser));
+  };
+
   return (
     <AuthContext.Provider value={{
       user,
       login,
       logout,
+      updateUserProfile,
       loading,
       isAuthenticated: !!user,
       isAdmin: user?.role === 'admin',

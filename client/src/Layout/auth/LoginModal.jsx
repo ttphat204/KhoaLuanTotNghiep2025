@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import bannerImg from '../../assets/images/BannerDN.jpg';
+import { showSuccess, showError } from '../../utils/toast';
 
 const modalVariants = {
   hidden: { opacity: 0, scale: 0.95, y: 40 },
@@ -18,6 +19,18 @@ const LoginModal = ({ onClose, onOpenRegisterModal }) => {
   const { login } = useAuth();
   const navigate = useNavigate();
 
+  // Debug logging
+  console.log('LoginModal rendered, onClose:', onClose);
+
+  const handleClose = () => {
+    console.log('LoginModal handleClose called');
+    if (typeof onClose === 'function') {
+      onClose();
+    } else {
+      console.error('onClose is not a function:', onClose);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -32,17 +45,28 @@ const LoginModal = ({ onClose, onOpenRegisterModal }) => {
       const data = await res.json();
       // Log response để kiểm tra role
       console.log('Login API response:', data);
-      if (data.data && data.data.user) {
-        console.log('User object:', data.data.user);
-      }
+      console.log('Response status:', res.status);
+      console.log('User data:', data.user);
       if (!res.ok) {
         // Bắt lỗi trả về từ backend (401, 400, ...)
         setError(data.message || 'Đăng nhập thất bại!');
         setLoading(false);
         return;
       }
-      // Chỉ lưu object user vào context
-      const userData = data.user || data.data?.user || data.data;
+      // Lấy user data từ response mới
+      const userData = data.user || data.data?.user || data;
+      if (!userData) {
+        console.error('No user data in response:', data);
+        setError('Dữ liệu đăng nhập không hợp lệ!');
+        setLoading(false);
+        return;
+      }
+      if (!userData.role) {
+        console.error('No role in user data:', userData);
+        setError('Thông tin người dùng không hợp lệ!');
+        setLoading(false);
+        return;
+      }
       if (userData.role !== 'admin' && userData.role !== 'candidate') {
         setError('Không thể đăng nhập bằng tài khoản nhà tuyển dụng tại đây.');
         setLoading(false);
@@ -62,31 +86,62 @@ const LoginModal = ({ onClose, onOpenRegisterModal }) => {
           navigate('/');
       }
     } catch (err) {
-      setError('Lỗi kết nối đến máy chủ!');
+      console.error('Login error:', err);
+      setError('Lỗi kết nối đến máy chủ! Vui lòng thử lại.');
     } finally {
       setLoading(false);
     }
   };
 
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
+
   return (
     <AnimatePresence>
       <motion.div
-        className="fixed inset-0 z-[2000] flex items-center justify-center bg-black bg-opacity-40"
+        className="fixed inset-0 z-[9999] flex items-center justify-center"
         initial={{ opacity: 0 }}
-        animate={{ opacity: 1, transition: { duration: 0.18 } }}
-        exit={{ opacity: 0, transition: { duration: 0.15 } }}
+        animate={{ opacity: 1, transition: { duration: 0.3 } }}
+        exit={{ opacity: 0, transition: { duration: 0.2 } }}
+        style={{ 
+          backgroundColor: 'rgba(0, 0, 0, 0.7)',
+          backdropFilter: 'blur(8px)',
+          WebkitBackdropFilter: 'blur(8px)',
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '1rem'
+        }}
       >
         <motion.div
-          className="bg-white rounded-2xl shadow-2xl flex w-full max-w-3xl mx-4 relative overflow-hidden"
+          className="bg-white rounded-2xl shadow-2xl flex w-full max-w-3xl mx-4 relative overflow-hidden modal-content debug-modal"
           variants={modalVariants}
           initial="hidden"
           animate="visible"
           exit="exit"
+          style={{ 
+            maxHeight: '85vh',
+            width: '100%',
+            margin: 'auto',
+            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+            position: 'relative',
+            zIndex: 10000
+          }}
         >
           {/* Nút đóng */}
           <button
             className="absolute top-4 left-4 text-2xl text-gray-500 hover:text-gray-700 z-10"
-            onClick={onClose}
+            onClick={handleClose}
             aria-label="Đóng"
           >
             &times;
@@ -115,6 +170,7 @@ const LoginModal = ({ onClose, onOpenRegisterModal }) => {
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-[#4B1CD6] text-base"
                   required
                   disabled={loading}
+                  autoComplete="email"
                 />
               </div>
               <div>
@@ -126,6 +182,7 @@ const LoginModal = ({ onClose, onOpenRegisterModal }) => {
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-[#4B1CD6] text-base"
                   required
                   disabled={loading}
+                  autoComplete="current-password"
                 />
               </div>
               <button 
