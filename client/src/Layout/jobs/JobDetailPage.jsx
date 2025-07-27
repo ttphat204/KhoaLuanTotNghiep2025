@@ -386,6 +386,28 @@ const JobDetailPage = () => {
     return date.toLocaleDateString('vi-VN');
   };
 
+  // Utility function để xử lý HTML entities
+  const decodeHtmlEntities = (text) => {
+    if (!text) return '';
+    
+    // Nếu là array, xử lý từng phần tử
+    if (Array.isArray(text)) {
+      return text.map(item => decodeHtmlEntities(item)).join('<br>');
+    }
+    
+    // Chuyển đổi thành string nếu không phải string
+    const textString = String(text);
+    
+    return textString
+      .replace(/&nbsp;/g, ' ') // Thay thế &nbsp; bằng space
+      .replace(/&amp;/g, '&') // Thay thế &amp; bằng &
+      .replace(/&lt;/g, '<') // Thay thế &lt; bằng <
+      .replace(/&gt;/g, '>') // Thay thế &gt; bằng >
+      .replace(/&quot;/g, '"') // Thay thế &quot; bằng "
+      .replace(/&#39;/g, "'") // Thay thế &#39; bằng '
+      .replace(/&apos;/g, "'"); // Thay thế &apos; bằng '
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex flex-col">
@@ -568,28 +590,13 @@ const JobDetailPage = () => {
                   {/* Mô tả công việc, yêu cầu, quyền lợi */}
                   <div className="bg-white rounded-2xl p-6 shadow mb-8">
                     <div className="text-xl font-bold mb-2">Mô tả công việc</div>
-                    <div className="text-gray-700 mb-6" dangerouslySetInnerHTML={{ __html: job.description || 'Đang cập nhật...' }} />
+                    <div className="text-gray-700 mb-6" dangerouslySetInnerHTML={{ __html: decodeHtmlEntities(job.description || 'Đang cập nhật...') }} />
                     
                     <div className="text-xl font-bold mb-2">Yêu cầu công việc</div>
-                    <div className="text-gray-700 mb-6" dangerouslySetInnerHTML={{ __html: jobDetail?.jobRequirements || job.jobRequirements || 'Đang cập nhật...' }} />
+                    <div className="text-gray-700 mb-6" dangerouslySetInnerHTML={{ __html: decodeHtmlEntities(jobDetail?.jobRequirements || job.jobRequirements || 'Đang cập nhật...') }} />
                     
-                    {/* Quyền lợi */}
-                    {job.benefits && (
-                      <>
-                        <div className="text-xl font-bold mb-2">Quyền lợi và đãi ngộ</div>
-                        {typeof job.benefits === 'string' && job.benefits.trim() ? (
-                          <div className="text-gray-700 mb-6" dangerouslySetInnerHTML={{ __html: job.benefits }} />
-                        ) : Array.isArray(job.benefits) && job.benefits.length > 0 ? (
-                          <div className="text-gray-700 mb-6">
-                            {job.benefits.map((benefit, index) => (
-                              <div key={index} className="mb-2">{benefit.replace(/<[^>]*>/g, '')}</div>
-                            ))}
-                          </div>
-                        ) : (
-                          <div className="text-gray-500 italic mb-6">Chưa có thông tin quyền lợi</div>
-                        )}
-                      </>
-                    )}
+                    <div className="text-xl font-bold mb-2">Quyền lợi và đãi ngộ</div>
+                    <div className="text-gray-700 mb-6" dangerouslySetInnerHTML={{ __html: decodeHtmlEntities(job.benefits || 'Chưa có thông tin quyền lợi') }} />
                   </div>
                 </>
               ) : (
