@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaArrowLeft, FaEye, FaDownload, FaCheck, FaTimes, FaEnvelope, FaPhone, FaCalendar, FaBriefcase, FaPlus } from 'react-icons/fa';
+import { FaArrowLeft, FaEye, FaDownload, FaCheck, FaTimes, FaEnvelope, FaPhone, FaCalendar, FaBriefcase, FaPlus, FaEdit } from 'react-icons/fa';
+import UpdateStatusModal from '../../components/UpdateStatusModal';
+import CVViewerModal from '../../components/CVViewerModal';
+import { showSuccess, showError, showInfo } from '../../utils/toast';
 
 const ApplicationsManager = () => {
   const navigate = useNavigate();
@@ -14,6 +17,10 @@ const ApplicationsManager = () => {
     search: ''
   });
   const [employerId, setEmployerId] = useState(null);
+  const [showStatusModal, setShowStatusModal] = useState(false);
+  const [selectedApplication, setSelectedApplication] = useState(null);
+  const [showCVModal, setShowCVModal] = useState(false);
+  const [selectedCV, setSelectedCV] = useState(null);
 
   useEffect(() => {
     // Lấy employerId từ localStorage hoặc context
@@ -48,8 +55,8 @@ const ApplicationsManager = () => {
         }
       }
 
-      // Fetch tất cả applications
-      const applicationsResponse = await fetch(`https://be-khoa-luan2.vercel.app/api/application/all`, {
+      // Fetch applications chỉ của employer này
+      const applicationsResponse = await fetch(`https://be-khoa-luan2.vercel.app/api/employer-dashboard-stats?employerId=${employerId}&type=applications`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json'
@@ -105,7 +112,7 @@ const ApplicationsManager = () => {
       }
     } catch (error) {
       console.error('Lỗi tải CV:', error);
-      alert('Lỗi khi tải CV!');
+      showError('Lỗi khi tải CV! Vui lòng thử lại sau.');
     }
   };
 
@@ -150,6 +157,46 @@ const ApplicationsManager = () => {
     }
     const index = Math.abs(hash) % colors.length;
     return colors[index];
+  };
+
+  const handleUpdateStatus = (applicationId, newStatus, note) => {
+    // Cập nhật trạng thái trong danh sách local
+    setApplications(prev => prev.map(app => 
+      app._id === applicationId 
+        ? { ...app, status: newStatus, note, lastStatusUpdate: new Date() }
+        : app
+    ));
+    
+    // Hiển thị thông báo thành công
+    const statusMessages = {
+      'Pending': 'Chờ xử lý',
+      'Reviewed': 'Đã xem xét',
+      'Interviewing': 'Đang phỏng vấn',
+      'Offer': 'Đã đề nghị',
+      'Rejected': 'Đã từ chối',
+      'Hired': 'Đã tuyển'
+    };
+    
+    showSuccess(
+      `✅ Cập nhật trạng thái thành công!`, 
+      `Đơn ứng tuyển đã được chuyển sang trạng thái: ${statusMessages[newStatus] || newStatus}`
+    );
+  };
+
+  const openStatusModal = (application) => {
+    setSelectedApplication(application);
+    setShowStatusModal(true);
+  };
+
+  const openCVModal = (application) => {
+    const cvUrl = application.cvUrl || application.resume?.fileUrl;
+    if (cvUrl) {
+      setSelectedCV({
+        url: cvUrl,
+        candidateName: application.candidateName || application.candidate?.fullName || 'Ứng viên'
+      });
+      setShowCVModal(true);
+    }
   };
 
 
@@ -481,11 +528,24 @@ const ApplicationsManager = () => {
                         )}
                         
                         <button
-                          onClick={() => navigate(`/employer/applications/${application.jobId}`)}
-                          className="text-purple-600 hover:text-purple-900"
-                          title="Xem chi tiết"
+                          onClick={() => openCVModal(application)}
+                          className={`${
+                            application.cvUrl || application.resume?.fileUrl
+                              ? 'text-purple-600 hover:text-purple-900'
+                              : 'text-gray-400 cursor-not-allowed'
+                          }`}
+                          title={application.cvUrl || application.resume?.fileUrl ? "Xem CV" : "Không có CV"}
+                          disabled={!application.cvUrl && !application.resume?.fileUrl}
                         >
                           <FaEye />
+                        </button>
+
+                        <button
+                          onClick={() => openStatusModal(application)}
+                          className="text-green-600 hover:text-green-900"
+                          title="Cập nhật trạng thái"
+                        >
+                          <FaEdit />
                         </button>
                       </div>
                     </td>
@@ -497,6 +557,22 @@ const ApplicationsManager = () => {
         )}
       </div>
       </div>
+
+      {/* Update Status Modal */}
+      <UpdateStatusModal
+        isOpen={showStatusModal}
+        onClose={() => setShowStatusModal(false)}
+        application={selectedApplication}
+        onStatusUpdate={handleUpdateStatus}
+      />
+
+      {/* CV Viewer Modal */}
+      <CVViewerModal
+        isOpen={showCVModal}
+        onClose={() => setShowCVModal(false)}
+        cvUrl={selectedCV?.url}
+        candidateName={selectedCV?.candidateName}
+      />
     </div>
   );
 };

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { FaArrowLeft, FaMapMarkerAlt, FaClock, FaMoneyBillWave, FaBuilding, FaUsers, FaIndustry, FaBriefcase, FaGraduationCap, FaCalendarAlt, FaStar, FaHeart, FaMedal, FaPaperPlane } from 'react-icons/fa';
+import { FaArrowLeft, FaMapMarkerAlt, FaClock, FaMoneyBillWave, FaBuilding, FaUsers, FaIndustry, FaBriefcase, FaGraduationCap, FaCalendarAlt, FaStar, FaHeart, FaPaperPlane, FaEnvelope, FaPhone, FaGlobe, FaInfoCircle } from 'react-icons/fa';
 import Header from '../shared/Header';
 import Footer from '../../components/Footer';
 import ApplicationModal from '../../components/ApplicationModal';
@@ -8,6 +8,131 @@ import ApplicationModal from '../../components/ApplicationModal';
 const JOB_API = 'https://be-khoaluan.vercel.app/api/job/all';
 const JOB_MANAGE_API = 'https://be-khoaluan.vercel.app/api/job/manage';
 const CATEGORY_API = 'https://be-khoaluan.vercel.app/api/admin/category-management';
+
+// Component hiển thị thông tin công ty
+const CompanyInfo = ({ companyData }) => {
+  if (!companyData) {
+    return (
+      <div className="bg-white rounded-2xl p-8 shadow text-center">
+        <div className="text-gray-500 text-lg">Không có thông tin công ty</div>
+      </div>
+    );
+  }
+
+  const companyName = companyData.companyName || 'Không xác định';
+  const companyLogoUrl = companyData.companyLogoUrl || '/default-logo.png';
+  const companyEmail = companyData.companyEmail || 'Chưa cập nhật';
+  const companyPhone = companyData.companyPhoneNumber || 'Chưa cập nhật';
+  const companyAddress = companyData.companyAddress || 'Chưa cập nhật';
+  const companyWebsite = companyData.companyWebsite || null;
+  const companyDescription = companyData.companyDescription || 'Chưa có mô tả';
+  const industry = companyData.industry || 'Chưa cập nhật';
+  const companySize = companyData.companySize || 'Chưa cập nhật';
+  const foundedYear = companyData.foundedYear || 'Chưa cập nhật';
+
+  return (
+    <div className="space-y-6">
+      {/* Header công ty */}
+      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-6">
+        <div className="flex items-center gap-6">
+          <div className="w-24 h-24 rounded-xl bg-white shadow-lg flex items-center justify-center overflow-hidden">
+            <img 
+              src={companyLogoUrl} 
+              alt={companyName}
+              className="w-full h-full object-cover"
+              onError={(e) => {
+                e.target.style.display = 'none';
+                e.target.nextSibling.style.display = 'flex';
+              }}
+            />
+            <FaBuilding className="w-12 h-12 text-gray-400 hidden" />
+          </div>
+          <div className="flex-1">
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">{companyName}</h2>
+            <div className="flex flex-wrap gap-4 text-sm text-gray-600">
+              <span className="flex items-center gap-2">
+                <FaIndustry className="text-blue-500" />
+                {industry}
+              </span>
+              {companySize !== 'Chưa cập nhật' && (
+                <span className="flex items-center gap-2">
+                  <FaUsers className="text-green-500" />
+                  {companySize}
+                </span>
+              )}
+              {foundedYear !== 'Chưa cập nhật' && (
+                <span className="flex items-center gap-2">
+                  <FaCalendarAlt className="text-purple-500" />
+                  Thành lập {foundedYear}
+                </span>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Thông tin liên hệ */}
+      <div className="bg-white rounded-2xl p-6 shadow">
+        <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+          <FaEnvelope className="text-blue-500" />
+          Thông tin liên hệ
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="flex items-center gap-3 p-4 bg-blue-50 rounded-xl">
+            <FaEnvelope className="text-blue-500 text-xl" />
+            <div>
+              <div className="font-semibold text-gray-700">Email</div>
+              <div className="text-gray-600">{companyEmail}</div>
+            </div>
+          </div>
+          <div className="flex items-center gap-3 p-4 bg-green-50 rounded-xl">
+            <FaPhone className="text-green-500 text-xl" />
+            <div>
+              <div className="font-semibold text-gray-700">Điện thoại</div>
+              <div className="text-gray-600">{companyPhone}</div>
+            </div>
+          </div>
+          <div className="flex items-center gap-3 p-4 bg-purple-50 rounded-xl">
+            <FaMapMarkerAlt className="text-purple-500 text-xl" />
+            <div>
+              <div className="font-semibold text-gray-700">Địa chỉ</div>
+              <div className="text-gray-600">{companyAddress}</div>
+            </div>
+          </div>
+          {companyWebsite && (
+            <div className="flex items-center gap-3 p-4 bg-indigo-50 rounded-xl">
+              <FaGlobe className="text-indigo-500 text-xl" />
+              <div>
+                <div className="font-semibold text-gray-700">Website</div>
+                <a 
+                  href={companyWebsite} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-indigo-600 hover:underline"
+                >
+                  {companyWebsite}
+                </a>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Mô tả công ty */}
+      <div className="bg-white rounded-2xl p-6 shadow">
+        <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+          <FaInfoCircle className="text-indigo-500" />
+          Giới thiệu công ty
+        </h3>
+        <div className="text-gray-700 leading-relaxed">
+          {companyDescription}
+        </div>
+      </div>
+
+      {/* Đã xóa phần Thông tin bổ sung */}
+    </div>
+  );
+};
 
 const JobDetailPage = () => {
   const { jobId } = useParams();
@@ -21,6 +146,9 @@ const JobDetailPage = () => {
   const [isFavorite, setIsFavorite] = useState(false);
   const [showApplicationModal, setShowApplicationModal] = useState(false);
   const [user, setUser] = useState(null);
+  const [activeTab, setActiveTab] = useState('job'); // 'job' hoặc 'company'
+  const [companyDetails, setCompanyDetails] = useState(null); // Thêm state cho thông tin công ty chi tiết
+  const [favoriteLoading, setFavoriteLoading] = useState(false); // Loading state cho favorite action
 
   useEffect(() => {
     fetchJobDetails();
@@ -28,7 +156,12 @@ const JobDetailPage = () => {
     const userFromStorage = localStorage.getItem('user');
     if (userFromStorage) {
       try {
-        setUser(JSON.parse(userFromStorage));
+        const parsedUser = JSON.parse(userFromStorage);
+        setUser(parsedUser);
+        // Kiểm tra trạng thái yêu thích nếu user là candidate
+        if (parsedUser && parsedUser.role === 'candidate' && jobId) {
+          checkFavoriteStatus(parsedUser._id, jobId);
+        }
       } catch (error) {
         console.error('Error parsing user from storage:', error);
       }
@@ -54,6 +187,37 @@ const JobDetailPage = () => {
       }
       
       setJob(found);
+      
+      // Lấy thông tin công ty chi tiết nếu có employerId
+      if (found.employerId) {
+        const employerId = typeof found.employerId === 'object' ? found.employerId._id : found.employerId;
+        try {
+          const companyResponse = await fetch(`https://be-khoaluan.vercel.app/api/employer/profile?employerId=${employerId}`);
+          if (companyResponse.ok) {
+            const companyData = await companyResponse.json();
+            if (companyData.success) {
+              setCompanyDetails(companyData.data);
+            } else if (companyData.message === 'Không tìm thấy employer') {
+              // Tự động tạo profile nếu chưa có
+              const createResponse = await fetch('https://be-khoaluan.vercel.app/api/employer/profile', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ employerId })
+              });
+              if (createResponse.ok) {
+                const createData = await createResponse.json();
+                if (createData.success) {
+                  setCompanyDetails(createData.data);
+                }
+              }
+            }
+          }
+        } catch (companyError) {
+          console.error('Error fetching company details:', companyError);
+          // Fallback to job data if company API fails
+          setCompanyDetails(found.employerId);
+        }
+      }
       
       // Find similar jobs from same category
       if (found.categoryId) {
@@ -116,8 +280,72 @@ const JobDetailPage = () => {
     setShowApplicationModal(true);
   };
 
-  const handleFavoriteClick = () => {
-    setIsFavorite(!isFavorite);
+  const checkFavoriteStatus = async (candidateId, jobId) => {
+    try {
+      const response = await fetch(`https://be-khoa-luan2.vercel.app/api/favorite-jobs?candidateId=${candidateId}&jobId=${jobId}`);
+      const data = await response.json();
+      setIsFavorite(data.isFavorite || false);
+    } catch (error) {
+      console.error('Error checking favorite status:', error);
+    }
+  };
+
+  const handleFavoriteClick = async () => {
+    if (!user || user.role !== 'candidate') {
+      alert('Vui lòng đăng nhập để sử dụng chức năng này!');
+      return;
+    }
+
+    if (favoriteLoading) return;
+
+    try {
+      setFavoriteLoading(true);
+      
+      if (isFavorite) {
+        // Xóa khỏi yêu thích
+        const response = await fetch(`https://be-khoa-luan2.vercel.app/api/favorite-jobs`, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            candidateId: user._id,
+            jobId: jobId
+          })
+        });
+        
+        const data = await response.json();
+        if (data.success) {
+          setIsFavorite(false);
+        } else {
+          alert(data.message || 'Không thể xóa khỏi yêu thích');
+        }
+      } else {
+        // Thêm vào yêu thích
+        const response = await fetch('https://be-khoa-luan2.vercel.app/api/favorite-jobs', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            candidateId: user._id,
+            jobId: jobId
+          })
+        });
+        
+        const data = await response.json();
+        if (data.success) {
+          setIsFavorite(true);
+        } else {
+          alert(data.message || 'Không thể thêm vào yêu thích');
+        }
+      }
+    } catch (error) {
+      console.error('Error handling favorite:', error);
+      alert('Lỗi kết nối server');
+    } finally {
+      setFavoriteLoading(false);
+    }
   };
 
   const handleCheckCV = () => {
@@ -207,10 +435,10 @@ const JobDetailPage = () => {
   // Thông tin chung lấy từ jobDetail nếu có, fallback về job
   const info = [
     { icon: <FaCalendarAlt />, label: 'Ngày đăng', value: jobDetail?.createdAt ? new Date(jobDetail.createdAt).toLocaleDateString('vi-VN') : (job.createdAt ? new Date(job.createdAt).toLocaleDateString('vi-VN') : '') },
-    { icon: <FaMedal />, label: 'Cấp bậc', value: jobDetail?.level || job.level || '---' },
+    { icon: <FaGraduationCap />, label: 'Cấp bậc', value: jobDetail?.level || job.level || '---' },
     { icon: <FaUsers />, label: 'Số lượng tuyển', value: jobDetail?.quantity || job.quantity || '---' },
     { icon: <FaBriefcase />, label: 'Hình thức làm việc', value: jobDetail?.jobType || job.jobType || '---' },
-    { icon: <FaMedal />, label: 'Kinh nghiệm', value: jobDetail?.experienceLevel || job.experienceLevel || '---' },
+    { icon: <FaStar />, label: 'Kinh nghiệm', value: jobDetail?.experienceLevel || job.experienceLevel || '---' },
     { icon: <FaBriefcase />, label: 'Trạng thái', value: getDeadlineStatus(jobDetail?.createdAt || job.createdAt, jobDetail?.applicationDeadline || job.applicationDeadline) },
   ];
   const skills = jobDetail?.skillsRequired || job.skillsRequired || [];
@@ -222,11 +450,11 @@ const JobDetailPage = () => {
         <div className="max-w-7xl mx-auto px-4 py-8">
           {/* Back Button */}
           <button
-            onClick={() => navigate('/jobs')}
-            className="flex items-center gap-2 text-indigo-600 hover:text-indigo-700 mb-6 transition-colors"
+            onClick={() => navigate('/')}
+            className="flex items-center gap-2 text-indigo-600 hover:text-indigo-700 mb-6 transition-colors bg-white px-4 py-2 rounded-lg shadow-sm hover:shadow-md border border-gray-200"
           >
             <FaArrowLeft className="w-4 h-4" />
-            Quay lại danh sách việc làm
+            Quay lại trang chủ
           </button>
 
           {/* Header lớn */}
@@ -260,9 +488,19 @@ const JobDetailPage = () => {
                   </button>
                   <button 
                     onClick={handleFavoriteClick}
-                    className="bg-purple-50 text-[#7c3aed] font-bold px-5 py-3 rounded-xl text-base shadow transition flex items-center gap-2 border border-[#7c3aed]"
+                    disabled={favoriteLoading}
+                    className={`font-bold px-5 py-3 rounded-xl text-base shadow transition flex items-center gap-2 border ${
+                      isFavorite 
+                        ? 'bg-red-50 text-red-600 border-red-600 hover:bg-red-100' 
+                        : 'bg-purple-50 text-[#7c3aed] border-[#7c3aed] hover:bg-purple-100'
+                    } ${favoriteLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
                   >
-                    <FaHeart className={isFavorite ? 'text-red-500 fill-current' : ''} />
+                    {favoriteLoading ? (
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current"></div>
+                    ) : (
+                      <FaHeart className={isFavorite ? 'text-red-500 fill-current' : ''} />
+                    )}
+                    {isFavorite ? 'Đã yêu thích' : 'Yêu thích'}
                   </button>
                 </div>
               </div>
@@ -276,43 +514,90 @@ const JobDetailPage = () => {
             {/* Tabs và nội dung chính */}
             <div className="flex-1">
               <div className="flex gap-2 border-b mb-6">
-                <button className="px-6 py-3 font-bold text-[#2563eb] border-b-2 border-[#2563eb] bg-white rounded-t-xl">Chi tiết tuyển dụng</button>
-                <button className="px-6 py-3 font-bold text-gray-500 bg-gray-50 rounded-t-xl">Công ty</button>
+                <button 
+                  onClick={() => setActiveTab('job')}
+                  className={`px-6 py-3 font-bold rounded-t-xl transition-all duration-200 ${
+                    activeTab === 'job' 
+                      ? 'text-[#2563eb] border-b-2 border-[#2563eb] bg-white' 
+                      : 'text-gray-500 bg-gray-50 hover:bg-gray-100'
+                  }`}
+                >
+                  Chi tiết tuyển dụng
+                </button>
+                <button 
+                  onClick={() => setActiveTab('company')}
+                  className={`px-6 py-3 font-bold rounded-t-xl transition-all duration-200 ${
+                    activeTab === 'company' 
+                      ? 'text-[#2563eb] border-b-2 border-[#2563eb] bg-white' 
+                      : 'text-gray-500 bg-gray-50 hover:bg-gray-100'
+                  }`}
+                >
+                  Công ty
+                </button>
               </div>
               
-              {/* Thông tin chung */}
-              <div className="bg-[#f5f3ff] rounded-2xl p-6 mb-8">
-                <div className="text-2xl font-bold mb-4">Thông tin chung</div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                  {info.map((item, idx) => (
-                    <div key={idx} className="flex flex-col items-center justify-center gap-2 bg-white rounded-xl p-6 shadow-sm h-full min-h-[90px]">
-                      <span className="text-[#7c3aed] text-2xl mb-1">{item.icon}</span>
-                      <span className="font-semibold text-gray-800 text-base text-center">
-                        {item.label}:
-                        <span className="font-normal text-gray-700 ml-1">{item.value}</span>
-                      </span>
-                    </div>
-                  ))}
-                </div>
-                {skills.length > 0 && (
-                  <div className="mt-4">
-                    <div className="font-semibold text-gray-700 mb-2">Kỹ năng yêu cầu:</div>
-                    <div className="flex flex-wrap gap-2">
-                      {skills.map((skill, i) => (
-                        <span key={i} className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-semibold">{skill}</span>
+              {/* Nội dung tab */}
+              {activeTab === 'job' ? (
+                <>
+                  {/* Thông tin chung */}
+                  <div className="bg-[#f5f3ff] rounded-2xl p-6 mb-8">
+                    <div className="text-2xl font-bold mb-4">Thông tin chung</div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                      {info.map((item, idx) => (
+                        <div key={idx} className="flex flex-col items-center justify-center gap-2 bg-white rounded-xl p-6 shadow-sm h-full min-h-[90px]">
+                          <span className="text-[#7c3aed] text-2xl mb-1">{item.icon}</span>
+                          <span className="font-semibold text-gray-800 text-base text-center">
+                            {item.label}:
+                            <span className="font-normal text-gray-700 ml-1">{item.value}</span>
+                          </span>
+                        </div>
                       ))}
                     </div>
+                    {skills.length > 0 && (
+                      <div className="mt-4">
+                        <div className="font-semibold text-gray-700 mb-2">Kỹ năng yêu cầu:</div>
+                        <div className="flex flex-wrap gap-2">
+                          {skills.map((skill, i) => (
+                            <span key={i} className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-semibold">{skill}</span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
-                )}
-              </div>
-              
-              {/* Mô tả công việc, yêu cầu... */}
-              <div className="bg-white rounded-2xl p-6 shadow mb-8">
-                <div className="text-xl font-bold mb-2">Mô tả công việc</div>
-                <div className="text-gray-700 mb-4" dangerouslySetInnerHTML={{ __html: job.description || 'Đang cập nhật...' }} />
-                <div className="text-xl font-bold mb-2">Yêu cầu công việc</div>
-                <div className="text-gray-700 mb-4" dangerouslySetInnerHTML={{ __html: jobDetail?.jobRequirements || job.jobRequirements || 'Đang cập nhật...' }} />
-              </div>
+                  
+                  {/* Mô tả công việc, yêu cầu, quyền lợi */}
+                  <div className="bg-white rounded-2xl p-6 shadow mb-8">
+                    <div className="text-xl font-bold mb-2">Mô tả công việc</div>
+                    <div className="text-gray-700 mb-6" dangerouslySetInnerHTML={{ __html: job.description || 'Đang cập nhật...' }} />
+                    
+                    <div className="text-xl font-bold mb-2">Yêu cầu công việc</div>
+                    <div className="text-gray-700 mb-6" dangerouslySetInnerHTML={{ __html: jobDetail?.jobRequirements || job.jobRequirements || 'Đang cập nhật...' }} />
+                    
+                    {/* Quyền lợi */}
+                    {job.benefits && (
+                      <>
+                        <div className="text-xl font-bold mb-2">Quyền lợi và đãi ngộ</div>
+                        {typeof job.benefits === 'string' && job.benefits.trim() ? (
+                          <div className="text-gray-700 mb-6" dangerouslySetInnerHTML={{ __html: job.benefits }} />
+                        ) : Array.isArray(job.benefits) && job.benefits.length > 0 ? (
+                          <div className="text-gray-700 mb-6">
+                            {job.benefits.map((benefit, index) => (
+                              <div key={index} className="mb-2">{benefit.replace(/<[^>]*>/g, '')}</div>
+                            ))}
+                          </div>
+                        ) : (
+                          <div className="text-gray-500 italic mb-6">Chưa có thông tin quyền lợi</div>
+                        )}
+                      </>
+                    )}
+                  </div>
+                </>
+              ) : (
+                <div>
+                  <CompanyInfo companyData={companyDetails || job.employerId || job} />
+                  {/* Đã xóa nút Xem trang công ty chi tiết */}
+                </div>
+              )}
             </div>
             
             {/* Sidebar việc làm tương tự */}

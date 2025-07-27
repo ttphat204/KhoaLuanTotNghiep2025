@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { FaBuilding, FaEnvelope, FaPhone, FaMapMarkerAlt, FaIndustry, FaGlobe, FaInfoCircle, FaEdit, FaSave, FaTimes } from 'react-icons/fa';
 import { useAuth } from '../../context/AuthContext';
 import EmployerProfile from './EmployerProfile';
+import { showSuccess, showError, showInfo } from '../../utils/toast';
 
 const InfoBox = ({ icon, label, value, color, link, isEditing = false, onEdit = null }) => (
   <div className={`flex items-center gap-3 rounded-xl p-4 mb-3 relative group`} style={{ background: color }}>
@@ -49,10 +50,12 @@ const EmployerProfilePage = () => {
       } else {
         setProfile(null);
         setError('Không thể tải thông tin công ty');
+        showError('Không thể tải thông tin công ty');
       }
     } catch (error) {
       console.error('Error fetching profile:', error);
       setError('Lỗi kết nối server');
+      showError('Lỗi kết nối server! Vui lòng thử lại sau.');
     } finally {
       setLoading(false);
     }
@@ -258,32 +261,7 @@ const EmployerProfilePage = () => {
         </div>
 
         {/* Additional Info Section */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-8">
-          <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
-            <FaBuilding className="text-indigo-500" />
-            Thông tin bổ sung
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <h4 className="font-semibold text-gray-700 mb-2">Thông tin liên hệ</h4>
-              <div className="space-y-2 text-sm text-gray-600">
-                <p><strong>Email:</strong> {profile.companyEmail}</p>
-                <p><strong>Điện thoại:</strong> {profile.companyPhoneNumber}</p>
-                {profile.companyWebsite && (
-                  <p><strong>Website:</strong> <a href={profile.companyWebsite} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">{profile.companyWebsite}</a></p>
-                )}
-              </div>
-            </div>
-            <div>
-              <h4 className="font-semibold text-gray-700 mb-2">Thông tin công ty</h4>
-              <div className="space-y-2 text-sm text-gray-600">
-                <p><strong>Tên công ty:</strong> {profile.companyName}</p>
-                <p><strong>Ngành nghề:</strong> {profile.industry || 'Chưa cập nhật'}</p>
-                <p><strong>Địa chỉ:</strong> {profile.companyAddress}</p>
-              </div>
-            </div>
-          </div>
-        </div>
+        {/* Đã xóa phần Thông tin bổ sung */}
       </div>
 
       {/* Modal cập nhật thông tin */}

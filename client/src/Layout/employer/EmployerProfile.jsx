@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
+import { showSuccess, showError, showInfo } from '../../utils/toast';
 
 const EmployerProfile = ({ onSuccess }) => {
   const { user } = useAuth();
@@ -48,7 +49,7 @@ const EmployerProfile = ({ onSuccess }) => {
       };
       reader.readAsDataURL(file);
     } catch (err) {
-      setMessage('Lỗi xử lý file!');
+      showError('Lỗi xử lý file! Vui lòng thử lại.');
       setUploading(false);
     }
   };
@@ -56,6 +57,9 @@ const EmployerProfile = ({ onSuccess }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage('');
+    
+    showInfo('Đang cập nhật thông tin công ty...');
+    
     const res = await fetch('https://be-khoaluan.vercel.app/api/employer/profile', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
@@ -63,14 +67,14 @@ const EmployerProfile = ({ onSuccess }) => {
     });
     const data = await res.json();
     if (data.success) {
-      setMessage('Cập nhật thành công!');
+      showSuccess('✅ Cập nhật thông tin công ty thành công!', 'Thông tin công ty đã được cập nhật.');
       setProfile(data.data);
       setTimeout(() => {
         setMessage('');
         if (onSuccess) onSuccess();
       }, 1000);
     } else {
-      setMessage(data.message || 'Có lỗi xảy ra!');
+      showError(data.message || 'Có lỗi xảy ra khi cập nhật thông tin!');
     }
   };
 

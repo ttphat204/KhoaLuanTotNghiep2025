@@ -1,15 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { showSuccess, showError, showLoading, updateLoading, showCustomToast, dismissToast } from '../../utils/toast.jsx';
-import ConfirmDeleteModal from '../../components/ConfirmDeleteModal';
+import { showSuccess, showError, showInfo } from '../../utils/toast';
+import { FaUsers, FaCheck, FaTimes, FaTrash, FaEye, FaBuilding, FaFilter } from 'react-icons/fa';
 
 const EmployerManagement = () => {
   const [employers, setEmployers] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [filter, setFilter] = useState('all'); // all, inactive, active, rejected
-  const [modalOpen, setModalOpen] = useState(false);
-  const [selectedEmployerId, setSelectedEmployerId] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     fetchAllEmployers();
@@ -18,21 +16,21 @@ const EmployerManagement = () => {
   const fetchAllEmployers = async () => {
     setLoading(true);
     try {
-      // API lấy danh sách tất cả employer
+      showInfo('Đang tải danh sách nhà tuyển dụng...');
       const res = await axios.get('https://be-khoaluan.vercel.app/api/admin/employer-management');
-      console.log('API Response:', res.data); // Debug log
       setEmployers(res.data);
     } catch (err) {
-      console.error('Error details:', err.response?.data || err.message); // Debug log
-      setError('Lỗi khi tải danh sách employer: ' + (err.response?.data?.message || err.message));
+      console.error('Error details:', err.response?.data || err.message);
+      showError('Lỗi khi tải danh sách nhà tuyển dụng: ' + (err.response?.data?.message || err.message));
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const handleAction = async (employerId, action) => {
-    const loadingToast = showLoading(`Đang ${action === 'approve' ? 'duyệt' : 'từ chối'} employer...`);
-    
     try {
+      showInfo(`Đang ${action === 'approve' ? 'duyệt' : 'từ chối'} nhà tuyển dụng...`);
+      
       const response = await axios.post('https://be-khoaluan.vercel.app/api/admin/employer-management', { employerId, action });
       
       // Cập nhật trạng thái employer trong danh sách
@@ -44,25 +42,23 @@ const EmployerManagement = () => {
         )
       );
       
-      showCustomToast(
-        'success', 
-        response.data.message, 
-        action === 'approve' ? 'Đã duyệt thành công!' : 'Đã từ chối thành công!'
+      showSuccess(
+        `✅ ${action === 'approve' ? 'Duyệt' : 'Từ chối'} thành công!`,
+        response.data.message
       );
-      dismissToast(loadingToast);
     } catch (err) {
-      updateLoading(loadingToast, 'Lỗi khi cập nhật trạng thái: ' + (err.response?.data?.message || err.message), 'error');
+      showError('Lỗi khi cập nhật trạng thái: ' + (err.response?.data?.message || err.message));
     }
   };
 
   const handleDelete = async (employerId) => {
-    if (!window.confirm('Bạn có chắc chắn muốn xóa employer này? Hành động này không thể hoàn tác và sẽ xóa tất cả dữ liệu liên quan.')) {
+    if (!window.confirm('Bạn có chắc chắn muốn xóa nhà tuyển dụng này? Hành động này không thể hoàn tác và sẽ xóa tất cả dữ liệu liên quan.')) {
       return;
     }
 
-    const loadingToast = showLoading('Đang xóa employer...');
-
     try {
+      showInfo('Đang xóa nhà tuyển dụng...');
+      
       const response = await axios.delete('https://be-khoaluan.vercel.app/api/admin/employer-management', { 
         data: { employerId } 
       });
@@ -72,16 +68,9 @@ const EmployerManagement = () => {
         prevEmployers.filter(emp => emp.id !== employerId)
       );
       
-      // Hiển thị thông báo tùy chỉnh
-      showCustomToast(
-        'success', 
-        response.data.message, 
-        'Đã xóa thành công!'
-      );
-      // Đóng toast loading
-      dismissToast(loadingToast);
+      showSuccess('🗑️ Xóa nhà tuyển dụng thành công!', response.data.message);
     } catch (err) {
-      updateLoading(loadingToast, 'Lỗi khi xóa employer: ' + (err.response?.data?.message || err.message), 'error');
+      showError('Lỗi khi xóa nhà tuyển dụng: ' + (err.response?.data?.message || err.message));
     }
   };
 
@@ -98,202 +87,238 @@ const EmployerManagement = () => {
     }
   };
 
-  const getStatusColor = (status) => {
-    switch (status) {
-      case 'inactive':
-        return 'text-yellow-600 bg-yellow-100';
-      case 'active':
-        return 'text-green-600 bg-green-100';
-      case 'rejected':
-        return 'text-red-600 bg-red-100';
-      default:
-        return 'text-gray-600 bg-gray-100';
-    }
+  const getStatusBadge = (status) => {
+    const statusConfig = {
+      'inactive': { color: 'bg-yellow-100 text-yellow-800', text: 'Chờ duyệt' },
+      'active': { color: 'bg-green-100 text-green-800', text: 'Đã duyệt' },
+      'rejected': { color: 'bg-red-100 text-red-800', text: 'Đã từ chối' }
+    };
+    
+    const config = statusConfig[status] || statusConfig['inactive'];
+    return (
+      <span className={`px-2 py-1 rounded-full text-xs font-medium ${config.color}`}>
+        {config.text}
+      </span>
+    );
   };
 
-  // Lọc employer theo trạng thái
-  const filteredEmployers = employers.filter(emp => {
-    if (filter === 'all') return true;
-    return emp.status === filter;
-  });
-
-  // Đếm số lượng theo trạng thái
   const getStatusCount = (status) => {
     return employers.filter(emp => emp.status === status).length;
   };
 
-  const openDeleteModal = (employerId) => {
-    setSelectedEmployerId(employerId);
-    setModalOpen(true);
-  };
+  const filteredEmployers = employers.filter(employer => {
+    const matchesFilter = filter === 'all' || employer.status === filter;
+    const matchesSearch = employer.companyName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         employer.email?.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchesFilter && matchesSearch;
+  });
 
-  const closeDeleteModal = () => {
-    setModalOpen(false);
-    setSelectedEmployerId(null);
-  };
-
-  const confirmDelete = () => {
-    if (selectedEmployerId) {
-      handleDelete(selectedEmployerId);
-      closeDeleteModal();
-    }
-  };
-
-  if (loading) return <div className="flex justify-center items-center h-64">Đang tải...</div>;
-  if (error) return <div className="text-red-600 p-4">{error}</div>;
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <div className="h-8 bg-gray-200 rounded animate-pulse"></div>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="h-20 bg-gray-200 rounded animate-pulse"></div>
+          ))}
+        </div>
+        <div className="space-y-2">
+          {[1, 2, 3, 4, 5].map((i) => (
+            <div key={i} className="h-16 bg-gray-200 rounded animate-pulse"></div>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="p-6">
-      <div className="mb-6">
-        <h2 className="text-2xl font-bold text-gray-800 mb-2">Quản lý Employer</h2>
-        <p className="text-gray-600">Quản lý tất cả tài khoản employer trong hệ thống</p>
+    <div className="space-y-6">
+      <div className="flex items-center gap-2">
+        <FaBuilding className="text-2xl text-indigo-500" />
+        <h2 className="text-2xl font-bold text-gray-800">Quản lý nhà tuyển dụng</h2>
       </div>
 
-      {/* Filter Tabs */}
-      <div className="mb-6">
-        <div className="border-b border-gray-200">
-          <nav className="-mb-px flex space-x-8">
-            <button
-              onClick={() => setFilter('all')}
-              className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                filter === 'all'
-                  ? 'border-blue-500 text-blue-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-              }`}
-            >
-              Tất cả ({employers.length})
-            </button>
-            <button
-              onClick={() => setFilter('inactive')}
-              className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                filter === 'inactive'
-                  ? 'border-yellow-500 text-yellow-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-              }`}
-            >
-              Chờ duyệt ({getStatusCount('inactive')})
-            </button>
-            <button
-              onClick={() => setFilter('active')}
-              className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                filter === 'active'
-                  ? 'border-green-500 text-green-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-              }`}
-            >
-              Đã duyệt ({getStatusCount('active')})
-            </button>
-            <button
-              onClick={() => setFilter('rejected')}
-              className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                filter === 'rejected'
-                  ? 'border-red-500 text-red-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-              }`}
-            >
-              Đã từ chối ({getStatusCount('rejected')})
-            </button>
-          </nav>
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div className="bg-white rounded-xl shadow-sm p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-600">Tổng số</p>
+              <p className="text-2xl font-bold text-gray-900">{employers.length}</p>
+            </div>
+            <FaUsers className="text-3xl text-blue-500" />
+          </div>
+        </div>
+        
+        <div className="bg-white rounded-xl shadow-sm p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-600">Chờ duyệt</p>
+              <p className="text-2xl font-bold text-yellow-600">{getStatusCount('inactive')}</p>
+            </div>
+            <FaUsers className="text-3xl text-yellow-500" />
+          </div>
+        </div>
+        
+        <div className="bg-white rounded-xl shadow-sm p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-600">Đã duyệt</p>
+              <p className="text-2xl font-bold text-green-600">{getStatusCount('active')}</p>
+            </div>
+            <FaCheck className="text-3xl text-green-500" />
+          </div>
+        </div>
+        
+        <div className="bg-white rounded-xl shadow-sm p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-600">Từ chối</p>
+              <p className="text-2xl font-bold text-red-600">{getStatusCount('rejected')}</p>
+            </div>
+            <FaTimes className="text-3xl text-red-500" />
+          </div>
         </div>
       </div>
 
-      <div className="bg-white rounded-lg shadow overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Thông tin cơ bản
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Công ty
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Địa chỉ
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Trạng thái
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Ngày tạo
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Hành động
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {filteredEmployers.length === 0 ? (
+      {/* Filters and Search */}
+      <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
+        <div className="flex gap-4">
+          <select 
+            value={filter} 
+            onChange={(e) => setFilter(e.target.value)}
+            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+          >
+            <option value="all">Tất cả</option>
+            <option value="inactive">Chờ duyệt</option>
+            <option value="active">Đã duyệt</option>
+            <option value="rejected">Từ chối</option>
+          </select>
+          
+          <input
+            type="text"
+            placeholder="Tìm kiếm theo tên công ty hoặc email..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+          />
+        </div>
+        
+        <button
+          onClick={fetchAllEmployers}
+          className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+        >
+          Làm mới
+        </button>
+      </div>
+
+      {/* Employers Table */}
+      <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+        <div className="px-6 py-4 border-b border-gray-200">
+          <h3 className="text-lg font-semibold text-gray-800">
+            Danh sách nhà tuyển dụng ({filteredEmployers.length})
+          </h3>
+        </div>
+        
+        {filteredEmployers.length === 0 ? (
+          <div className="text-center py-12">
+            <FaBuilding className="text-6xl text-gray-300 mx-auto mb-4" />
+            <h3 className="text-xl font-semibold text-gray-600 mb-2">
+              {filter === 'all' ? 'Chưa có nhà tuyển dụng nào' : 'Không tìm thấy kết quả'}
+            </h3>
+            <p className="text-gray-500">
+              {filter === 'all' ? 'Hãy chờ nhà tuyển dụng đăng ký' : 'Thử thay đổi bộ lọc hoặc từ khóa tìm kiếm'}
+            </p>
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-gray-50">
                 <tr>
-                  <td colSpan={6} className="px-6 py-4 text-center text-gray-500">
-                    {filter === 'all' 
-                      ? 'Không có employer nào.' 
-                      : `Không có employer nào có trạng thái "${getStatusText(filter)}".`
-                    }
-                  </td>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Công ty
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Email
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Trạng thái
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Ngày đăng ký
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Hành động
+                  </th>
                 </tr>
-              ) : (
-                filteredEmployers.map(emp => (
-                  <tr key={emp.id} className="hover:bg-gray-50">
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {filteredEmployers.map((employer) => (
+                  <tr key={employer.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div>
-                        <div className="text-sm font-medium text-gray-900">{emp.email}</div>
-                        <div className="text-sm text-gray-500">{emp.phone}</div>
+                      <div className="flex items-center">
+                        <div className="flex-shrink-0 h-10 w-10">
+                          <div className="h-10 w-10 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 flex items-center justify-center text-white font-semibold">
+                            {employer.companyName?.charAt(0) || 'C'}
+                          </div>
+                        </div>
+                        <div className="ml-4">
+                          <div className="text-sm font-medium text-gray-900">
+                            {employer.companyName || 'Chưa cập nhật'}
+                          </div>
+                          <div className="text-sm text-gray-500">
+                            {employer.phone || 'Chưa có số điện thoại'}
+                          </div>
+                        </div>
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">{emp.companyName}</div>
-                      {emp.profile?.industry && (
-                        <div className="text-sm text-gray-500">{emp.profile.industry}</div>
-                      )}
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {employer.email || 'Chưa có email'}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">{emp.address}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(emp.status)}`}>
-                        {getStatusText(emp.status)}
-                      </span>
+                      {getStatusBadge(employer.status)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {new Date(emp.createdAt).toLocaleDateString('vi-VN')}
+                      {new Date(employer.createdAt).toLocaleDateString('vi-VN')}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <div className="flex space-x-2">
-                        {emp.status === 'inactive' && (
+                      <div className="flex items-center gap-2">
+                        {employer.status === 'inactive' && (
                           <>
-                            <button 
-                              onClick={() => handleAction(emp.id, 'approve')} 
-                              className="bg-green-500 text-white px-3 py-1 rounded text-xs hover:bg-green-600 transition-colors"
+                            <button
+                              onClick={() => handleAction(employer.id, 'approve')}
+                              className="bg-green-600 text-white px-3 py-1.5 rounded-lg hover:bg-green-700 transition-colors flex items-center gap-1"
                             >
+                              <FaCheck className="text-sm" />
                               Duyệt
                             </button>
-                            <button 
-                              onClick={() => handleAction(emp.id, 'reject')} 
-                              className="bg-red-500 text-white px-3 py-1 rounded text-xs hover:bg-red-600 transition-colors"
+                            <button
+                              onClick={() => handleAction(employer.id, 'reject')}
+                              className="bg-red-600 text-white px-3 py-1.5 rounded-lg hover:bg-red-700 transition-colors flex items-center gap-1"
                             >
+                              <FaTimes className="text-sm" />
                               Từ chối
                             </button>
                           </>
                         )}
-                        <button 
-                          onClick={() => openDeleteModal(emp.id)} 
-                          className="bg-red-700 text-white px-3 py-1 rounded text-xs hover:bg-red-800 transition-colors"
-                          title="Xóa vĩnh viễn"
+                        <button className="text-indigo-600 hover:text-indigo-900">
+                          <FaEye />
+                        </button>
+                        <button
+                          onClick={() => handleDelete(employer.id)}
+                          className="text-red-600 hover:text-red-900"
                         >
-                          Xóa
+                          <FaTrash />
                         </button>
                       </div>
                     </td>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
-
-      <ConfirmDeleteModal open={modalOpen} onClose={closeDeleteModal} onConfirm={confirmDelete} />
     </div>
   );
 };

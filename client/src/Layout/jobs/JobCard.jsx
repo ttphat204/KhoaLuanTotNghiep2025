@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaHeart, FaClock, FaMapMarkerAlt, FaMoneyBillWave, FaBuilding, FaStar, FaEye } from 'react-icons/fa';
+import { useAuth } from '../../context/AuthContext';
 
 function getDeadline(expireDate) {
   if (!expireDate) return '';
@@ -26,18 +27,92 @@ function getLocation(location) {
 const JobCard = ({ job }) => {
   const [isFavorite, setIsFavorite] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  const [favoriteLoading, setFavoriteLoading] = useState(false);
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   const companyName = job.employerId?.companyName || job.companyName || 'Không xác định';
   const companyLogoUrl = job.employerLogo || job.employerId?.companyLogoUrl || job.companyLogoUrl || '/default-logo.png';
+
+  const checkFavoriteStatus = useCallback(async () => {
+    try {
+      const response = await fetch(`https://be-khoa-luan2.vercel.app/api/favorite-jobs?candidateId=${user._id}&jobId=${job._id}`);
+      const data = await response.json();
+      setIsFavorite(data.isFavorite || false);
+    } catch (error) {
+      console.error('Error checking favorite status:', error);
+    }
+  }, [user?._id, job._id]);
+
+  // Kiểm tra trạng thái yêu thích khi component mount
+  useEffect(() => {
+    if (user && user.role === 'candidate' && job._id) {
+      checkFavoriteStatus();
+    }
+  }, [user, job._id, checkFavoriteStatus]);
 
   const handleCardClick = () => {
     navigate(`/jobs/${job._id}`);
   };
 
-  const handleFavoriteClick = (e) => {
+  const handleFavoriteClick = async (e) => {
     e.stopPropagation();
-    setIsFavorite(!isFavorite);
+    
+    if (!user || user.role !== 'candidate') {
+      alert('Vui lòng đăng nhập để sử dụng chức năng này!');
+      return;
+    }
+
+    if (favoriteLoading) return;
+
+    try {
+      setFavoriteLoading(true);
+      
+      if (isFavorite) {
+        // Xóa khỏi yêu thích
+        const response = await fetch(`https://be-khoa-luan2.vercel.app/api/favorite-jobs`, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            candidateId: user._id,
+            jobId: job._id
+          })
+        });
+        
+        const data = await response.json();
+        if (data.success) {
+          setIsFavorite(false);
+        } else {
+          alert(data.message || 'Không thể xóa khỏi yêu thích');
+        }
+      } else {
+        // Thêm vào yêu thích
+        const response = await fetch('https://be-khoa-luan2.vercel.app/api/favorite-jobs', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            candidateId: user._id,
+            jobId: job._id
+          })
+        });
+        
+        const data = await response.json();
+        if (data.success) {
+          setIsFavorite(true);
+        } else {
+          alert(data.message || 'Không thể thêm vào yêu thích');
+        }
+      }
+    } catch (error) {
+      console.error('Error handling favorite:', error);
+      alert('Lỗi kết nối server');
+    } finally {
+      setFavoriteLoading(false);
+    }
   };
 
   const isUrgent = () => {
@@ -98,12 +173,17 @@ const JobCard = ({ job }) => {
           isFavorite 
             ? 'bg-red-500 text-white shadow-lg' 
             : 'bg-white/80 text-gray-400 hover:bg-red-50 hover:text-red-400'
-        }`}
+        } ${favoriteLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
         onMouseEnter={e => { e.stopPropagation(); }}
         onMouseLeave={e => { e.stopPropagation(); }}
         onClick={handleFavoriteClick}
+        disabled={favoriteLoading}
       >
-        <FaHeart className={`w-4 h-4 transition-all duration-200 ${isFavorite ? 'fill-current' : ''}`} />
+        {favoriteLoading ? (
+          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current"></div>
+        ) : (
+          <FaHeart className={`w-4 h-4 transition-all duration-200 ${isFavorite ? 'fill-current' : ''}`} />
+        )}
       </button>
 
       <div className="relative z-10 p-6">

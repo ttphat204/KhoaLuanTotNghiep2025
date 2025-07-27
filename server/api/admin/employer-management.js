@@ -22,6 +22,201 @@ async function handler(req, res) {
 
   await dbConnect();
 
+  // Xử lý endpoint dashboard-stats
+  if (req.method === 'GET' && req.query.type === 'dashboard-stats') {
+    try {
+      // Lấy thống kê tổng quan
+      const totalUsers = await Auth.countDocuments();
+      const totalCandidates = await Auth.countDocuments({ role: 'candidate' });
+      const totalEmployers = await Auth.countDocuments({ role: 'employer' });
+      const totalJobs = await Jobs.countDocuments();
+      const totalApplications = await Applications.countDocuments();
+      const pendingEmployers = await Employers.countDocuments({ status: 'inactive' });
+
+      // Phân loại jobs theo trạng thái
+      const activeJobs = await Jobs.countDocuments({ status: 'Active' });
+      const closedJobs = await Jobs.countDocuments({ status: 'Closed' });
+      const draftJobs = await Jobs.countDocuments({ status: 'Draft' });
+
+      // Thống kê theo tháng (6 tháng gần nhất)
+      const sixMonthsAgo = new Date();
+      sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+
+      // Thống kê jobs theo tháng
+      const monthlyJobs = await Jobs.aggregate([
+        {
+          $match: {
+            createdAt: { $gte: sixMonthsAgo }
+          }
+        },
+        {
+          $group: {
+            _id: {
+              year: { $year: "$createdAt" },
+              month: { $month: "$createdAt" }
+            },
+            count: { $sum: 1 }
+          }
+        },
+        {
+          $sort: { "_id.year": 1, "_id.month": 1 }
+        }
+      ]);
+
+      // Thống kê applications theo tháng
+      const monthlyApplications = await Applications.aggregate([
+        {
+          $match: {
+            createdAt: { $gte: sixMonthsAgo }
+          }
+        },
+        {
+          $group: {
+            _id: {
+              year: { $year: "$createdAt" },
+              month: { $month: "$createdAt" }
+            },
+            count: { $sum: 1 }
+          }
+        },
+        {
+          $sort: { "_id.year": 1, "_id.month": 1 }
+        }
+      ]);
+
+      // Thống kê users theo tháng
+      const monthlyUsers = await Auth.aggregate([
+        {
+          $match: {
+            createdAt: { $gte: sixMonthsAgo }
+          }
+        },
+        {
+          $group: {
+            _id: {
+              year: { $year: "$createdAt" },
+              month: { $month: "$createdAt" }
+            },
+            count: { $sum: 1 }
+          }
+        },
+        {
+          $sort: { "_id.year": 1, "_id.month": 1 }
+        }
+      ]);
+
+      // Tạo dữ liệu cho biểu đồ theo tháng
+      const months = ['T1', 'T2', 'T3', 'T4', 'T5', 'T6'];
+      const monthlyData = months.map((month, index) => {
+        const currentDate = new Date();
+        const targetMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() - (5 - index), 1);
+        const year = targetMonth.getFullYear();
+        const monthNum = targetMonth.getMonth() + 1;
+
+        const jobsData = monthlyJobs.find(item => item._id.year === year && item._id.month === monthNum);
+        const applicationsData = monthlyApplications.find(item => item._id.year === year && item._id.month === monthNum);
+        const usersData = monthlyUsers.find(item => item._id.year === year && item._id.month === monthNum);
+
+        return {
+          name: month,
+          jobs: jobsData ? jobsData.count : 0, // Chỉ sử dụng dữ liệu thực
+          applications: applicationsData ? applicationsData.count : 0,
+          users: usersData ? usersData.count : 0
+        };
+      });
+
+      // Tạo dữ liệu xu hướng tăng trưởng (cumulative)
+      let cumulativeUsers = totalUsers - monthlyUsers.reduce((sum, item) => sum + item.count, 0);
+      let cumulativeJobs = totalJobs - monthlyJobs.reduce((sum, item) => sum + item.count, 0);
+      let cumulativeApplications = totalApplications - monthlyApplications.reduce((sum, item) => sum + item.count, 0);
+
+      const growthData = months.map((month, index) => {
+        const currentDate = new Date();
+        const targetMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() - (5 - index), 1);
+        const year = targetMonth.getFullYear();
+        const monthNum = targetMonth.getMonth() + 1;
+
+        const jobsData = monthlyJobs.find(item => item._id.year === year && item._id.month === monthNum);
+        const applicationsData = monthlyApplications.find(item => item._id.year === year && item._id.month === monthNum);
+        const usersData = monthlyUsers.find(item => item._id.year === year && item._id.month === monthNum);
+
+        if (jobsData) cumulativeJobs += jobsData.count;
+        if (applicationsData) cumulativeApplications += applicationsData.count;
+        if (usersData) cumulativeUsers += usersData.count;
+
+        return {
+          month,
+          users: cumulativeUsers,
+          jobs: cumulativeJobs,
+          applications: cumulativeApplications
+        };
+      });
+
+      // Hoạt động gần đây
+      const recentActivity = [];
+
+      // Thêm employers mới được duyệt
+      const recentEmployers = await Employers.find({ status: 'active' })
+        .sort({ updatedAt: -1 })
+        .limit(2);
+      
+      recentEmployers.forEach(emp => {
+        recentActivity.push(`Employer "${emp.companyName || 'Unknown'}" đã được duyệt`);
+      });
+
+      // Thêm jobs mới
+      const recentJobs = await Jobs.find()
+        .sort({ createdAt: -1 })
+        .limit(2);
+      
+      recentJobs.forEach(job => {
+        recentActivity.push(`Tin tuyển dụng mới: "${job.jobTitle}"`);
+      });
+
+      // Thêm applications mới
+      const recentApps = await Applications.find()
+        .sort({ createdAt: -1 })
+        .limit(2);
+      
+      recentApps.forEach(app => {
+        recentActivity.push(`Đơn ứng tuyển mới cho "${app.jobTitle || 'Unknown Job'}"`);
+      });
+
+      // Nếu không đủ hoạt động, thêm mock data
+      while (recentActivity.length < 4) {
+        recentActivity.push('Hoạt động hệ thống bình thường');
+      }
+
+      const stats = {
+        totalUsers,
+        totalCandidates,
+        totalEmployers,
+        totalJobs,
+        totalApplications,
+        pendingEmployers,
+        activeJobs,
+        closedJobs,
+        draftJobs,
+        monthlyData,
+        growthData,
+        recentActivity: recentActivity.slice(0, 4)
+      };
+
+      return res.json({
+        success: true,
+        data: stats
+      });
+
+    } catch (error) {
+      console.error('Error fetching dashboard stats:', error);
+      return res.status(500).json({
+        success: false,
+        message: 'Lỗi server khi lấy thống kê dashboard',
+        error: error.message
+      });
+    }
+  }
+
   // API GET: Lấy danh sách employer
   if (req.method === 'GET') {
     try {

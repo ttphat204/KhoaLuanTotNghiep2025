@@ -1,22 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { FaUsers, FaBriefcase, FaFileAlt, FaChartLine, FaCalendarAlt } from 'react-icons/fa';
 import { useAuth } from '../../context/AuthContext';
-import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement, PointElement, LineElement, Filler } from 'chart.js';
-import { Bar, Doughnut, Line } from 'react-chartjs-2';
-
-// Register Chart.js components
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
-  ArcElement,
-  PointElement,
-  LineElement,
-  Filler
-);
+import { PieChart, Pie, Cell, LineChart as RechartsLineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, BarChart as RechartsBarChart, Bar } from 'recharts';
+import { showSuccess, showError, showInfo } from '../../utils/toast';
 
 const InfoBox = ({ icon, label, value, color, link }) => (
   <div className={`flex items-center gap-3 rounded-xl p-4 mb-3`} style={{ background: color }}>
@@ -36,105 +22,75 @@ const InfoBox = ({ icon, label, value, color, link }) => (
 const BarChart = ({ data, title, color = "indigo" }) => {
   const getColorByType = (type) => {
     const colors = {
-      purple: {
-        bg: 'rgba(139, 92, 246, 0.8)',
-        border: 'rgba(139, 92, 246, 1)',
-        hover: 'rgba(139, 92, 246, 0.9)'
-      },
-      green: {
-        bg: 'rgba(16, 185, 129, 0.8)',
-        border: 'rgba(16, 185, 129, 1)',
-        hover: 'rgba(16, 185, 129, 0.9)'
-      },
-      blue: {
-        bg: 'rgba(59, 130, 246, 0.8)',
-        border: 'rgba(59, 130, 246, 1)',
-        hover: 'rgba(59, 130, 246, 0.9)'
-      },
-      indigo: {
-        bg: 'rgba(99, 102, 241, 0.8)',
-        border: 'rgba(99, 102, 241, 1)',
-        hover: 'rgba(99, 102, 241, 0.9)'
-      }
+      purple: '#8B5CF6',
+      green: '#10B981',
+      blue: '#3B82F6',
+      indigo: '#6366F1'
     };
     return colors[color] || colors.indigo;
   };
 
-  const colors = getColorByType(color);
+  const barColor = getColorByType(color);
   
-  const chartData = {
-    labels: data.map(item => item.label),
-    datasets: [
-      {
-        label: title,
-        data: data.map(item => item.value),
-        backgroundColor: colors.bg,
-        borderColor: colors.border,
-        borderWidth: 2,
-        borderRadius: 8,
-        borderSkipped: false,
-        hoverBackgroundColor: colors.hover,
-      },
-    ],
-  };
-
-  const options = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        display: false,
-      },
-      title: {
-        display: true,
-        text: title,
-        font: {
-          size: 16,
-          weight: 'bold',
-        },
-        color: '#374151',
-      },
-      tooltip: {
-        backgroundColor: 'rgba(0, 0, 0, 0.8)',
-        titleColor: '#fff',
-        bodyColor: '#fff',
-        borderColor: colors.border,
-        borderWidth: 1,
-        cornerRadius: 8,
-        displayColors: false,
-        callbacks: {
-          label: function(context) {
-            return `Số đơn: ${context.parsed.y}`;
-          }
-        }
-      },
-    },
-    scales: {
-      y: {
-        beginAtZero: true,
-        grid: {
-          color: 'rgba(0, 0, 0, 0.1)',
-        },
-        ticks: {
-          color: '#6B7280',
-          stepSize: 1,
-        },
-      },
-      x: {
-        grid: {
-          display: false,
-        },
-        ticks: {
-          color: '#6B7280',
-        },
-      },
-    },
-  };
+  // Đảm bảo có dữ liệu, nếu không thì tạo dữ liệu mẫu
+  const chartData = data && data.length > 0 ? data : [
+    { name: 'Job 1', value: 0 },
+    { name: 'Job 2', value: 0 },
+    { name: 'Job 3', value: 0 },
+    { name: 'Job 4', value: 0 },
+    { name: 'Job 5', value: 0 }
+  ];
 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-      <div style={{ height: '300px' }}>
-        <Bar data={chartData} options={options} />
+      <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+        <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center">
+          <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+          </svg>
+        </div>
+        {title}
+      </h3>
+      
+      <div className="h-80 flex items-center justify-center">
+        {chartData.some(item => item.value > 0) ? (
+          <ResponsiveContainer width="100%" height="100%">
+            <RechartsBarChart data={chartData}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
+              <XAxis 
+                dataKey="name" 
+                tick={{ fontSize: 12, fill: '#6B7280' }}
+                axisLine={{ stroke: '#E5E7EB' }}
+              />
+              <YAxis 
+                tick={{ fontSize: 12, fill: '#6B7280' }}
+                axisLine={{ stroke: '#E5E7EB' }}
+              />
+              <Tooltip 
+                contentStyle={{
+                  backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                  border: '1px solid #fff',
+                  borderRadius: '8px',
+                  color: '#fff'
+                }}
+              />
+              <Bar 
+                dataKey="value" 
+                fill={barColor}
+                radius={[4, 4, 0, 0]}
+              />
+            </RechartsBarChart>
+          </ResponsiveContainer>
+        ) : (
+          <div className="text-center text-gray-500">
+            <div className="w-32 h-32 border-4 border-gray-200 border-dashed rounded-lg flex items-center justify-center mx-auto mb-4">
+              <svg className="w-12 h-12 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+              </svg>
+            </div>
+            <p className="text-sm">Chưa có dữ liệu top jobs</p>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -142,68 +98,80 @@ const BarChart = ({ data, title, color = "indigo" }) => {
 
 // Component biểu đồ tròn
 const DoughnutChart = ({ data, title }) => {
-  const colors = [
-    'rgba(99, 102, 241, 0.8)',
-    'rgba(139, 92, 246, 0.8)',
-    'rgba(16, 185, 129, 0.8)',
-    'rgba(245, 158, 11, 0.8)',
-    'rgba(239, 68, 68, 0.8)',
-    'rgba(236, 72, 153, 0.8)',
+  console.log('DoughnutChart received data:', data); // Debug log
+  console.log('DoughnutChart data type:', typeof data); // Debug log
+  console.log('DoughnutChart data length:', data ? data.length : 'undefined'); // Debug log
+  
+  const colors = ['#8B5CF6', '#3B82F6', '#10B981', '#F59E0B', '#EF4444'];
+  
+  // Đảm bảo có dữ liệu, nếu không thì tạo dữ liệu mẫu
+  const chartData = data && data.length > 0 ? data : [
+    { name: 'Chờ xử lý', value: 0 },
+    { name: 'Đang phỏng vấn', value: 0 },
+    { name: 'Đã đề nghị', value: 0 },
+    { name: 'Đã tuyển', value: 0 },
+    { name: 'Đã từ chối', value: 0 }
   ];
 
-  const chartData = {
-    labels: data.map(item => item.label),
-    datasets: [
-      {
-        data: data.map(item => item.value),
-        backgroundColor: colors.slice(0, data.length),
-        borderColor: colors.slice(0, data.length).map(color => color.replace('0.8', '1')),
-        borderWidth: 2,
-        cutout: '60%',
-      },
-    ],
-  };
-
-  const options = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        position: 'bottom',
-        labels: {
-          padding: 20,
-          usePointStyle: true,
-          color: '#6B7280',
-          font: {
-            size: 12,
-          },
-        },
-      },
-      title: {
-        display: true,
-        text: title,
-        font: {
-          size: 16,
-          weight: 'bold',
-        },
-        color: '#374151',
-      },
-      tooltip: {
-        callbacks: {
-          label: function(context) {
-            const total = context.dataset.data.reduce((a, b) => a + b, 0);
-            const percentage = ((context.parsed / total) * 100).toFixed(1);
-            return `${context.label}: ${context.parsed} (${percentage}%)`;
-          }
-        }
-      }
-    },
-  };
+  console.log('Processed chartData:', chartData); // Debug log
+  console.log('ChartData has values > 0:', chartData.some(item => item.value > 0)); // Debug log
+  console.log('ChartData values:', chartData.map(item => `${item.name}: ${item.value}`)); // Debug log
 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-      <div style={{ height: '350px' }}>
-        <Doughnut data={chartData} options={options} />
+      <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+        <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg flex items-center justify-center">
+          <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+          </svg>
+        </div>
+        {title}
+      </h3>
+      
+      <div className="h-80 flex items-center justify-center">
+        {chartData.some(item => item.value > 0) ? (
+          <div style={{ width: '100%', height: '100%', position: 'relative' }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={chartData}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={60}
+                  outerRadius={100}
+                  paddingAngle={5}
+                  dataKey="value"
+                >
+                  {chartData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
+                  ))}
+                </Pie>
+                <Tooltip 
+                  contentStyle={{
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    border: '1px solid #fff',
+                    borderRadius: '8px',
+                    color: '#fff'
+                  }}
+                />
+                <Legend 
+                  verticalAlign="bottom" 
+                  height={36}
+                  formatter={(value, entry) => <span style={{ color: '#6B7280' }}>{value}</span>}
+                />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+        ) : (
+          <div className="text-center text-gray-500">
+            <div className="w-32 h-32 border-4 border-gray-200 border-dashed rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg className="w-12 h-12 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+              </svg>
+            </div>
+            <p className="text-sm">Chưa có dữ liệu ứng tuyển</p>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -211,91 +179,75 @@ const DoughnutChart = ({ data, title }) => {
 
 // Component biểu đồ đường
 const LineChart = ({ data, title, color = "blue" }) => {
+  console.log('LineChart data:', data); // Debug log
+  
   const getColorByType = (type) => {
     const colors = {
-      blue: {
-        border: 'rgba(59, 130, 246, 1)',
-        bg: 'rgba(59, 130, 246, 0.1)',
-        point: 'rgba(59, 130, 246, 1)'
-      },
-      purple: {
-        border: 'rgba(139, 92, 246, 1)',
-        bg: 'rgba(139, 92, 246, 0.1)',
-        point: 'rgba(139, 92, 246, 1)'
-      },
-      green: {
-        border: 'rgba(16, 185, 129, 1)',
-        bg: 'rgba(16, 185, 129, 0.1)',
-        point: 'rgba(16, 185, 129, 1)'
-      }
+      purple: '#8B5CF6',
+      green: '#10B981',
+      blue: '#3B82F6'
     };
     return colors[color] || colors.blue;
   };
 
-  const colors = getColorByType(color);
+  const lineColor = getColorByType(color);
   
-  const chartData = {
-    labels: data.map(item => item.label),
-    datasets: [
-      {
-        label: title,
-        data: data.map(item => item.value),
-        borderColor: colors.border,
-        backgroundColor: colors.bg,
-        borderWidth: 3,
-        fill: true,
-        tension: 0.4,
-        pointBackgroundColor: colors.point,
-        pointBorderColor: '#fff',
-        pointBorderWidth: 2,
-        pointRadius: 6,
-        pointHoverRadius: 8,
-      },
-    ],
-  };
+  // Đảm bảo có dữ liệu, nếu không thì tạo dữ liệu mẫu
+  const chartData = data && data.length > 0 ? data : [
+    { name: 'Tháng 1', value: 0 },
+    { name: 'Tháng 2', value: 0 },
+    { name: 'Tháng 3', value: 0 },
+    { name: 'Tháng 4', value: 0 },
+    { name: 'Tháng 5', value: 0 },
+    { name: 'Tháng 6', value: 0 }
+  ];
 
-  const options = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        display: false,
-      },
-      title: {
-        display: true,
-        text: title,
-        font: {
-          size: 16,
-          weight: 'bold',
-        },
-        color: '#374151',
-      },
-    },
-    scales: {
-      y: {
-        beginAtZero: true,
-        grid: {
-          color: 'rgba(0, 0, 0, 0.1)',
-        },
-        ticks: {
-          color: '#6B7280',
-        },
-      },
-      x: {
-        grid: {
-          color: 'rgba(0, 0, 0, 0.1)',
-        },
-        ticks: {
-          color: '#6B7280',
-        },
-      },
-    },
-  };
+  console.log('Processed chartData:', chartData); // Debug log
 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-      <div style={{ height: '300px' }}>
-        <Line data={chartData} options={options} />
+      <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+        <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
+          <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
+          </svg>
+        </div>
+        {title}
+      </h3>
+      
+      <div className="h-80 flex items-center justify-center">
+        <ResponsiveContainer width="100%" height="100%">
+          <RechartsLineChart data={chartData}>
+            <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
+            <XAxis 
+              dataKey="name" 
+              tick={{ fontSize: 12, fill: '#6B7280' }}
+              axisLine={{ stroke: '#E5E7EB' }}
+            />
+            <YAxis 
+              tick={{ fontSize: 12, fill: '#6B7280' }}
+              axisLine={{ stroke: '#E5E7EB' }}
+            />
+            <Tooltip 
+              contentStyle={{
+                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                border: '1px solid #fff',
+                borderRadius: '8px',
+                color: '#fff'
+              }}
+            />
+            <Line 
+              type="monotone" 
+              dataKey="value" 
+              stroke={lineColor} 
+              strokeWidth={3}
+              fill={lineColor}
+              fillOpacity={0.1}
+              dot={{ fill: lineColor, strokeWidth: 2, r: 6 }}
+              activeDot={{ r: 8, stroke: lineColor, strokeWidth: 2 }}
+            />
+          </RechartsLineChart>
+        </ResponsiveContainer>
       </div>
     </div>
   );
@@ -353,50 +305,11 @@ const StatsOverview = ({ stats }) => (
 // Component thống kê chi tiết
 const DetailedStats = ({ chartData }) => (
   <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-      <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-        <FaCalendarAlt className="text-indigo-500" />
-        Thống kê tháng này
-      </h3>
-      <div className="space-y-3">
-        {chartData.applicationsByMonth.slice(-1).map((item, index) => (
-          <div key={index} className="flex items-center justify-between">
-            <span className="text-gray-600">{item.label}</span>
-            <span className="text-2xl font-bold text-indigo-600">{item.value}</span>
-          </div>
-        ))}
-      </div>
-    </div>
-    
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-      <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-        <FaUsers className="text-green-500" />
-        Trạng thái hiện tại
-      </h3>
-      <div className="space-y-2">
-        {chartData.applicationsByStatus.slice(0, 3).map((item, index) => (
-          <div key={index} className="flex items-center justify-between">
-            <span className="text-sm text-gray-600">{item.label}</span>
-            <span className="text-sm font-semibold text-gray-800">{item.value}</span>
-          </div>
-        ))}
-      </div>
-    </div>
-    
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-      <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-        <FaBriefcase className="text-purple-500" />
-        Việc làm hot nhất
-      </h3>
-      <div className="space-y-2">
-        {chartData.topJobs.slice(0, 3).map((item, index) => (
-          <div key={index} className="flex items-center justify-between">
-            <span className="text-sm text-gray-600 truncate">{item.label}</span>
-            <span className="text-sm font-semibold text-gray-800">{item.value}</span>
-          </div>
-        ))}
-      </div>
-    </div>
+    {/* Đã xóa 3 trường thống kê:
+    - Thống kê tháng này
+    - Trạng thái hiện tại  
+    - Việc làm hot nhất
+    */}
   </div>
 );
 
@@ -425,97 +338,65 @@ const EmployerDashboard = () => {
 
   const fetchDashboardData = async () => {
     try {
+      showInfo('Đang tải dữ liệu dashboard...');
+      
+      console.log('Fetching dashboard data for employerId:', user._id); // Debug log
+      
       // Fetch profile
       const profileRes = await fetch(`https://be-khoaluan.vercel.app/api/employer/profile?employerId=${user._id}`);
       const profileData = await profileRes.json();
+      console.log('Profile data:', profileData); // Debug log
       if (profileData.success) setProfile(profileData.data);
 
-      // Fetch jobs
-      const jobsRes = await fetch('https://be-khoa-luan2.vercel.app/api/jobs/all');
-      const jobsData = await jobsRes.json();
-      const jobs = jobsData.success ? jobsData.data : [];
+      // Fetch dashboard stats từ API mới
+      const statsRes = await fetch(`https://be-khoa-luan2.vercel.app/api/employer-dashboard-stats?employerId=${user._id}`);
+      console.log('Stats response status:', statsRes.status); // Debug log
+      const statsData = await statsRes.json();
+      console.log('Raw stats data:', statsData); // Debug log
+      
+      if (statsData.success) {
+        const stats = statsData.data;
+        
+        console.log('Dashboard stats:', stats); // Debug log
+        
+        setStats({ 
+          totalJobs: stats.totalJobs, 
+          totalApplications: stats.totalApplications, 
+          hiredCount: stats.hiredCount, 
+          successRate: stats.successRate 
+        });
 
-      // Fetch applications
-      const appsRes = await fetch('https://be-khoa-luan2.vercel.app/api/application/all');
-      const appsData = await appsRes.json();
-      const applications = appsData.success ? appsData.data : [];
+        // Tạo dữ liệu cho biểu đồ từ thống kê
+        const statusCounts = {
+          'Chờ xử lý': stats.statusCounts.pending || 0,
+          'Đang phỏng vấn': stats.statusCounts.interviewing || 0,
+          'Đã đề nghị': stats.statusCounts.offer || 0,
+          'Đã tuyển': stats.statusCounts.hired || 0,
+          'Đã từ chối': stats.statusCounts.rejected || 0
+        };
 
-      // Calculate stats
-      const totalJobs = jobs.length;
-      const totalApplications = applications.length;
-      const hiredCount = applications.filter(app => app.status === 'Hired').length;
-      const successRate = totalApplications > 0 ? Math.round((hiredCount / totalApplications) * 100) : 0;
+        console.log('Status counts:', statusCounts); // Debug log
 
-      setStats({ totalJobs, totalApplications, hiredCount, successRate });
-
-      // Prepare chart data
-      const statusCounts = {};
-      const monthCounts = {};
-      const jobCounts = {};
-
-      // Status mapping for Vietnamese
-      const statusLabels = {
-        'Pending': 'Chờ xử lý',
-        'Reviewed': 'Đã xem xét',
-        'Interviewing': 'Đang phỏng vấn',
-        'Offer': 'Đã đề nghị',
-        'Rejected': 'Đã từ chối',
-        'Hired': 'Đã tuyển'
-      };
-
-      applications.forEach(app => {
-        // Status counts with Vietnamese labels
-        const status = app.status || 'Pending';
-        const statusLabel = statusLabels[status] || status;
-        statusCounts[statusLabel] = (statusCounts[statusLabel] || 0) + 1;
-
-        // Month counts - get last 6 months
-        const date = new Date(app.createdAt || app.appliedAt || Date.now());
-        if (!isNaN(date.getTime())) {
-          const month = date.toLocaleDateString('vi-VN', { month: 'short' });
-          monthCounts[month] = (monthCounts[month] || 0) + 1;
-        }
-
-        // Job counts
-        const jobTitle = app.jobTitle || 'Không xác định';
-        jobCounts[jobTitle] = (jobCounts[jobTitle] || 0) + 1;
-      });
-
-      // Generate last 6 months data
-      const currentDate = new Date();
-      const last6Months = [];
-      for (let i = 5; i >= 0; i--) {
-        const date = new Date(currentDate.getFullYear(), currentDate.getMonth() - i, 1);
-        const month = date.toLocaleDateString('vi-VN', { month: 'short' });
-        last6Months.push(month);
-      }
-
-      // Create month counts with actual data or default to 0
-      const sortedMonthCounts = {};
-      last6Months.forEach(month => {
-        sortedMonthCounts[month] = monthCounts[month] || 0;
-      });
-
-      setChartData({
-        applicationsByStatus: Object.entries(statusCounts).map(([status, count]) => ({
-          label: status,
-          value: count
-        })),
-        applicationsByMonth: Object.entries(sortedMonthCounts).map(([month, count]) => ({
-          label: month,
-          value: count
-        })),
-        topJobs: Object.entries(jobCounts)
-          .sort(([,a], [,b]) => b - a)
-          .slice(0, 5)
-          .map(([job, count]) => ({
-            label: job.length > 30 ? job.substring(0, 30) + '...' : job,
+        // Sử dụng dữ liệu từ API thay vì tạo dữ liệu mẫu
+        const chartDataToSet = {
+          applicationsByStatus: Object.entries(statusCounts).map(([status, count]) => ({
+            name: status,
             value: count
-          }))
-      });
+          })),
+          applicationsByMonth: stats.monthlyData || [],
+          topJobs: stats.topJobs || []
+        };
+
+        console.log('Final chart data:', chartDataToSet); // Debug log
+        setChartData(chartDataToSet);
+      } else {
+        console.error('API returned error:', statsData); // Debug log
+        showError('Không thể tải thống kê dashboard');
+      }
 
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
+      showError('Lỗi khi tải dữ liệu dashboard! Vui lòng thử lại sau.');
     } finally {
       setLoading(false);
     }
@@ -627,11 +508,11 @@ const EmployerDashboard = () => {
         {/* Charts Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
           <DoughnutChart 
-            data={chartData.applicationsByStatus} 
+            data={chartData.applicationsByStatus || []} 
             title="Phân bố trạng thái ứng viên" 
           />
           <LineChart 
-            data={chartData.applicationsByMonth} 
+            data={chartData.applicationsByMonth || []} 
             title="Xu hướng đơn ứng tuyển theo tháng" 
             color="blue" 
           />
@@ -640,7 +521,7 @@ const EmployerDashboard = () => {
         {/* Top Jobs Chart */}
         <div className="mb-8">
           <BarChart 
-            data={chartData.topJobs} 
+            data={chartData.topJobs || []} 
             title="Top 5 việc làm được ứng tuyển nhiều nhất" 
             color="green" 
           />

@@ -16,6 +16,10 @@ import JobList from './Layout/jobs/JobList';
 import JobCategoryList from './Layout/jobs/JobCategoryList';
 import JobDetailPage from './Layout/jobs/JobDetailPage';
 import JobSearchResultPage from './Layout/jobs/JobSearchResultPage';
+import CompanyList from './Layout/jobs/CompanyList';
+import CompanyDetail from './Layout/jobs/CompanyDetail';
+import FavoriteJobs from './Layout/candidate/FavoriteJobs';
+import ApplicationHistory from './Layout/candidate/ApplicationHistory';
 import './App.css';
 
 // Component để xử lý routing dựa trên authentication
@@ -38,6 +42,8 @@ const AppRoutes = () => {
       <Route path="/jobs/category/:slug" element={<JobCategoryList />} />
       <Route path="/jobs/:jobId" element={<JobDetailPage />} />
       <Route path="/jobs/search" element={<JobSearchResultPage />} />
+      <Route path="/companies" element={<CompanyList />} />
+      <Route path="/companies/:companyId" element={<CompanyDetail />} />
       <Route path="/employer/login" element={<EmployerLogin />} />
       <Route path="/employer/register" element={<EmployerRegister />} />
 
@@ -50,6 +56,8 @@ const AppRoutes = () => {
               <Route path="/" element={<CandidateHome />} />
               <Route path="/jobs" element={<div className="text-center py-10">Trang tìm việc làm</div>} />
               <Route path="/profile" element={<CandidateProfile />} />
+              <Route path="/favorite-jobs" element={<FavoriteJobs />} />
+              <Route path="/applications" element={<ApplicationHistory />} />
               <Route path="/saved" element={<div className="text-center py-10">Việc làm đã lưu</div>} />
               <Route path="/account" element={<div className="text-center py-10">Thông tin cá nhân</div>} />
               <Route path="/settings" element={<div className="text-center py-10">Cài đặt</div>} />

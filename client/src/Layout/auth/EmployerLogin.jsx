@@ -29,8 +29,14 @@ const EmployerLogin = () => {
       const data = await response.json();
 
       if (data.success) {
-        // Lưu user là data.data.user, token là data.token
-        login(data.data.user);
+        // Kiểm tra role của user
+        if (data.user.role !== 'employer') {
+          showError('Tài khoản này không phải là nhà tuyển dụng');
+          return;
+        }
+        
+        // Lưu user và token
+        login(data.user, data.token);
         showSuccess('Đăng nhập thành công!');
         navigate('/employer');
       } else {

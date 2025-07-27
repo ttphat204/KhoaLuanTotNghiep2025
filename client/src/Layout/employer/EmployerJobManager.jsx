@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { FaBriefcase, FaPlus, FaEdit, FaTrash, FaEye, FaEyeSlash, FaStar, FaCalendarAlt, FaUsers, FaCheckCircle, FaClock } from 'react-icons/fa';
 import { useAuth } from '../../context/AuthContext';
 import JobCreateForm from '../jobs/JobCreateForm';
+import { showSuccess, showError, showInfo } from '../../utils/toast';
 
 const StatCard = ({ icon, title, value, color, bgColor }) => (
   <div className={`flex items-center gap-4 p-6 rounded-2xl shadow-sm`} style={{ background: bgColor }}>
@@ -133,9 +134,12 @@ const EmployerJobManager = () => {
   const handleCreateJob = async (formData) => {
     try {
       if (!user || !user._id) {
-        alert('Không tìm thấy employerId. Vui lòng đăng nhập lại.');
+        showError('Không tìm thấy thông tin người dùng. Vui lòng đăng nhập lại.');
         return;
       }
+      
+      showInfo('Đang tạo tin tuyển dụng...');
+      
       const payload = {
         employerId: user._id,
         jobTitle: formData.jobTitle,
@@ -162,62 +166,96 @@ const EmployerJobManager = () => {
         applicationDeadline: formData.applicationDeadline,
         isFeatured: false,
       };
+      
       const response = await fetch('https://be-khoaluan.vercel.app/api/job/manage', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
+      
       const data = await response.json();
       if (response.ok && data.success !== false) {
-        alert('Tạo tin tuyển dụng thành công!');
+        showSuccess('🎉 Tạo tin tuyển dụng thành công!', 'Tin tuyển dụng đã được đăng tải và sẵn sàng nhận hồ sơ.');
         setShowCreateForm(false);
         fetchJobs();
       } else {
-        alert(data.message || 'Có lỗi xảy ra!');
+        showError(data.message || 'Có lỗi xảy ra khi tạo tin tuyển dụng!');
       }
     } catch (err) {
-      alert('Lỗi kết nối server!');
+      showError('Lỗi kết nối server! Vui lòng thử lại sau.');
     }
   };
 
   const handleEditJob = async (jobId, updatedFields) => {
     try {
+      showInfo('Đang cập nhật tin tuyển dụng...');
+      
+      // Format data for API
+      const formattedData = {
+        jobId,
+        employerId: user._id,
+        jobTitle: updatedFields.jobTitle,
+        description: updatedFields.description,
+        jobRequirements: updatedFields.jobRequirements,
+        benefits: updatedFields.benefits,
+        salaryRange: {
+          min: Number(updatedFields.salaryMin) * 1000000,
+          max: Number(updatedFields.salaryMax) * 1000000,
+          currency: 'VND',
+        },
+        location: {
+          province: updatedFields.province,
+          district: updatedFields.district,
+          addressDetail: updatedFields.addressDetail,
+        },
+        jobType: updatedFields.jobType,
+        categoryId: updatedFields.categoryId,
+        skillsRequired: updatedFields.skillsRequired || [],
+        experienceLevel: updatedFields.experienceLevel,
+        level: updatedFields.level,
+        quantity: Number(updatedFields.quantity),
+        applicationDeadline: new Date(updatedFields.applicationDeadline).toISOString(),
+      };
+
       const response = await fetch('https://be-khoaluan.vercel.app/api/job/manage', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ jobId, employerId: user._id, ...updatedFields }),
+        body: JSON.stringify(formattedData),
       });
+      
       const data = await response.json();
       if (data.success) {
-        alert('Đã cập nhật thành công!');
+        showSuccess('✅ Cập nhật tin tuyển dụng thành công!', 'Thông tin tin tuyển dụng đã được cập nhật.');
         setEditingJob(null);
         fetchJobs();
       } else {
-        alert(data.message || 'Có lỗi khi cập nhật!');
+        showError(data.message || 'Có lỗi xảy ra khi cập nhật tin tuyển dụng!');
       }
     } catch (err) {
-      alert('Lỗi kết nối server!');
+      showError('Lỗi kết nối server! Vui lòng thử lại sau.');
     }
   };
 
   const handleDeleteJob = async (jobId) => {
     try {
+      showInfo('Đang xóa tin tuyển dụng...');
+      
       const response = await fetch('https://be-khoaluan.vercel.app/api/job/manage', {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ jobId, employerId: user._id }),
       });
+      
       const data = await response.json();
       if (data.success) {
         setJobToDelete(null);
         fetchJobs();
-        setMessage('Đã xóa thành công!');
-        setTimeout(() => setMessage(''), 2000);
+        showSuccess('🗑️ Xóa tin tuyển dụng thành công!', 'Tin tuyển dụng đã được xóa khỏi hệ thống.');
       } else {
-        alert(data.message || 'Có lỗi khi xóa!');
+        showError(data.message || 'Có lỗi xảy ra khi xóa tin tuyển dụng!');
       }
     } catch (err) {
-      alert('Lỗi kết nối server!');
+      showError('Lỗi kết nối server! Vui lòng thử lại sau.');
     }
   };
 
@@ -378,7 +416,12 @@ const EmployerJobManager = () => {
             >
               &times;
             </button>
-            <JobCreateForm onSubmit={(updatedFields) => handleEditJob(editingJob._id, updatedFields)} categories={categories} />
+            <JobCreateForm 
+              onSubmit={(updatedFields) => handleEditJob(editingJob._id, updatedFields)} 
+              categories={categories}
+              initialData={editingJob}
+              isEditing={true}
+            />
           </div>
         </div>
       )}

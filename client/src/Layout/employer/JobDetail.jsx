@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { FaArrowLeft, FaEdit, FaTrash, FaEye, FaEyeSlash, FaStar, FaMapMarkerAlt, FaMoneyBillWave, FaCalendarAlt, FaUsers, FaBriefcase } from 'react-icons/fa';
 import { useAuth } from '../../context/AuthContext';
+import { showSuccess, showError, showInfo } from '../../utils/toast';
 
 const JobDetail = () => {
   const { jobId } = useParams();
@@ -34,16 +35,16 @@ const JobDetail = () => {
           if (data.success) {
             setJob(data.data);
           } else {
-            alert('Không tìm thấy tin tuyển dụng');
+            showError('Không tìm thấy tin tuyển dụng');
             navigate('/employer');
           }
         } else {
-          alert('Có lỗi khi tải thông tin tin tuyển dụng');
+          showError('Có lỗi khi tải thông tin tin tuyển dụng');
           navigate('/employer');
         }
       } catch (error) {
         console.error('Lỗi kết nối:', error);
-        alert('Lỗi kết nối server');
+        showError('Lỗi kết nối server');
       } finally {
         setLoading(false);
       }
@@ -56,6 +57,8 @@ const JobDetail = () => {
 
   const handleUpdateStatus = async (newStatus) => {
     try {
+      showInfo('Đang cập nhật trạng thái tin tuyển dụng...');
+      
       const token = localStorage.getItem('token');
       const response = await fetch(`https://be-khoaluan.vercel.app/api/jobs/${jobId}/status`, {
         method: "PATCH",
@@ -68,17 +71,19 @@ const JobDetail = () => {
 
       if (response.ok) {
         setJob(prev => ({ ...prev, status: newStatus }));
-        alert('Cập nhật trạng thái thành công!');
+        showSuccess('✅ Cập nhật trạng thái thành công!', 'Trạng thái tin tuyển dụng đã được cập nhật.');
       } else {
-        alert('Có lỗi khi cập nhật trạng thái!');
+        showError('Có lỗi khi cập nhật trạng thái!');
       }
     } catch (error) {
-      alert('Lỗi kết nối!');
+      showError('Lỗi kết nối server! Vui lòng thử lại sau.');
     }
   };
 
   const handleToggleFeatured = async () => {
     try {
+      showInfo('Đang cập nhật trạng thái nổi bật...');
+      
       const token = localStorage.getItem('token');
       const response = await fetch(`https://be-khoaluan.vercel.app/api/jobs/${jobId}/featured`, {
         method: "PATCH",
@@ -89,12 +94,15 @@ const JobDetail = () => {
 
       if (response.ok) {
         setJob(prev => ({ ...prev, isFeatured: !prev.isFeatured }));
-        alert(job.isFeatured ? 'Đã bỏ nổi bật tin tuyển dụng!' : 'Đã đặt nổi bật tin tuyển dụng!');
+        showSuccess(
+          job.isFeatured ? '⭐ Đã bỏ nổi bật tin tuyển dụng!' : '⭐ Đã đặt nổi bật tin tuyển dụng!',
+          job.isFeatured ? 'Tin tuyển dụng không còn hiển thị nổi bật.' : 'Tin tuyển dụng đã được đặt nổi bật.'
+        );
       } else {
-        alert('Có lỗi khi cập nhật tin nổi bật!');
+        showError('Có lỗi khi cập nhật tin nổi bật!');
       }
     } catch (error) {
-      alert('Lỗi kết nối!');
+      showError('Lỗi kết nối server! Vui lòng thử lại sau.');
     }
   };
 

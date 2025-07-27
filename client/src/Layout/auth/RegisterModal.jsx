@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
@@ -145,15 +145,15 @@ const RegisterModal = ({ onClose, onOpenLoginModal }) => {
       console.log('API response:', data);
       
       if (res.ok) {
-        toast.success(`Đăng ký tài khoản ${form.role} thành công!`);
+        showSuccess(`Đăng ký tài khoản ${form.role} thành công!`);
         if (onClose) onClose();
         if (onOpenLoginModal) onOpenLoginModal();
       } else {
-        toast.error(data.message || 'Đăng ký thất bại!');
+        showError(data.message || 'Đăng ký thất bại!');
       }
     } catch (err) {
       console.error('Registration error:', err);
-      toast.error('Lỗi kết nối máy chủ!');
+      showError('Lỗi kết nối máy chủ!');
     } finally {
       setLoading(false);
     }
@@ -301,6 +301,7 @@ const RegisterModal = ({ onClose, onOpenLoginModal }) => {
                       onChange={handleChange}
                       className={`w-full px-4 py-3 border ${errors.password ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:border-[#4B1CD6] text-base transition-all duration-200`}
                       required
+                      autoComplete="new-password"
                     />
                     {errors.password && <div className="text-xs text-red-500 mt-1">{errors.password}</div>}
                   </div>

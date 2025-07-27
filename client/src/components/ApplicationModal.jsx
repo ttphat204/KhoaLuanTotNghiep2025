@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { FaTimes, FaFileAlt, FaCheck, FaSpinner, FaPlus, FaEye } from 'react-icons/fa';
+import { calculateProfileCompletion } from '../utils/profileCompletion';
 
 const ApplicationModal = ({ isOpen, onClose, job, candidateId }) => {
   const [resumes, setResumes] = useState([]);
@@ -158,47 +159,7 @@ const ApplicationModal = ({ isOpen, onClose, job, candidateId }) => {
     return type === 'DOCX' ? '📄' : '📋';
   };
 
-  const calculateProfileCompletion = (profile) => {
-    if (!profile) return 0;
-    
-    const fields = [
-      'fullName',
-      'phoneNumber', 
-      'dateOfBirth',
-      'gender',
-      'city',
-      'district',
-      'ward',
-      'specificAddress',
-      'bio',
-      'skills',
-      'experience',
-      'education',
-      'languages',
-      'certifications',
-      'cvUrl',
-      'avatarUrl'
-    ];
-    
-    let completedFields = 0;
-    fields.forEach(field => {
-      if (field === 'skills' || field === 'experience' || field === 'education' || field === 'languages' || field === 'certifications') {
-        if (profile[field] && Array.isArray(profile[field]) && profile[field].length > 0) {
-          completedFields++;
-        }
-      } else if (field === 'cvUrl' || field === 'avatarUrl') {
-        if (profile[field]) {
-          completedFields++;
-        }
-      } else {
-        if (profile[field] && profile[field].toString().trim() !== '') {
-          completedFields++;
-        }
-      }
-    });
-    
-    return Math.round((completedFields / fields.length) * 100);
-  };
+
 
   if (!isOpen) return null;
 
@@ -246,11 +207,7 @@ const ApplicationModal = ({ isOpen, onClose, job, candidateId }) => {
                   Chọn CV của bạn
                 </h3>
                 
-                <div className="mb-3 p-2 bg-blue-50 border border-blue-200 rounded-lg">
-                  <p className="text-xs text-blue-700">
-                    <strong>📋 CV từ hồ sơ:</strong> CV được lấy từ hồ sơ cá nhân (API cũ) và submit qua API mới
-                  </p>
-                </div>
+
                 
                 {isLoading && (
                   <div className="text-center py-4">

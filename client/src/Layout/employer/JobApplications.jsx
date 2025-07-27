@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { FaArrowLeft, FaEye, FaDownload, FaCheck, FaTimes, FaEnvelope, FaPhone, FaCalendar } from 'react-icons/fa';
+import { showSuccess, showError, showInfo } from '../../utils/toast';
 
 const JobApplications = () => {
   const { jobId } = useParams();
@@ -52,6 +53,7 @@ const JobApplications = () => {
       } else {
         console.error('Lỗi khi lấy thông tin job:', jobData.message);
         setError('Không tìm thấy tin tuyển dụng');
+        showError('Không tìm thấy tin tuyển dụng');
         return;
       }
 
@@ -73,6 +75,7 @@ const JobApplications = () => {
     } catch (error) {
       console.error('Lỗi kết nối:', error);
       setError('Lỗi kết nối server');
+      showError('Lỗi kết nối server! Vui lòng thử lại sau.');
     } finally {
       setLoading(false);
     }
@@ -80,6 +83,8 @@ const JobApplications = () => {
 
   const handleUpdateApplicationStatus = async (applicationId, newStatus) => {
     try {
+      showInfo('Đang cập nhật trạng thái đơn ứng tuyển...');
+      
       const token = localStorage.getItem('token');
       const response = await fetch(`https://be-khoaluan.vercel.app/api/applications/${applicationId}/status`, {
         method: 'PATCH',
@@ -100,13 +105,26 @@ const JobApplications = () => {
               : app
           )
         );
-        alert(`Đã cập nhật trạng thái thành ${newStatus === 'accepted' ? 'chấp nhận' : 'từ chối'}!`);
+        
+        const statusMessages = {
+          'Pending': 'Chờ xử lý',
+          'Reviewed': 'Đã xem xét',
+          'Interviewing': 'Đang phỏng vấn',
+          'Offer': 'Đã đề nghị',
+          'Rejected': 'Đã từ chối',
+          'Hired': 'Đã tuyển'
+        };
+        
+        showSuccess(
+          `✅ Cập nhật trạng thái thành công!`, 
+          `Đơn ứng tuyển đã được chuyển sang: ${statusMessages[newStatus] || newStatus}`
+        );
       } else {
-        alert(data.message || 'Có lỗi khi cập nhật trạng thái!');
+        showError(data.message || 'Có lỗi khi cập nhật trạng thái!');
       }
     } catch (error) {
       console.error('Lỗi cập nhật status:', error);
-      alert('Lỗi kết nối!');
+      showError('Lỗi kết nối server! Vui lòng thử lại sau.');
     }
   };
 
@@ -124,7 +142,7 @@ const JobApplications = () => {
       document.body.removeChild(a);
     } catch (error) {
       console.error('Lỗi tải CV:', error);
-      alert('Lỗi khi tải CV!');
+      showError('Lỗi khi tải CV! Vui lòng thử lại sau.');
     }
   };
 

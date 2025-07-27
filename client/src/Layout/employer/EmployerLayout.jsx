@@ -37,7 +37,7 @@ const EmployerLayout = () => {
   // Fetch số lượng applications
   useEffect(() => {
     if (user && user._id) {
-      fetch(`https://be-khoa-luan2.vercel.app/api/application/all`)
+      fetch(`https://be-khoa-luan2.vercel.app/api/employer-dashboard-stats?employerId=${user._id}&type=applications`)
         .then(res => res.json())
         .then(data => {
           if (data.success) {
@@ -51,11 +51,11 @@ const EmployerLayout = () => {
   // Fetch số lượng jobs
   useEffect(() => {
     if (user && user._id) {
-      fetch(`https://be-khoa-luan2.vercel.app/api/jobs/all`)
+      fetch(`https://be-khoaluan.vercel.app/api/job/manage?employerId=${user._id}`)
         .then(res => res.json())
         .then(data => {
-          if (data.success) {
-            setJobsCount(data.data?.length || 0);
+          if (data.success !== false) {
+            setJobsCount(data.data?.length || data.jobs?.length || 0);
           }
         })
         .catch(() => setJobsCount(0));

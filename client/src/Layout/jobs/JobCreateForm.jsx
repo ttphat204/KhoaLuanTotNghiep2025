@@ -4,6 +4,78 @@ import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import vietnamProvinces from '../../assets/vietnam_provinces';
 
+// Error Boundary Component
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError(error) {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error, errorInfo) {
+    console.error('Error caught by boundary:', error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+          <h3 className="text-red-800 font-semibold mb-2">Có lỗi xảy ra</h3>
+          <p className="text-red-600 text-sm">Vui lòng thử lại hoặc liên hệ hỗ trợ.</p>
+          <button 
+            onClick={() => this.setState({ hasError: false })}
+            className="mt-2 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+          >
+            Thử lại
+          </button>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
+}
+
+// Wrapper component để handle lỗi ReactQuill
+const SafeReactQuill = ({ value, onChange, isEditing = false, ...props }) => {
+  const [isClient, setIsClient] = useState(false);
+  
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  // Nếu đang edit, sử dụng textarea để tránh lỗi ReactQuill
+  if (isEditing) {
+    return (
+      <textarea
+        value={value || ''}
+        onChange={(e) => onChange(e.target.value)}
+        className="w-full rounded-lg border border-gray-300 focus:border-purple-500 focus:ring-2 focus:ring-purple-100 px-4 py-2 transition"
+        style={{ minHeight: 120 }}
+        placeholder={props.placeholder || "Nhập nội dung..."}
+      />
+    );
+  }
+
+  if (!isClient) {
+    return <div className="bg-white rounded-lg border border-gray-300 p-4" style={{ minHeight: 120 }}>
+      <div className="text-gray-500">Đang tải editor...</div>
+    </div>;
+  }
+
+  return (
+    <ReactQuill
+      theme="snow"
+      value={value || ''}
+      onChange={onChange}
+      {...props}
+    />
+  );
+};
+
 const jobTypeOptions = [
   { value: "Full-time", label: "Toàn thời gian" },
   { value: "Part-time", label: "Bán thời gian" },
@@ -12,7 +84,7 @@ const jobTypeOptions = [
   { value: "Contract", label: "Hợp đồng" },
 ];
 
-export default function JobCreateForm({ onSubmit, categories = [] }) {
+export default function JobCreateForm({ onSubmit, categories = [], initialData = null, isEditing = false }) {
   const {
     register,
     handleSubmit,
@@ -20,11 +92,73 @@ export default function JobCreateForm({ onSubmit, categories = [] }) {
     setValue,
     watch,
     control,
-  } = useForm();
+  } = useForm({
+    defaultValues: initialData ? {
+      jobTitle: initialData.jobTitle || '',
+      categoryId: initialData.categoryId?._id || initialData.categoryId || '',
+      description: initialData.description || '',
+      jobRequirements: initialData.jobRequirements || '',
+      benefits: initialData.benefits || '',
+      jobType: initialData.jobType || 'Full-time',
+      experienceLevel: initialData.experienceLevel || '',
+      level: initialData.level || '',
+      quantity: initialData.quantity || 1,
+      salaryMin: initialData.salaryRange ? Math.floor(initialData.salaryRange.min / 1000000) : 0,
+      salaryMax: initialData.salaryRange ? Math.floor(initialData.salaryRange.max / 1000000) : 0,
+      province: initialData.location?.province || '',
+      district: initialData.location?.district || '',
+      addressDetail: initialData.location?.addressDetail || '',
+      applicationDeadline: initialData.applicationDeadline ? new Date(initialData.applicationDeadline).toISOString().split('T')[0] : '',
+      skillsRequired: initialData.skillsRequired || []
+    } : {
+      jobTitle: '',
+      categoryId: '',
+      description: '',
+      jobRequirements: '',
+      benefits: '',
+      jobType: 'Full-time',
+      experienceLevel: '',
+      level: '',
+      quantity: 1,
+      salaryMin: 0,
+      salaryMax: 0,
+      province: '',
+      district: '',
+      addressDetail: '',
+      applicationDeadline: '',
+      skillsRequired: []
+    }
+  });
 
   const [provinces] = useState(vietnamProvinces);
 
+  // Set form values when initialData changes (for editing)
+  useEffect(() => {
+    if (initialData && isEditing) {
+      // Delay setting values to ensure form is ready
+      setTimeout(() => {
+        setValue('jobTitle', initialData.jobTitle || '');
+        setValue('categoryId', initialData.categoryId?._id || initialData.categoryId || '');
+        setValue('description', initialData.description || '');
+        setValue('jobRequirements', initialData.jobRequirements || '');
+        setValue('benefits', initialData.benefits || '');
+        setValue('jobType', initialData.jobType || 'Full-time');
+        setValue('experienceLevel', initialData.experienceLevel || '');
+        setValue('level', initialData.level || '');
+        setValue('quantity', initialData.quantity || 1);
+        setValue('salaryMin', initialData.salaryRange ? Math.floor(initialData.salaryRange.min / 1000000) : 0);
+        setValue('salaryMax', initialData.salaryRange ? Math.floor(initialData.salaryRange.max / 1000000) : 0);
+        setValue('province', initialData.location?.province || '');
+        setValue('district', initialData.location?.district || '');
+        setValue('addressDetail', initialData.location?.addressDetail || '');
+        setValue('applicationDeadline', initialData.applicationDeadline ? new Date(initialData.applicationDeadline).toISOString().split('T')[0] : '');
+        setValue('skillsRequired', initialData.skillsRequired || []);
+      }, 100);
+    }
+  }, [initialData, isEditing, setValue]);
+
   return (
+    <ErrorBoundary>
     <form
       onSubmit={handleSubmit((data) => {
         console.log('description:', data.description);
@@ -33,7 +167,9 @@ export default function JobCreateForm({ onSubmit, categories = [] }) {
       })}
       className="bg-white rounded-2xl shadow-2xl p-8 max-w-[900px] w-full mx-4 space-y-8"
     >
-      <h2 className="text-2xl font-bold mb-2 text-gray-800">Thông tin cơ bản</h2>
+      <h2 className="text-2xl font-bold mb-2 text-gray-800">
+        {isEditing ? 'Chỉnh sửa tin tuyển dụng' : 'Thông tin cơ bản'}
+      </h2>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
           <label className="block font-medium text-gray-700 mb-1">Tiêu đề tin tuyển dụng *</label>
@@ -58,10 +194,10 @@ export default function JobCreateForm({ onSubmit, categories = [] }) {
             defaultValue=""
             rules={{ required: true }}
             render={({ field }) => (
-              <ReactQuill
-                theme="snow"
-                value={field.value}
+              <SafeReactQuill
+                value={field.value || ''}
                 onChange={field.onChange}
+                isEditing={isEditing}
                 className="bg-white rounded-lg"
                 placeholder="Nhập mô tả chi tiết công việc"
                 style={{ minHeight: 120 }}
@@ -78,10 +214,10 @@ export default function JobCreateForm({ onSubmit, categories = [] }) {
             defaultValue=""
             rules={{ required: true }}
             render={({ field }) => (
-              <ReactQuill
-                theme="snow"
-                value={field.value}
+              <SafeReactQuill
+                value={field.value || ''}
                 onChange={field.onChange}
+                isEditing={isEditing}
                 className="bg-white rounded-lg"
                 placeholder="Nhập yêu cầu chi tiết cho công việc"
                 style={{ minHeight: 120 }}
@@ -89,6 +225,25 @@ export default function JobCreateForm({ onSubmit, categories = [] }) {
             )}
           />
           {errors.jobRequirements && <span className="text-red-500 text-sm">Bắt buộc</span>}
+        </div>
+        <div className="md:col-span-2">
+          <label className="block font-medium text-gray-700 mb-1">Quyền lợi</label>
+          <Controller
+            name="benefits"
+            control={control}
+            defaultValue=""
+            render={({ field }) => (
+              <SafeReactQuill
+                value={field.value || ''}
+                onChange={field.onChange}
+                isEditing={isEditing}
+                className="bg-white rounded-lg"
+                placeholder="Nhập các quyền lợi và đãi ngộ của công việc (không bắt buộc)"
+                style={{ minHeight: 120 }}
+              />
+            )}
+          />
+          <p className="text-sm text-gray-500 mt-1">Ví dụ: Bảo hiểm sức khỏe, Thưởng tháng 13, Đào tạo nội bộ, Du lịch công ty...</p>
         </div>
         <div>
           <label className="block font-medium text-gray-700 mb-1">Kinh nghiệm *</label>
@@ -164,9 +319,10 @@ export default function JobCreateForm({ onSubmit, categories = [] }) {
       </div>
       <div className="flex justify-end mt-8">
         <button type="submit" className="bg-purple-700 hover:bg-purple-800 text-white font-semibold px-8 py-3 rounded-lg shadow transition-all text-lg">
-          Tạo tin tuyển dụng
+          {isEditing ? 'Cập nhật tin tuyển dụng' : 'Tạo tin tuyển dụng'}
         </button>
       </div>
     </form>
+    </ErrorBoundary>
   );
 } 

@@ -7,6 +7,7 @@ import ProfileCard from '../../components/ProfileCard';
 import { FaUser, FaCamera, FaBriefcase, FaMapMarkerAlt, FaGraduationCap, FaLanguage, FaCertificate, FaLink, FaSave, FaGlobe, FaEye, FaTimes, FaPlus, FaTrash, FaDownload } from 'react-icons/fa';
 import vietnamProvinces from '../../assets/vietnam_provinces';
 import { showSuccess, showError } from '../../utils/toast';
+import { calculateProfileCompletion } from '../../utils/profileCompletion';
 
 // Helper component để hiển thị địa chỉ đầy đủ
 const FullAddressDisplay = ({ formData }) => {
@@ -1003,7 +1004,10 @@ const CandidateProfile = () => {
   const [wards, setWards] = useState([]);
   const [loadingProvinces, setLoadingProvinces] = useState(false);
 
-
+  // Tính toán phần trăm hoàn thành hồ sơ
+  const profileCompletion = useMemo(() => {
+    return calculateProfileCompletion(formData);
+  }, [formData]);
 
   // Khai báo fetchProfile trước để tránh lỗi hoisting
   const fetchProfile = useCallback(async () => {
@@ -1407,10 +1411,13 @@ const CandidateProfile = () => {
               <div className="mt-6 max-w-md mx-auto">
                 <div className="flex items-center justify-between text-sm mb-2">
                   <span className="text-blue-100">Hoàn thành hồ sơ</span>
-                  <span className="font-bold text-white">82%</span>
+                  <span className="font-bold text-white">{profileCompletion}%</span>
                 </div>
                 <div className="w-full bg-white/20 rounded-full h-3 overflow-hidden">
-                  <div className="bg-gradient-to-r from-yellow-400 to-orange-500 h-3 rounded-full transition-all duration-1000 ease-out" style={{ width: '82%' }}>
+                  <div 
+                    className="bg-gradient-to-r from-yellow-400 to-orange-500 h-3 rounded-full transition-all duration-1000 ease-out" 
+                    style={{ width: `${profileCompletion}%` }}
+                  >
                     <div className="h-full bg-gradient-to-r from-transparent via-white/30 to-transparent animate-pulse"></div>
                   </div>
                 </div>

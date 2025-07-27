@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { FaBriefcase, FaUsers, FaEye, FaFileAlt, FaChartLine, FaCalendarAlt, FaMapMarkerAlt } from 'react-icons/fa';
 import { useAuth } from '../../context/AuthContext';
+import { showSuccess, showError, showInfo } from '../../utils/toast';
 
 const EmployerStats = () => {
   const { user } = useAuth();
@@ -23,6 +24,7 @@ const EmployerStats = () => {
         
         if (!token) {
           console.error('Không tìm thấy token');
+          showError('Không tìm thấy thông tin đăng nhập. Vui lòng đăng nhập lại.');
           return;
         }
 
@@ -50,6 +52,7 @@ const EmployerStats = () => {
         }
       } catch (error) {
         console.error('Lỗi kết nối:', error);
+        showError('Lỗi kết nối server! Vui lòng thử lại sau.');
       } finally {
         setLoading(false);
       }

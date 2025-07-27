@@ -1,10 +1,19 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import CommonLayout from '../shared/CommonLayout';
 import { useAuth } from '../../context/AuthContext';
-import { FaBriefcase, FaFire, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
+import { FaBriefcase, FaFire, FaChevronLeft, FaChevronRight, FaBuilding, FaMapMarkerAlt, FaIndustry, FaUsers } from 'react-icons/fa';
 import JobCard from '../jobs/JobCard';
 import SearchBar from '../jobs/SearchBar';
 import { showError } from '../../utils/toast';
+
+// Utility function to check if job is active (not expired)
+const isJobActive = (job) => {
+  if (!job.applicationDeadline) return true; // No deadline = always active
+  const currentDate = new Date();
+  const deadline = new Date(job.applicationDeadline);
+  return deadline > currentDate;
+};
 
 // Job List Component
 const JobList = ({ jobs, loading, error, onRetry }) => {
@@ -41,10 +50,10 @@ const JobList = ({ jobs, loading, error, onRetry }) => {
           <FaBriefcase className="w-16 h-16 mx-auto mb-4" />
         </div>
         <h3 className="text-lg font-medium text-gray-900 mb-2">
-          Không có việc làm nào
+          Không có việc làm nào đang tuyển
         </h3>
         <p className="text-gray-600">
-          Hiện tại chưa có việc làm nào được đăng tải
+          Hiện tại chưa có việc làm nào đang tuyển hoặc tất cả đã hết hạn
         </p>
       </div>
     );
@@ -230,6 +239,7 @@ const UrgentJobsFilter = ({ selectedCategory, onCategoryChange }) => {
 };
 
 const CandidateHome = () => {
+  const navigate = useNavigate();
   const { user } = useAuth();
 
   // Job list states
@@ -239,6 +249,8 @@ const CandidateHome = () => {
   const [jobsError, setJobsError] = useState(null);
   const [searchKeyword, setSearchKeyword] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
+
+  // Đã xóa state featuredCompanies
 
   // Fetch jobs function
   const fetchJobs = useCallback(async () => {
@@ -252,8 +264,13 @@ const CandidateHome = () => {
       const data = await response.json();
       // API trả về data.data hoặc data.jobs
       const jobsData = data.data || data.jobs || [];
-      setJobs(jobsData);
-      setFilteredJobs(jobsData);
+      
+      // Lọc bỏ những job đã hết hạn
+      const activeJobs = jobsData.filter(isJobActive);
+      
+      setJobs(activeJobs);
+      setFilteredJobs(activeJobs);
+      // Đã xóa logic lấy featuredCompanies
     } catch (error) {
       setJobsError(error.message);
       showError('Lỗi khi tải danh sách việc làm');
@@ -302,6 +319,8 @@ const CandidateHome = () => {
 
         {/* Main Content */}
         <div className="max-w-7xl mx-auto px-2 pb-12 -mt-1">
+          {/* Đã xóa section Công ty nổi bật */}
+
           {/* Connection Area */}
           <div className="relative mb-2">
             <div className="absolute inset-0 bg-gradient-to-b from-blue-50/40 to-transparent pointer-events-none"></div>
@@ -326,6 +345,7 @@ const CandidateHome = () => {
                   <div>
                     <h1 className="text-3xl font-bold mb-2">Việc làm tuyển gấp</h1>
                     <p className="text-emerald-100 text-lg">Khám phá những cơ hội việc làm hấp dẫn nhất hiện tại</p>
+                    <p className="text-emerald-200 text-sm mt-1">✨ Chỉ hiển thị việc làm đang tuyển</p>
                   </div>
                 </div>
                 <div className="hidden lg:flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full">
@@ -352,7 +372,7 @@ const CandidateHome = () => {
                   <div>
                     <h2 className="text-xl font-bold text-gray-900">Kết quả tìm kiếm</h2>
                     <p className="text-gray-600 text-sm">
-                      {jobsLoading ? 'Đang tải...' : `${filteredJobs.length} việc làm được tìm thấy`}
+                      {jobsLoading ? 'Đang tải...' : `${filteredJobs.length} việc làm đang tuyển được tìm thấy`}
                     </p>
                   </div>
                 </div>
