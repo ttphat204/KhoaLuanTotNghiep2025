@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FaBriefcase, FaUsers, FaEye, FaFileAlt, FaChartLine, FaCalendarAlt, FaMapMarkerAlt } from 'react-icons/fa';
+import { FaBriefcase, FaUsers, FaEye, FaFileAlt, FaChartBar, FaCalendarAlt, FaMapMarkerAlt } from 'react-icons/fa';
 import { useAuth } from '../../context/AuthContext';
 import { showSuccess, showError, showInfo } from '../../utils/toast';
 
@@ -189,7 +189,7 @@ const EmployerStats = () => {
         <div className="bg-white rounded-lg shadow p-6">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-semibold text-gray-900">Tin được xem nhiều nhất</h3>
-            <FaChartLine className="text-gray-400" />
+                            <FaChartBar className="text-gray-400" />
           </div>
           <div className="space-y-4">
             {stats.topViewedJobs.length === 0 ? (
@@ -254,7 +254,7 @@ const EmployerStats = () => {
             <span>Xem ứng viên</span>
           </button>
           <button className="flex items-center justify-center space-x-2 p-4 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors">
-            <FaChartLine />
+                            <FaChartBar />
             <span>Xem báo cáo</span>
           </button>
         </div>

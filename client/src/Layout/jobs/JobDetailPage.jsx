@@ -349,7 +349,22 @@ const JobDetailPage = () => {
   };
 
   const handleCheckCV = () => {
-    alert('Chức năng kiểm tra CV sẽ được phát triển!');
+    console.log('Job object:', job); // Debug log
+    console.log('JobDetail object:', jobDetail); // Debug log
+    console.log('Requirements from jobDetail:', jobDetail?.jobRequirements); // Debug log
+    console.log('Requirements from job:', job.jobRequirements); // Debug log
+    
+    navigate('/cv-check', { 
+      state: { 
+        jobData: {
+          title: job.jobTitle,
+          description: job.description,
+          jobRequirements: jobDetail?.jobRequirements || job.jobRequirements || job.requirements || '',
+          benefits: job.benefits,
+          salary: formatSalary(job.salaryMin, job.salaryMax)
+        }
+      }
+    });
   };
 
   const formatSalary = (min, max) => {

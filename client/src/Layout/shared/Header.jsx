@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { FaSearch, FaUser, FaBell, FaBriefcase, FaSignOutAlt, FaHome, FaBuilding, FaBookOpen, FaIndustry, FaCity, FaGlobe, FaUsers, FaChartLine, FaMoon, FaSun, FaLanguage } from 'react-icons/fa';
+import { FaSearch, FaUser, FaBell, FaBriefcase, FaHome, FaBuilding, FaBookOpen, FaIndustry, FaCity, FaGlobe, FaUsers, FaChartBar, FaMoon, FaSun, FaLanguage } from 'react-icons/fa';
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';

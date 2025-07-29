@@ -61,7 +61,7 @@ const Sidebar = ({ active, onSelect, open }) => {
           className="flex items-center gap-4 py-3 rounded-lg hover:bg-white hover:text-[#2C3EFF] cursor-pointer transition-all text-[#2563eb]"
           onClick={handleLogout}
         >
-          <FaSignOutAlt className="text-xl" />
+                          <FaSignOutAlt className="text-xl" />
           {open && <span>Sign Out</span>}
         </div>
       </div>

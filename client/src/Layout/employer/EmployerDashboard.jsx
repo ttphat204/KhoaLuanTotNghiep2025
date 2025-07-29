@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FaUsers, FaBriefcase, FaFileAlt, FaChartLine, FaCalendarAlt } from 'react-icons/fa';
+import { FaUsers, FaBriefcase, FaFileAlt, FaChartBar, FaCalendarAlt } from 'react-icons/fa';
 import { useAuth } from '../../context/AuthContext';
 import { PieChart, Pie, Cell, LineChart as RechartsLineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, BarChart as RechartsBarChart, Bar } from 'recharts';
 import { showSuccess, showError, showInfo } from '../../utils/toast';
@@ -296,7 +296,7 @@ const StatsOverview = ({ stats }) => (
           <p className="text-3xl font-bold">{stats.successRate}%</p>
           <p className="text-orange-200 text-xs mt-1">Hiệu quả</p>
         </div>
-        <FaChartLine className="text-4xl text-orange-200" />
+                        <FaChartBar className="text-4xl text-orange-200" />
       </div>
     </div>
   </div>

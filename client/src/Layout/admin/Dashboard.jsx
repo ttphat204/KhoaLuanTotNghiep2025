@@ -7,7 +7,7 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
   PieChart, Pie, Cell, LineChart, Line, AreaChart, Area
 } from 'recharts';
-import { FaUsers, FaBriefcase, FaFileAlt, FaCalendarAlt, FaUserCheck, FaUserTimes, FaEye, FaEdit, FaTrash, FaChartLine, FaChartBar, FaChartPie } from 'react-icons/fa';
+import { FaUsers, FaBriefcase, FaFileAlt, FaCalendarAlt, FaUserCheck, FaUserTimes, FaEye, FaEdit, FaTrash, FaChartBar } from 'react-icons/fa';
 
 // Dashboard Overview Component
 const DashboardOverview = ({ stats, loading }) => {
@@ -145,7 +145,7 @@ const DashboardOverview = ({ stats, loading }) => {
         {/* Biểu đồ tròn - Phân bố trạng thái tin tuyển dụng */}
         <div className="bg-white rounded-xl shadow-sm p-6">
           <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-            <FaChartPie className="text-purple-500" />
+                            <FaChartBar className="text-purple-500" />
             Phân bố trạng thái tin tuyển dụng
           </h3>
           <ResponsiveContainer width="100%" height={300}>
@@ -203,7 +203,7 @@ const DashboardOverview = ({ stats, loading }) => {
       {/* Biểu đồ đường - Xu hướng tăng trưởng */}
       <div className="bg-white rounded-xl shadow-sm p-6">
         <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-          <FaChartLine className="text-green-500" />
+                          <FaChartBar className="text-green-500" />
           Xu hướng tăng trưởng
         </h3>
         {hasGrowthData ? (
@@ -222,7 +222,7 @@ const DashboardOverview = ({ stats, loading }) => {
         ) : (
           <div className="flex items-center justify-center h-64 text-gray-500">
             <div className="text-center">
-              <FaChartLine className="text-4xl mx-auto mb-2 text-gray-300" />
+                              <FaChartBar className="text-4xl mx-auto mb-2 text-gray-300" />
               <p className="text-sm">Chưa có dữ liệu xu hướng tăng trưởng</p>
               <p className="text-xs text-gray-400 mt-1">Dữ liệu sẽ hiển thị khi có hoạt động trong hệ thống</p>
             </div>
