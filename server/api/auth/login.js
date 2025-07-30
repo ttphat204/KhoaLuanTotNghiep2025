@@ -1,4 +1,4 @@
-const dbConnect = require('../../utils/dbConnect');
+const { dbConnect, isConnected } = require('../../utils/dbConnect');
 const Auth = require('../../models/Auth');
 const Candidates = require('../../models/Candidates');
 const Employers = require('../../models/Employers');
@@ -23,7 +23,10 @@ module.exports = async function handler(req, res) {
   // Handle GET request - Show API info and data
   if (req.method === 'GET') {
     try {
-      await dbConnect();
+      // Chỉ connect nếu chưa connected
+      if (!isConnected()) {
+        await dbConnect();
+      }
       const totalUsers = await Auth.countDocuments();
       const totalAdmins = await Auth.countDocuments({ role: 'admin' });
       const totalCandidates = await Auth.countDocuments({ role: 'candidate' });
@@ -109,7 +112,10 @@ module.exports = async function handler(req, res) {
     });
   }
 
-  await dbConnect();
+  // Chỉ connect nếu chưa connected
+  if (!isConnected()) {
+    await dbConnect();
+  }
   
   try {
     const { email, password } = req.body;

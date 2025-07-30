@@ -1,4 +1,4 @@
-const dbConnect = require('../../utils/dbConnect');
+const { dbConnect, isConnected } = require('../../utils/dbConnect');
 const Auth = require('../../models/Auth');
 const Employers = require('../../models/Employers');
 const Jobs = require('../../models/Jobs');
@@ -20,7 +20,16 @@ async function handler(req, res) {
     return;
   }
 
-  await dbConnect();
+  // Chỉ connect nếu chưa connected
+
+
+  if (!isConnected()) {
+
+
+    await dbConnect();
+
+
+  }
 
   // Xử lý endpoint dashboard-stats
   if (req.method === 'GET' && req.query.type === 'dashboard-stats') {

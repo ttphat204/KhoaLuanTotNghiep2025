@@ -142,4 +142,24 @@ jobSchema.index({ skillsRequired: 1 });
 jobSchema.index({ status: 1, postedDate: -1 });
 jobSchema.index({ isFeatured: 1, postedDate: -1 });
 
+// Compound indexes cho performance
+jobSchema.index({ status: 1, categoryId: 1, postedDate: -1 });
+jobSchema.index({ status: 1, isFeatured: 1, postedDate: -1 });
+jobSchema.index({ employerId: 1, status: 1, postedDate: -1 });
+jobSchema.index({ jobTitle: 1, status: 1, postedDate: -1 });
+jobSchema.index({ location: 1, status: 1, postedDate: -1 });
+
+// Text index cho search
+jobSchema.index({ 
+  jobTitle: "text", 
+  description: "text", 
+  requirements: "text" 
+}, {
+  weights: {
+    jobTitle: 10,
+    description: 5,
+    requirements: 3
+  }
+});
+
 module.exports = mongoose.model("Job", jobSchema);

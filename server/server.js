@@ -1,7 +1,8 @@
 const express = require('express');
 const cors = require('cors');
-
 const path = require('path');
+const performanceMiddleware = require('./middleware/performance');
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -13,6 +14,9 @@ app.use(cors({
   credentials: true
 }));
 app.options('*', cors()); // Đảm bảo trả về phản hồi hợp lệ cho mọi preflight request
+
+// Performance monitoring middleware
+app.use(performanceMiddleware);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

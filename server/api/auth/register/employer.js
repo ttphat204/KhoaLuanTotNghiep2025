@@ -1,4 +1,4 @@
-const dbConnect = require('../../../utils/dbConnect');
+const { dbConnect, isConnected } = require('../../../utils/dbConnect');
 const Auth = require('../../../models/Auth');
 const Employers = require('../../../models/Employers');
 const bcrypt = require('bcryptjs');
@@ -19,7 +19,16 @@ module.exports = async function handler(req, res) {
     return;
   }
 
-  await dbConnect();
+  // Chỉ connect nếu chưa connected
+
+
+  if (!isConnected()) {
+
+
+    await dbConnect();
+
+
+  }
 
   // Handle GET request - Show API info and data
   if (req.method === 'GET') {

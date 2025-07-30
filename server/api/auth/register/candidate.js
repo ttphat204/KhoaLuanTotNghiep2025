@@ -1,4 +1,4 @@
-const dbConnect = require('../../../utils/dbConnect');
+const { dbConnect, isConnected } = require('../../../utils/dbConnect');
 const Auth = require('../../../models/Auth');
 const Candidates = require('../../../models/Candidates');
 const bcrypt = require('bcryptjs');
@@ -22,7 +22,13 @@ module.exports = async function handler(req, res) {
   // Handle GET request - Show API info and data
   if (req.method === 'GET') {
     try {
-      await dbConnect();
+      // Chỉ connect nếu chưa connected
+
+      if (!isConnected()) {
+
+        await dbConnect();
+
+      }
       const totalCandidates = await Auth.countDocuments({ role: 'candidate' });
       
       // Lấy dữ liệu thực tế từ database
@@ -111,7 +117,16 @@ module.exports = async function handler(req, res) {
     });
   }
 
-  await dbConnect();
+  // Chỉ connect nếu chưa connected
+
+
+  if (!isConnected()) {
+
+
+    await dbConnect();
+
+
+  }
   
   try {
     console.log('Request body:', req.body); // Debug log

@@ -9,7 +9,13 @@ class JobController {
   // Đăng tin tuyển dụng
   async createJob(req, res) {
     try {
-      await dbConnect();
+      // Chỉ connect nếu chưa connected
+
+      if (!isConnected()) {
+
+        await dbConnect();
+
+      }
       const {
         jobTitle,
         description,
@@ -87,7 +93,13 @@ class JobController {
   // Lấy danh sách tin tuyển dụng của nhà tuyển dụng
   async getEmployerJobs(req, res) {
     try {
-      await dbConnect();
+      // Chỉ connect nếu chưa connected
+
+      if (!isConnected()) {
+
+        await dbConnect();
+
+      }
       const { 
         page = 1, 
         limit = 10, 
@@ -342,7 +354,13 @@ class JobController {
   // Lấy chi tiết tin tuyển dụng
   async getJobById(req, res) {
     try {
-      await dbConnect();
+      // Chỉ connect nếu chưa connected
+
+      if (!isConnected()) {
+
+        await dbConnect();
+
+      }
       const { jobId } = req.params;
 
       const job = await Jobs.findById(jobId)
@@ -437,7 +455,13 @@ class JobController {
   // Tìm kiếm job theo keyword (jobTitle hoặc description)
   async searchJobs(req, res) {
     try {
-      await dbConnect();
+      // Chỉ connect nếu chưa connected
+
+      if (!isConnected()) {
+
+        await dbConnect();
+
+      }
       const { keyword, page = 1, limit = 10 } = req.query;
       const query = { status: "Active" };
 
@@ -478,7 +502,13 @@ class JobController {
   // Lọc công việc dựa trên nhiều tiêu chí
   async filterJobs(req, res) {
     try {
-      await dbConnect();
+      // Chỉ connect nếu chưa connected
+
+      if (!isConnected()) {
+
+        await dbConnect();
+
+      }
       const {
         categories,
         locations,
@@ -670,7 +700,13 @@ class JobController {
   // Lấy tin tuyển dụng nổi bật
   async getFeaturedJobs(req, res) {
     try {
-      await dbConnect();
+      // Chỉ connect nếu chưa connected
+
+      if (!isConnected()) {
+
+        await dbConnect();
+
+      }
       const { limit = 10 } = req.query;
 
       const jobs = await Jobs.find({
@@ -692,7 +728,13 @@ class JobController {
   // Lấy tin tuyển dụng mới nhất
   async getLatestJobs(req, res) {
     try {
-      await dbConnect();
+      // Chỉ connect nếu chưa connected
+
+      if (!isConnected()) {
+
+        await dbConnect();
+
+      }
       const { limit = 10 } = req.query;
 
       const jobs = await Jobs.find({ status: "Active" })
@@ -711,7 +753,13 @@ class JobController {
   // Thống kê tin tuyển dụng
   async getJobStats(req, res) {
     try {
-      await dbConnect();
+      // Chỉ connect nếu chưa connected
+
+      if (!isConnected()) {
+
+        await dbConnect();
+
+      }
       const userId = req.user.userId;
 
       // Kiểm tra xem người dùng có phải là nhà tuyển dụng không
@@ -777,7 +825,13 @@ class JobController {
   // Lấy dashboard tổng hợp cho employer
   async getEmployerDashboard(req, res) {
     try {
-      await dbConnect();
+      // Chỉ connect nếu chưa connected
+
+      if (!isConnected()) {
+
+        await dbConnect();
+
+      }
       // Thêm header CORS cho route này
       res.setHeader('Access-Control-Allow-Credentials', true);
       res.setHeader('Access-Control-Allow-Origin', '*');
@@ -820,7 +874,13 @@ class JobController {
   // Lấy TẤT CẢ jobs của employer (không phân trang)
   async getAllEmployerJobs(req, res) {
     try {
-      await dbConnect();
+      // Chỉ connect nếu chưa connected
+
+      if (!isConnected()) {
+
+        await dbConnect();
+
+      }
       const { 
         status, 
         jobType, 

@@ -1,4 +1,4 @@
-const dbConnect = require('../../utils/dbConnect');
+const { dbConnect, isConnected } = require('../../utils/dbConnect');
 const Jobs = require('../../models/Jobs');
 const Category = require('../../models/Categories');
 
@@ -14,47 +14,82 @@ module.exports = async function handler(req, res) {
     return;
   }
 
-  await dbConnect();
+  // Chỉ connect nếu chưa connected
+  if (!isConnected()) {
+    await dbConnect();
+  }
   if (req.method !== 'GET') {
     return res.status(405).json({ success: false, message: 'Method Not Allowed' });
   }
+  
   try {
-    // Đảm bảo model Auth đã được đăng ký
-    const Auth = require('../../models/Auth');
-    const { page = 1, limit = 10, status, categoryId } = req.query;
+    const { page = 1, limit = 10, status, categoryId, keyword } = req.query;
     const skip = (page - 1) * limit;
-    let query = {};
+    
+    // Xây dựng query
+    let query = { status: "Active" };
     if (status) query.status = status;
     if (categoryId && categoryId !== 'all') query.categoryId = categoryId;
-    const jobs = await Jobs.find(query)
-      .populate('categoryId', 'name')
-      .populate({
-        path: 'employerId',
-        model: 'Auth',
-        select: 'companyName email phone',
-      })
-      .skip(skip)
-      .limit(parseInt(limit))
-      .sort({ postedDate: -1 });
-    const total = await Jobs.countDocuments(query);
+    if (keyword && keyword.trim()) {
+      query.$or = [
+        { jobTitle: { $regex: keyword, $options: "i" } },
+        { description: { $regex: keyword, $options: "i" } }
+      ];
+    }
 
-    // Lấy logo từ Employers cho từng job
-    const Employers = require('../../models/Employers');
-    const jobsWithLogo = await Promise.all(jobs.map(async (job) => {
-      let employerLogo = null;
-      if (job.employerId && job.employerId._id) {
-        const employerProfile = await Employers.findById(job.employerId._id);
-        employerLogo = employerProfile?.companyLogoUrl || null;
-      }
-      return {
-        ...job.toObject(),
-        employerLogo
-      };
-    }));
+    // Sử dụng aggregate pipeline để tránh N+1 query
+    const pipeline = [
+      { $match: query },
+      {
+        $lookup: {
+          from: 'categories',
+          localField: 'categoryId',
+          foreignField: '_id',
+          as: 'category'
+        }
+      },
+      {
+        $lookup: {
+          from: 'auths',
+          localField: 'employerId',
+          foreignField: '_id',
+          as: 'employer'
+        }
+      },
+      {
+        $lookup: {
+          from: 'employers',
+          localField: 'employerId',
+          foreignField: 'userId',
+          as: 'employerProfile'
+        }
+      },
+      {
+        $addFields: {
+          categoryId: { $arrayElemAt: ['$category', 0] },
+          employerId: { $arrayElemAt: ['$employer', 0] },
+          employerLogo: { $arrayElemAt: ['$employerProfile.companyLogoUrl', 0] }
+        }
+      },
+      {
+        $project: {
+          category: 0,
+          employer: 0,
+          employerProfile: 0
+        }
+      },
+      { $sort: { postedDate: -1 } },
+      { $skip: skip },
+      { $limit: parseInt(limit) }
+    ];
+
+    // Thực hiện aggregate query
+    const jobs = await Jobs.aggregate(pipeline);
+    const total = await Jobs.countDocuments(query);
 
     return res.status(200).json({
       success: true,
-      data: jobsWithLogo,
+      data: jobs,
       pagination: {
         currentPage: parseInt(page),
         totalPages: Math.ceil(total / limit),
@@ -63,6 +98,7 @@ module.exports = async function handler(req, res) {
       }
     });
   } catch (error) {
+    console.error('Error in job/all API:', error);
     return res.status(500).json({
       success: false,
       message: 'Lỗi khi lấy danh sách công việc',
