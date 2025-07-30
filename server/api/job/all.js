@@ -1,4 +1,4 @@
-const dbConnect = require('../../utils/dbConnect');
+const { dbConnect, isConnected } = require('../../utils/dbConnect');
 const Jobs = require('../../models/Jobs');
 const Category = require('../../models/Categories');
 

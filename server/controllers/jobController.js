@@ -3,7 +3,7 @@ const Employers = require("../models/Employers");
 const Auth = require("../models/Auth");
 const JobReports = require("../models/JobReports");
 const Categories = require("../models/Categories");
-const dbConnect = require("../utils/dbConnect");
+const { dbConnect, isConnected } = require("../utils/dbConnect");
 
 class JobController {
   // Đăng tin tuyển dụng
