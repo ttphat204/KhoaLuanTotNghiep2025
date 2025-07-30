@@ -7,6 +7,7 @@ import JobCard from '../jobs/JobCard';
 import SearchBar from '../jobs/SearchBar';
 import { showError } from '../../utils/toast';
 
+
 // Utility function to check if job is active (not expired)
 const isJobActive = (job) => {
   if (!job.applicationDeadline) return true; // No deadline = always active
@@ -106,7 +107,7 @@ const UrgentJobsFilter = ({ selectedCategory, onCategoryChange }) => {
       const newPosition = direction === 'left' 
         ? Math.max(0, scrollPosition - scrollAmount)
         : Math.min(container.scrollWidth - container.clientWidth, scrollPosition + scrollAmount);
-      
+
       container.scrollTo({ left: newPosition, behavior: 'smooth' });
       setScrollPosition(newPosition);
     }
@@ -125,11 +126,11 @@ const UrgentJobsFilter = ({ selectedCategory, onCategoryChange }) => {
           container.scrollLeft < container.scrollWidth - container.clientWidth - 10
         );
       };
-      
+
       checkScroll();
       container.addEventListener('scroll', checkScroll);
       window.addEventListener('resize', checkScroll);
-      
+
       return () => {
         container.removeEventListener('scroll', checkScroll);
         window.removeEventListener('resize', checkScroll);
@@ -144,7 +145,7 @@ const UrgentJobsFilter = ({ selectedCategory, onCategoryChange }) => {
         {/* Gradient Overlay for Arrows */}
         <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none"></div>
         <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none"></div>
-        
+
                   {/* Enhanced Left Arrow */}
           {showLeftArrow && (
             <button
@@ -154,7 +155,7 @@ const UrgentJobsFilter = ({ selectedCategory, onCategoryChange }) => {
               <FaChevronLeft className="w-4 h-4 text-blue-600" />
             </button>
           )}
-          
+
           {/* Enhanced Right Arrow */}
           {showRightArrow && (
             <button
@@ -164,7 +165,7 @@ const UrgentJobsFilter = ({ selectedCategory, onCategoryChange }) => {
               <FaChevronRight className="w-4 h-4 text-blue-600" />
             </button>
           )}
-        
+
         {/* Enhanced Filter Buttons */}
         <div 
           ref={scrollContainerRef}
@@ -194,7 +195,7 @@ const UrgentJobsFilter = ({ selectedCategory, onCategoryChange }) => {
               Tất cả
             </span>
           </button>
-          
+
           {/* Enhanced Category Buttons */}
           {loading ? (
             // Loading skeleton
@@ -264,10 +265,10 @@ const CandidateHome = () => {
       const data = await response.json();
       // API trả về data.data hoặc data.jobs
       const jobsData = data.data || data.jobs || [];
-      
+
       // Lọc bỏ những job đã hết hạn
       const activeJobs = jobsData.filter(isJobActive);
-      
+
       setJobs(activeJobs);
       setFilteredJobs(activeJobs);
       // Đã xóa logic lấy featuredCompanies
@@ -308,7 +309,7 @@ const CandidateHome = () => {
           <div className="absolute inset-0 bg-gradient-to-r from-blue-600/8 to-indigo-600/8"></div>
           <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-blue-400/15 to-indigo-400/15 rounded-full blur-3xl"></div>
           <div className="absolute bottom-0 left-0 w-96 h-96 bg-gradient-to-tr from-emerald-400/10 to-teal-400/10 rounded-full blur-3xl"></div>
-          
+
           <div className="relative max-w-7xl mx-auto px-2 py-6">
             {/* Search Bar */}
             <div className="mb-2">
@@ -325,7 +326,7 @@ const CandidateHome = () => {
           <div className="relative mb-2">
             <div className="absolute inset-0 bg-gradient-to-b from-blue-50/40 to-transparent pointer-events-none"></div>
           </div>
-          
+
           {/* Unified Content Card */}
           <div className="bg-white/90 backdrop-blur-md rounded-3xl shadow-2xl border border-white/30 overflow-hidden relative">
             {/* Top Connection */}
@@ -335,7 +336,7 @@ const CandidateHome = () => {
               {/* Background Pattern */}
               <div className="absolute inset-0 bg-gradient-to-r from-emerald-600/20 to-cyan-600/20"></div>
               <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-2xl"></div>
-              
+
               <div className="relative flex items-center justify-between">
                 <div className="flex items-center gap-4">
                   <div className="relative">
@@ -447,5 +448,3 @@ const CandidateHome = () => {
     </CommonLayout>
   );
 };
-
-export default CandidateHome; 
