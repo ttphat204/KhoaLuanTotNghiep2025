@@ -22,8 +22,4 @@ async function dbConnect() {
   return cached.conn;
 }
 
-function isConnected() {
-  return mongoose.connection.readyState === 1;
-}
-
-module.exports = { dbConnect, isConnected }; 
+module.exports = dbConnect; 

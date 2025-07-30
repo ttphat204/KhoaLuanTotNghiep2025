@@ -1,4 +1,4 @@
-const { dbConnect, isConnected } = require('../../utils/dbConnect');
+const dbConnect = require('../../utils/dbConnect');
 const Auth = require('../../models/Auth');
 const Candidates = require('../../models/Candidates');
 
@@ -18,16 +18,7 @@ module.exports = async function handler(req, res) {
     return;
   }
 
-  // Chỉ connect nếu chưa connected
-
-
-  if (!isConnected()) {
-
-
-    await dbConnect();
-
-
-  }
+  await dbConnect();
 
   // Handle GET request - Lấy thông tin profile
   if (req.method === 'GET') {

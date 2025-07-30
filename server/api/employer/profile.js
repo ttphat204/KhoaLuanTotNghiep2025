@@ -1,4 +1,4 @@
-const { dbConnect, isConnected } = require('../../utils/dbConnect');
+const dbConnect = require('../../utils/dbConnect');
 const Employers = require('../../models/Employers');
 const mongoose = require('mongoose');
 
@@ -14,16 +14,7 @@ module.exports = async function handler(req, res) {
     return;
   }
 
-  // Chỉ connect nếu chưa connected
-
-
-  if (!isConnected()) {
-
-
-    await dbConnect();
-
-
-  }
+  await dbConnect();
 
   // Helper function để tìm profile
   const findProfile = async (employerId) => {

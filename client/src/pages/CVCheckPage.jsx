@@ -215,7 +215,7 @@ const CVCheckPage = () => {
             if (cvUrl) {
               // Kiểm tra xem URL có hợp lệ không
               if (cvUrl.startsWith('http') || cvUrl.startsWith('data:')) {
-                setCvFile(cvUrl);
+              setCvFile(cvUrl);
               } else {
                 console.warn('Invalid CV URL format:', cvUrl);
                 setCvFile(null);
@@ -266,17 +266,17 @@ const CVCheckPage = () => {
     setAnalysisError(null);
     
     try {
-      // Lấy thông tin category và position đã chọn
-      const selectedCategoryLabel = getCategoryLabel(selectedCategory);
-      const selectedPositionLabel = getPositionLabel(selectedPosition, selectedCategory);
-      
-      console.log('Analyzing CV for:', {
-        category: selectedCategoryLabel,
-        position: selectedPositionLabel,
+    // Lấy thông tin category và position đã chọn
+    const selectedCategoryLabel = getCategoryLabel(selectedCategory);
+    const selectedPositionLabel = getPositionLabel(selectedPosition, selectedCategory);
+    
+    console.log('Analyzing CV for:', {
+      category: selectedCategoryLabel,
+      position: selectedPositionLabel,
         hasJobRequirements: !!jobRequirements,
         cvFile: cvFile
-      });
-
+    });
+    
       // Kiểm tra xem có CV file và thông tin cần thiết không
       const cvFileToUse = uploadedCV || cvFile;
       if (!cvFileToUse) {
@@ -843,13 +843,13 @@ const CVCheckPage = () => {
                     )}
                     
                     <div className="flex gap-2">
-                      <button
-                        onClick={() => navigate('/candidate/profile')}
-                        className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
-                      >
-                        <FaUser className="w-4 h-4" />
-                        Cập nhật Profile
-                      </button>
+                  <button
+                    onClick={() => navigate('/candidate/profile')}
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+                  >
+                    <FaUser className="w-4 h-4" />
+                    Cập nhật Profile
+                  </button>
                       
                       {uploadedCV && (
                         <button

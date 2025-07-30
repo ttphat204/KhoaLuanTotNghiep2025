@@ -1,4 +1,4 @@
-const { dbConnect, isConnected } = require('../../utils/dbConnect');
+const dbConnect = require('../../utils/dbConnect');
 const Auth = require('../../models/Auth');
 const Employers = require('../../models/Employers');
 const Jobs = require('../../models/Jobs');
@@ -19,13 +19,7 @@ async function handler(req, res) {
   // Chỉ connect nếu chưa connected
 
 
-  if (!isConnected()) {
-
-
-    await dbConnect();
-
-
-  }
+  await dbConnect();
 
   // API GET: Lấy danh sách jobs hoặc job cụ thể
   if (req.method === 'GET') {

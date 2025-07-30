@@ -1,5 +1,5 @@
 const Category = require('../../models/Categories');
-const { dbConnect, isConnected } = require('../../utils/dbConnect');
+const dbConnect = require('../../utils/dbConnect');
 
 module.exports = async (req, res) => {
   // CORS headers
@@ -10,16 +10,7 @@ module.exports = async (req, res) => {
     return res.status(200).end();
   }
 
-  // Chỉ connect nếu chưa connected
-
-
-  if (!isConnected()) {
-
-
-    await dbConnect();
-
-
-  }
+  await dbConnect();
   const { method, query, body } = req;
   const { id } = query;
 

@@ -1,4 +1,4 @@
-const { dbConnect, isConnected } = require('../../utils/dbConnect');
+const dbConnect = require('../../utils/dbConnect');
 const Jobs = require('../../models/Jobs');
 const jwt = require('jsonwebtoken');
 
@@ -17,16 +17,7 @@ module.exports = async function handler(req, res) {
     return res.status(405).json({ success: false, message: 'Method Not Allowed' });
   }
 
-  // Chỉ connect nếu chưa connected
-
-
-  if (!isConnected()) {
-
-
-    await dbConnect();
-
-
-  }
+  await dbConnect();
 
   // Xác thực JWT
   const authHeader = req.headers.authorization || req.headers.Authorization;

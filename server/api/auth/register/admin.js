@@ -1,4 +1,4 @@
-const { dbConnect, isConnected } = require('../../../utils/dbConnect');
+const dbConnect = require('../../../utils/dbConnect');
 const Auth = require('../../../models/Auth');
 const bcrypt = require('bcryptjs');
 
@@ -21,13 +21,7 @@ module.exports = async function handler(req, res) {
   // Handle GET request - Show API info and data
   if (req.method === 'GET') {
     try {
-      // Chỉ connect nếu chưa connected
-
-      if (!isConnected()) {
-
-        await dbConnect();
-
-      }
+      await dbConnect();
       const totalAdmins = await Auth.countDocuments({ role: 'admin' });
       const recentAdmins = await Auth.find({ role: 'admin' })
         .select('-password')
@@ -81,16 +75,7 @@ module.exports = async function handler(req, res) {
     });
   }
 
-  // Chỉ connect nếu chưa connected
-
-
-  if (!isConnected()) {
-
-
-    await dbConnect();
-
-
-  }
+  await dbConnect();
 
   try {
     const { email, phone, password, fullName, address } = req.body;
