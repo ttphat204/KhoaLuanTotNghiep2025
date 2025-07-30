@@ -448,3 +448,5 @@ const CandidateHome = () => {
     </CommonLayout>
   );
 };
+
+export default CandidateHome;
