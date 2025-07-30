@@ -12,45 +12,14 @@ if (!cached) {
 }
 
 async function dbConnect() {
-  // Nếu đã có connection và đang hoạt động, trả về ngay
-  if (cached.conn && mongoose.connection.readyState === 1) {
-    return cached.conn;
+  if (cached.conn) return cached.conn;
+  if (!cached.promise) {
+    cached.promise = mongoose.connect(MONGODB_URI, {
+      bufferCommands: false,
+    }).then((mongoose) => mongoose);
   }
-  
-  // Nếu đang trong quá trình kết nối, đợi
-  if (cached.promise) {
-    cached.conn = await cached.promise;
-    return cached.conn;
-  }
-  
-  // Tạo connection mới
-  const opts = {
-    bufferCommands: false,
-    maxPoolSize: 10, // Tăng pool size
-    serverSelectionTimeoutMS: 5000, // Timeout nhanh hơn
-    socketTimeoutMS: 45000, // Socket timeout
-    family: 4 // Force IPv4
-  };
-
-  cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => {
-    console.log('✅ MongoDB connected successfully');
-    return mongoose;
-  });
-
-  try {
-    cached.conn = await cached.promise;
-  } catch (e) {
-    cached.promise = null;
-    console.error('❌ MongoDB connection error:', e);
-    throw e;
-  }
-
+  cached.conn = await cached.promise;
   return cached.conn;
 }
 
-// Thêm function để kiểm tra connection status
-function isConnected() {
-  return mongoose.connection.readyState === 1;
-}
-
-module.exports = { dbConnect, isConnected }; 
+module.exports = dbConnect; 

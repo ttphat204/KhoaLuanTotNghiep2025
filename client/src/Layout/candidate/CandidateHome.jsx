@@ -6,7 +6,6 @@ import { FaBriefcase, FaFire, FaChevronLeft, FaChevronRight, FaBuilding, FaMapMa
 import JobCard from '../jobs/JobCard';
 import SearchBar from '../jobs/SearchBar';
 import { showError } from '../../utils/toast';
-import { API_ENDPOINTS, cachedApiCall } from '../../config/api';
 
 // Utility function to check if job is active (not expired)
 const isJobActive = (job) => {
@@ -77,9 +76,11 @@ const UrgentJobsFilter = ({ selectedCategory, onCategoryChange }) => {
   const scrollContainerRef = React.useRef(null);
 
   useEffect(() => {
-    // Fetch categories from API with caching
-    cachedApiCall(API_ENDPOINTS.CATEGORIES)
+    // Fetch categories from API
+    fetch('https://be-khoaluan.vercel.app/api/admin/category-management')
+      .then(res => res.json())
       .then(data => {
+        console.log('Categories from API:', data.categories); // Debug log
         const categoriesData = data.categories || [];
         setCategories(categoriesData);
       })
@@ -256,7 +257,11 @@ const CandidateHome = () => {
     try {
       setJobsLoading(true);
       setJobsError(null);
-      const data = await cachedApiCall(API_ENDPOINTS.JOBS_ALL);
+      const response = await fetch('https://be-khoaluan.vercel.app/api/job/all');
+      if (!response.ok) {
+        throw new Error('Failed to fetch jobs');
+      }
+      const data = await response.json();
       // API trả về data.data hoặc data.jobs
       const jobsData = data.data || data.jobs || [];
       
