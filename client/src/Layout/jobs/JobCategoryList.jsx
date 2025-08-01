@@ -34,9 +34,18 @@ const JobCategoryList = () => {
       .then(res => res.json())
       .then(data => {
         const found = (data.categories || []).find(cat => cat.slug === slug);
-        setCategory(found || null);
+        if (!found) {
+          // Nếu không tìm thấy category, chuyển hướng đến trang chính
+          navigate('/jobs');
+          return;
+        }
+        setCategory(found);
+      })
+      .catch(error => {
+        console.error('Error fetching category:', error);
+        navigate('/jobs');
       });
-  }, [slug]);
+  }, [slug, navigate]);
 
   useEffect(() => {
     if (!category) return;
@@ -53,10 +62,24 @@ const JobCategoryList = () => {
         });
         setJobs(filtered);
       })
+      .catch(error => {
+        console.error('Error fetching jobs:', error);
+        setJobs([]);
+      })
       .finally(() => setLoading(false));
   }, [category]);
 
-  if (!category) return <div className="text-center py-10">Không tìm thấy ngành nghề.</div>;
+  // Nếu chưa có category, hiển thị loading
+  if (!category) {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+        <Header />
+        <div className="pt-20 flex items-center justify-center min-h-screen">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -75,10 +98,7 @@ const JobCategoryList = () => {
         {/* Danh sách jobs */}
         {loading ? (
           <div className="flex justify-center items-center py-8">
-            <svg className="animate-spin h-8 w-8 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
-            </svg>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
           </div>
         ) : jobs.length === 0 ? (
           <div className="text-center text-gray-500 py-8">Không có công việc nào.</div>

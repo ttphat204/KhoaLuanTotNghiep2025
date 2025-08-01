@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import bannerImg from '../../assets/images/BannerDN.jpg';
 import { showSuccess, showError } from '../../utils/toast';
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
 
 const modalVariants = {
   hidden: { opacity: 0, scale: 0.95, y: 40 },
@@ -16,8 +17,21 @@ const LoginModal = ({ onClose, onOpenRegisterModal }) => {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [rememberMe, setRememberMe] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
+
+  // Load saved credentials on component mount
+  React.useEffect(() => {
+    const savedEmail = localStorage.getItem('candidate_remembered_email');
+    const savedRememberMe = localStorage.getItem('candidate_remember_me');
+    
+    if (savedEmail && savedRememberMe === 'true') {
+      setEmail(savedEmail);
+      setRememberMe(true);
+    }
+  }, []);
 
   // Debug logging
 
@@ -70,6 +84,15 @@ const LoginModal = ({ onClose, onOpenRegisterModal }) => {
         setLoading(false);
         return;
       }
+      // Handle remember me functionality
+      if (rememberMe) {
+        localStorage.setItem('candidate_remembered_email', email);
+        localStorage.setItem('candidate_remember_me', 'true');
+      } else {
+        localStorage.removeItem('candidate_remembered_email');
+        localStorage.removeItem('candidate_remember_me');
+      }
+
       login(userData);
       onClose();
       // Điều hướng theo role
@@ -149,7 +172,9 @@ const LoginModal = ({ onClose, onOpenRegisterModal }) => {
           <div className="flex-1 p-8 flex flex-col justify-center min-w-[320px] max-w-[400px]">
             <div className="text-center mb-6">
               <div className="text-lg font-medium text-gray-700 mb-1">Đăng nhập</div>
-              <div className="text-2xl font-bold text-gray-900 mb-2">Chào mừng bạn quay trở lại!</div>
+              <div className="text-2xl font-bold text-gray-900 mb-2">
+                Chào mừng bạn<br />quay trở lại!
+              </div>
             </div>
 
             {error && (
@@ -171,18 +196,56 @@ const LoginModal = ({ onClose, onOpenRegisterModal }) => {
                   autoComplete="email"
                 />
               </div>
-              <div>
+              <div className="relative">
                 <input
-                  type="password"
+                  type={showPassword ? 'text' : 'password'}
                   placeholder="Nhập mật khẩu"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-[#4B1CD6] text-base"
+                  className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:outline-none focus:border-[#4B1CD6] text-base"
                   required
                   disabled={loading}
                   autoComplete="current-password"
                 />
+                <button
+                  type="button"
+                  className="absolute inset-y-0 right-0 pr-4 flex items-center"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? (
+                    <FaEyeSlash className="h-5 w-5 text-gray-400 hover:text-gray-600 transition-colors" />
+                  ) : (
+                    <FaEye className="h-5 w-5 text-gray-400 hover:text-gray-600 transition-colors" />
+                  )}
+                </button>
               </div>
+
+              {/* Remember Me & Forgot Password */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <input
+                    id="remember-me"
+                    name="remember-me"
+                    type="checkbox"
+                    checked={rememberMe}
+                    onChange={(e) => setRememberMe(e.target.checked)}
+                    className="h-4 w-4 text-[#4B1CD6] focus:ring-[#4B1CD6] border-gray-300 rounded transition-colors"
+                  />
+                  <label htmlFor="remember-me" className="ml-3 block text-sm text-gray-700">
+                    Ghi nhớ đăng nhập
+                  </label>
+                </div>
+
+                <div className="text-sm">
+                  <a 
+                    href="/forgot-password" 
+                    className="font-medium text-[#4B1CD6] hover:text-[#3a13b3] transition-colors duration-200"
+                  >
+                    Quên mật khẩu?
+                  </a>
+                </div>
+              </div>
+
               <button 
                 type="submit"
                 disabled={loading}
@@ -217,12 +280,7 @@ const LoginModal = ({ onClose, onOpenRegisterModal }) => {
               Đăng nhập bằng Google (Tạm khóa)
             </button>
 
-            <div className="text-xs text-gray-500 mt-6 text-center">
-              Bằng việc đăng nhập, tôi đồng ý chia sẻ thông tin cá nhân của mình với nhà tuyển dụng theo các
-              <a href="#" className="text-[#4B1CD6] underline mx-1">Điều khoản sử dụng</a>,
-              <a href="#" className="text-[#4B1CD6] underline mx-1">Chính sách bảo mật</a> và
-              <a href="#" className="text-[#4B1CD6] underline mx-1">Chính sách dữ liệu cá nhân</a> của Vieclam24h
-            </div>
+
           </div>
 
           {/* Cột phải: Banner */}

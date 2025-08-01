@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { showSuccess, showError } from '../../utils/toast';
+import { FaUser, FaEnvelope, FaPhone, FaLock, FaMapMarkerAlt, FaCalendarAlt, FaEye, FaEyeSlash, FaVenusMars } from 'react-icons/fa';
 
 const modalVariants = {
   hidden: { opacity: 0, scale: 0.95, y: 40 },
@@ -11,6 +12,29 @@ const modalVariants = {
 };
 
 const RegisterModal = ({ onClose, onOpenLoginModal }) => {
+  // Add blob animation styles
+  React.useEffect(() => {
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes blob {
+        0% {
+          transform: translate(0px, 0px) scale(1);
+        }
+        33% {
+          transform: translate(30px, -50px) scale(1.1);
+        }
+        66% {
+          transform: translate(-20px, 20px) scale(0.9);
+        }
+        100% {
+          transform: translate(0px, 0px) scale(1);
+        }
+      }
+    `;
+    document.head.appendChild(style);
+    return () => document.head.removeChild(style);
+  }, []);
+
   const [form, setForm] = useState({
     email: '',
     phone: '',
@@ -26,6 +50,7 @@ const RegisterModal = ({ onClose, onOpenLoginModal }) => {
   });
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [provinces, setProvinces] = useState([]);
   const [districts, setDistricts] = useState([]);
   const [wards, setWards] = useState([]);
@@ -199,7 +224,7 @@ const RegisterModal = ({ onClose, onOpenLoginModal }) => {
         }}
       >
         <motion.div
-          className="bg-white rounded-2xl shadow-2xl flex w-full max-w-5xl mx-4 relative overflow-hidden modal-content"
+          className="bg-white/80 backdrop-blur-md rounded-3xl shadow-2xl flex w-full max-w-5xl mx-4 relative overflow-hidden modal-content border border-white/30"
           variants={modalVariants}
           initial="hidden"
           animate="visible"
@@ -209,14 +234,13 @@ const RegisterModal = ({ onClose, onOpenLoginModal }) => {
             width: '100%',
             margin: 'auto',
             boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
-            border: '1px solid rgba(255, 255, 255, 0.1)',
             position: 'relative',
             zIndex: 10000
           }}
         >
           {/* Nút đóng */}
           <button
-            className="absolute top-4 left-4 text-2xl text-gray-500 hover:text-gray-700 z-10"
+            className="absolute top-4 left-4 text-2xl text-gray-700 hover:text-gray-900 z-10"
             onClick={onClose}
             aria-label="Đóng"
           >
@@ -224,189 +248,246 @@ const RegisterModal = ({ onClose, onOpenLoginModal }) => {
           </button>
 
           {/* Cột trái: Form */}
-          <div className="flex-1 p-8 flex flex-col justify-center min-w-[400px] max-w-[500px]">
-            <div className="text-center mb-8">
-              <div className="text-2xl font-bold text-gray-900 mb-2">Đăng ký tài khoản ứng viên</div>
-              <div className="text-gray-600">Tạo tài khoản mới để bắt đầu hành trình tìm việc</div>
+          <div className="flex-[6] p-4 flex flex-col justify-center min-w-[400px] bg-white/30 backdrop-blur-sm">
+                        <div className="text-center mb-3">
+              <div className="text-xl font-bold text-gray-900">Đăng ký tài khoản ứng viên</div>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Basic Info Section */}
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-gray-800 border-b border-gray-200 pb-2">
+            <form onSubmit={handleSubmit} className="space-y-2">
+                            {/* Basic Info Section */}
+              <div className="bg-white/40 backdrop-blur-sm rounded-xl p-3 border border-white/30">
+                <h3 className="text-base font-bold text-gray-900 mb-2 flex items-center">
+                  <FaUser className="mr-2 text-indigo-600" />
                   Thông tin cơ bản
                 </h3>
                 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Email *
+                    <label className="block text-xs font-semibold text-gray-900 mb-1">
+                      Email <span className="text-red-500">*</span>
                     </label>
-                    <input
-                      type="email"
-                      name="email"
-                      placeholder="Nhập email của bạn"
-                      value={form.email}
-                      onChange={handleChange}
-                      className={`w-full px-4 py-3 border ${errors.email ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:border-[#4B1CD6] text-base transition-all duration-200`}
-                      required
-                    />
-                    {errors.email && <div className="text-xs text-red-500 mt-1">{errors.email}</div>}
+                    <div className="relative">
+                                              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                          <FaEnvelope className="h-4 w-4 text-gray-400" />
+                        </div>
+                      <input
+                        type="email"
+                        name="email"
+                        placeholder="Nhập email của bạn"
+                        value={form.email}
+                        onChange={handleChange}
+                        className={`w-full pl-10 pr-3 py-2 border ${errors.email ? 'border-red-400' : 'border-white/30'} rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 bg-white/60 focus:bg-white/80 text-gray-900 placeholder-gray-600 text-sm`}
+                        required
+                      />
+                    </div>
+                    {errors.email && <div className="text-xs text-red-600 mt-1">{errors.email}</div>}
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Số điện thoại *
+                    <label className="block text-sm font-semibold text-gray-900 mb-1">
+                      Số điện thoại <span className="text-red-500">*</span>
                     </label>
-                    <input
-                      type="tel"
-                      name="phone"
-                      placeholder="Nhập số điện thoại"
-                      value={form.phone}
-                      onChange={handleChange}
-                      className={`w-full px-4 py-3 border ${errors.phone ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:border-[#4B1CD6] text-base transition-all duration-200`}
-                      required
-                    />
-                    {errors.phone && <div className="text-xs text-red-500 mt-1">{errors.phone}</div>}
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                        <FaPhone className="h-5 w-5 text-gray-400" />
+                      </div>
+                      <input
+                        type="tel"
+                        name="phone"
+                        placeholder="Nhập số điện thoại"
+                        value={form.phone}
+                        onChange={handleChange}
+                        className={`w-full pl-12 pr-4 py-3 border ${errors.phone ? 'border-red-400' : 'border-white/30'} rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 bg-white/60 focus:bg-white/80 text-gray-900 placeholder-gray-600`}
+                        required
+                      />
+                    </div>
+                    {errors.phone && <div className="text-xs text-red-600 mt-1">{errors.phone}</div>}
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-2">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Họ và tên *
+                    <label className="block text-sm font-semibold text-gray-900 mb-1">
+                      Họ và tên <span className="text-red-500">*</span>
                     </label>
-                    <input
-                      type="text"
-                      name="fullName"
-                      placeholder="Nhập họ và tên"
-                      value={form.fullName}
-                      onChange={handleChange}
-                      className={`w-full px-4 py-3 border ${errors.fullName ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:border-[#4B1CD6] text-base transition-all duration-200`}
-                      required
-                    />
-                    {errors.fullName && <div className="text-xs text-red-500 mt-1">{errors.fullName}</div>}
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                        <FaUser className="h-5 w-5 text-gray-400" />
+                      </div>
+                      <input
+                        type="text"
+                        name="fullName"
+                        placeholder="Nhập họ và tên"
+                        value={form.fullName}
+                        onChange={handleChange}
+                        className={`w-full pl-12 pr-4 py-3 border ${errors.fullName ? 'border-red-400' : 'border-white/30'} rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 bg-white/60 focus:bg-white/80 text-gray-900 placeholder-gray-600`}
+                        required
+                      />
+                    </div>
+                    {errors.fullName && <div className="text-xs text-red-600 mt-1">{errors.fullName}</div>}
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Mật khẩu *
+                    <label className="block text-sm font-semibold text-gray-900 mb-1">
+                      Mật khẩu <span className="text-red-500">*</span>
                     </label>
-                    <input
-                      type="password"
-                      name="password"
-                      placeholder="Nhập mật khẩu"
-                      value={form.password}
-                      onChange={handleChange}
-                      className={`w-full px-4 py-3 border ${errors.password ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:border-[#4B1CD6] text-base transition-all duration-200`}
-                      required
-                      autoComplete="new-password"
-                    />
-                    {errors.password && <div className="text-xs text-red-500 mt-1">{errors.password}</div>}
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                        <FaLock className="h-5 w-5 text-gray-400" />
+                      </div>
+                      <input
+                        type={showPassword ? 'text' : 'password'}
+                        name="password"
+                        placeholder="Nhập mật khẩu"
+                        value={form.password}
+                        onChange={handleChange}
+                        className={`w-full pl-12 pr-12 py-3 border ${errors.password ? 'border-red-400' : 'border-white/30'} rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 bg-white/60 focus:bg-white/80 text-gray-900 placeholder-gray-600`}
+                        required
+                        autoComplete="new-password"
+                      />
+                      <button
+                        type="button"
+                        className="absolute inset-y-0 right-0 pr-4 flex items-center"
+                        onClick={() => setShowPassword(!showPassword)}
+                      >
+                        {showPassword ? (
+                          <FaEyeSlash className="h-5 w-5 text-gray-400 hover:text-gray-300 transition-colors" />
+                        ) : (
+                          <FaEye className="h-5 w-5 text-gray-400 hover:text-gray-300 transition-colors" />
+                        )}
+                      </button>
+                    </div>
+                    {errors.password && <div className="text-xs text-red-600 mt-1">{errors.password}</div>}
                   </div>
                 </div>
               </div>
 
-              {/* Candidate specific fields */}
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-gray-800 border-b border-gray-200 pb-2">
+                            {/* Candidate specific fields */}
+              <div className="bg-white/40 backdrop-blur-sm rounded-xl p-3 border border-white/30">
+                <h3 className="text-base font-bold text-gray-900 mb-2 flex items-center">
+                  <FaUser className="mr-2 text-indigo-600" />
                   Thông tin cá nhân
                 </h3>
                 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Giới tính *
+                    <label className="block text-sm font-semibold text-gray-900 mb-1">
+                      Giới tính <span className="text-red-500">*</span>
                     </label>
-                    <select
-                      name="gender"
-                      value={form.gender}
-                      onChange={handleChange}
-                      className={`w-full px-4 py-3 border ${errors.gender ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:border-[#4B1CD6] text-base transition-all duration-200`}
-                      required
-                    >
-                      <option value="">Chọn giới tính</option>
-                      <option value="Male">Nam</option>
-                      <option value="Female">Nữ</option>
-                      <option value="Other">Khác</option>
-                    </select>
-                    {errors.gender && <div className="text-xs text-red-500 mt-1">{errors.gender}</div>}
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                        <FaVenusMars className="h-5 w-5 text-gray-400" />
+                      </div>
+                      <select
+                        name="gender"
+                        value={form.gender}
+                        onChange={handleChange}
+                        className={`w-full pl-12 pr-4 py-3 border ${errors.gender ? 'border-red-400' : 'border-white/30'} rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 bg-white/60 focus:bg-white/80 text-gray-900 disabled:bg-white/30 disabled:cursor-not-allowed`}
+                        required
+                      >
+                        <option value="" className="text-gray-900">Chọn giới tính</option>
+                        <option value="Male" className="text-gray-900">Nam</option>
+                        <option value="Female" className="text-gray-900">Nữ</option>
+                        <option value="Other" className="text-gray-900">Khác</option>
+                      </select>
+                    </div>
+                    {errors.gender && <div className="text-xs text-red-600 mt-1">{errors.gender}</div>}
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Ngày sinh *
+                    <label className="block text-sm font-semibold text-gray-900 mb-1">
+                      Ngày sinh <span className="text-red-500">*</span>
                     </label>
-                    <input
-                      type="date"
-                      name="dateOfBirth"
-                      value={form.dateOfBirth}
-                      onChange={handleChange}
-                      className={`w-full px-4 py-3 border ${errors.dateOfBirth ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:border-[#4B1CD6] text-base transition-all duration-200`}
-                      required
-                    />
-                    {errors.dateOfBirth && <div className="text-xs text-red-500 mt-1">{errors.dateOfBirth}</div>}
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                        <FaCalendarAlt className="h-5 w-5 text-gray-400" />
+                      </div>
+                      <input
+                        type="date"
+                        name="dateOfBirth"
+                        value={form.dateOfBirth}
+                        onChange={handleChange}
+                        className={`w-full pl-12 pr-4 py-3 border ${errors.dateOfBirth ? 'border-red-400' : 'border-white/30'} rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 bg-white/60 focus:bg-white/80 text-gray-900`}
+                        required
+                      />
+                    </div>
+                    {errors.dateOfBirth && <div className="text-xs text-red-600 mt-1">{errors.dateOfBirth}</div>}
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-2 mt-2">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Tỉnh/Thành phố *
+                    <label className="block text-sm font-semibold text-gray-900 mb-1">
+                      Tỉnh/Thành phố <span className="text-red-500">*</span>
                     </label>
-                    <select
-                      name="city"
-                      value={form.city}
-                      onChange={handleChange}
-                      className={`w-full px-4 py-3 border ${errors.city ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:border-[#4B1CD6] text-base transition-all duration-200`}
-                      required
-                    >
-                      <option value="">Chọn tỉnh/thành phố</option>
-                      {provinces.map((p) => (
-                        <option key={p.code} value={p.name}>{p.name}</option>
-                      ))}
-                    </select>
-                    {errors.city && <div className="text-xs text-red-500 mt-1">{errors.city}</div>}
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                        <FaMapMarkerAlt className="h-5 w-5 text-gray-400" />
+                      </div>
+                      <select
+                        name="city"
+                        value={form.city}
+                        onChange={handleChange}
+                        className={`w-full pl-12 pr-4 py-3 border ${errors.city ? 'border-red-400' : 'border-white/30'} rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 bg-white/60 focus:bg-white/80 text-gray-900 disabled:bg-white/30 disabled:cursor-not-allowed`}
+                        required
+                      >
+                        <option value="" className="text-gray-900">Chọn tỉnh/thành phố</option>
+                        {provinces.map((p) => (
+                          <option key={p.code} value={p.name} className="text-gray-900">{p.name}</option>
+                        ))}
+                      </select>
+                    </div>
+                    {errors.city && <div className="text-xs text-red-600 mt-1">{errors.city}</div>}
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Quận/Huyện *
+                    <label className="block text-sm font-semibold text-gray-900 mb-1">
+                      Quận/Huyện <span className="text-red-500">*</span>
                     </label>
-                    <select
-                      name="district"
-                      value={form.district}
-                      onChange={handleChange}
-                      className={`w-full px-4 py-3 border ${errors.district ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:border-[#4B1CD6] text-base transition-all duration-200`}
-                      required
-                      disabled={!form.city}
-                    >
-                      <option value="">Chọn quận/huyện</option>
-                      {districts.map((d) => (
-                        <option key={d.code} value={d.name}>{d.name}</option>
-                      ))}
-                    </select>
-                    {errors.district && <div className="text-xs text-red-500 mt-1">{errors.district}</div>}
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                        <FaMapMarkerAlt className="h-5 w-5 text-gray-400" />
+                      </div>
+                      <select
+                        name="district"
+                        value={form.district}
+                        onChange={handleChange}
+                        className={`w-full pl-12 pr-4 py-3 border ${errors.district ? 'border-red-400' : 'border-white/30'} rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 bg-white/60 focus:bg-white/80 text-gray-900 disabled:bg-white/30 disabled:cursor-not-allowed`}
+                        required
+                        disabled={!form.city}
+                      >
+                        <option value="" className="text-gray-900">Chọn quận/huyện</option>
+                        {districts.map((d) => (
+                          <option key={d.code} value={d.name} className="text-gray-900">{d.name}</option>
+                        ))}
+                      </select>
+                    </div>
+                    {errors.district && <div className="text-xs text-red-600 mt-1">{errors.district}</div>}
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Phường/Xã *
+                    <label className="block text-sm font-semibold text-gray-900 mb-1">
+                      Phường/Xã <span className="text-red-500">*</span>
                     </label>
-                    <select
-                      name="ward"
-                      value={form.ward}
-                      onChange={handleChange}
-                      className={`w-full px-4 py-3 border ${errors.ward ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:border-[#4B1CD6] text-base transition-all duration-200`}
-                      required
-                      disabled={!form.district}
-                    >
-                      <option value="">Chọn phường/xã</option>
-                      {wards.map((w) => (
-                        <option key={w.code} value={w.name}>{w.name}</option>
-                      ))}
-                    </select>
-                    {errors.ward && <div className="text-xs text-red-500 mt-1">{errors.ward}</div>}
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                        <FaMapMarkerAlt className="h-5 w-5 text-gray-400" />
+                      </div>
+                      <select
+                        name="ward"
+                        value={form.ward}
+                        onChange={handleChange}
+                        className={`w-full pl-12 pr-4 py-3 border ${errors.ward ? 'border-red-400' : 'border-white/30'} rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 bg-white/60 focus:bg-white/80 text-gray-900 disabled:bg-white/30 disabled:cursor-not-allowed`}
+                        required
+                        disabled={!form.district}
+                      >
+                        <option value="" className="text-gray-900">Chọn phường/xã</option>
+                        {wards.map((w) => (
+                          <option key={w.code} value={w.name} className="text-gray-900">{w.name}</option>
+                        ))}
+                      </select>
+                    </div>
+                    {errors.ward && <div className="text-xs text-red-600 mt-1">{errors.ward}</div>}
                   </div>
                 </div>
               </div>
@@ -414,17 +495,27 @@ const RegisterModal = ({ onClose, onOpenLoginModal }) => {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-[#4B1CD6] hover:bg-[#3a13b3] disabled:bg-gray-400 text-white font-bold py-4 rounded-lg text-base transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-60 disabled:cursor-not-allowed"
+                className="group relative w-full flex justify-center py-4 px-4 border border-transparent text-lg font-semibold rounded-xl text-white bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 transform hover:scale-105 shadow-lg"
               >
-                {loading ? 'Đang đăng ký...' : 'Đăng ký Ứng viên'}
+                {loading ? (
+                  <div className="flex items-center">
+                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-3"></div>
+                    Đang đăng ký...
+                  </div>
+                ) : (
+                  <div className="flex items-center">
+                    <FaUser className="mr-3" />
+                    Đăng ký Ứng viên
+                  </div>
+                )}
               </button>
 
               <div className="text-center">
-                <span className="text-gray-600">Đã có tài khoản? </span>
+                <span className="text-gray-700">Đã có tài khoản? </span>
                 <button
                   type="button"
                   onClick={onOpenLoginModal}
-                  className="text-[#4B1CD6] font-medium hover:underline"
+                  className="text-indigo-600 font-medium hover:text-indigo-700 transition-colors duration-200"
                 >
                   Đăng nhập ngay
                 </button>
@@ -433,22 +524,29 @@ const RegisterModal = ({ onClose, onOpenLoginModal }) => {
           </div>
 
           {/* Cột phải: Banner */}
-          <div className="hidden lg:flex flex-[1.2] items-stretch justify-center bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600 p-8 relative rounded-r-2xl overflow-hidden">
-            <div className="flex flex-col items-center justify-center text-white text-center relative z-10">
-              {/* Logo */}
-              <div className="mb-8">
-                <div className="text-3xl font-bold mb-2">JobFinder</div>
-                <div className="text-lg opacity-90">Nền tảng tuyển dụng hàng đầu</div>
-              </div>
-              
-              {/* Main content */}
-              <div className="mb-8">
-                <h2 className="text-4xl font-bold mb-4 drop-shadow-lg">Bắt đầu hành trình</h2>
-                <h3 className="text-xl font-semibold drop-shadow-lg opacity-90">Tìm việc làm mơ ước</h3>
-              </div>
-              
-              {/* Features */}
-              <div className="space-y-4 mb-8">
+          <div className="hidden lg:flex flex-[4] items-stretch justify-center bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600 p-6 relative rounded-r-2xl overflow-hidden">
+            {/* Background Pattern */}
+            <div className="absolute inset-0 opacity-10">
+              <div className="absolute top-0 left-0 w-32 h-32 bg-white rounded-full -translate-x-16 -translate-y-16"></div>
+              <div className="absolute top-1/2 right-0 w-24 h-24 bg-white rounded-full translate-x-12 -translate-y-12"></div>
+              <div className="absolute bottom-0 left-1/3 w-20 h-20 bg-white rounded-full translate-y-10"></div>
+            </div>
+            
+                          <div className="flex flex-col items-center justify-center text-white text-center relative z-10">
+                {/* Logo */}
+                <div className="mb-6">
+                  <div className="text-2xl font-bold mb-2">JobFinder</div>
+                  <div className="text-sm opacity-90">Nền tảng tuyển dụng hàng đầu</div>
+                </div>
+                
+                {/* Main content */}
+                <div className="mb-6">
+                  <h2 className="text-3xl font-bold mb-3 drop-shadow-lg">Bắt đầu hành trình</h2>
+                  <h3 className="text-lg font-semibold drop-shadow-lg opacity-90">Tìm việc làm mơ ước</h3>
+                </div>
+                
+                {/* Features */}
+                <div className="space-y-3 mb-6">
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
                     ✓
@@ -469,8 +567,8 @@ const RegisterModal = ({ onClose, onOpenLoginModal }) => {
                 </div>
               </div>
               
-              {/* Stats */}
-              <div className="grid grid-cols-3 gap-6 text-center">
+                              {/* Stats */}
+                <div className="grid grid-cols-3 gap-6 text-center">
                 <div>
                   <div className="text-2xl font-bold">10K+</div>
                   <div className="text-sm opacity-80">Việc làm</div>
@@ -486,10 +584,10 @@ const RegisterModal = ({ onClose, onOpenLoginModal }) => {
               </div>
             </div>
             
-            {/* Background pattern */}
-            <div className="absolute inset-0 opacity-10">
-              <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-white to-transparent"></div>
-            </div>
+            {/* Floating Elements */}
+            <div className="absolute top-4 right-4 w-3 h-3 bg-yellow-400 rounded-full animate-bounce"></div>
+            <div className="absolute bottom-4 left-4 w-2 h-2 bg-pink-400 rounded-full animate-pulse"></div>
+            <div className="absolute top-1/2 left-4 w-1 h-1 bg-blue-400 rounded-full animate-ping"></div>
           </div>
         </motion.div>
       </motion.div>

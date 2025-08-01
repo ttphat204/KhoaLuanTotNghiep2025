@@ -250,7 +250,7 @@ module.exports = async function handler(req, res) {
     );
 
     // Log response for debugging
-    
+    console.log('Login successful:', {
       success: true,
       message: 'Đăng nhập thành công',
       user: userResponse

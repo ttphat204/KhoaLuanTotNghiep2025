@@ -422,42 +422,11 @@ const JobDetailPage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
         <Header />
-        <main className="flex-1 pt-20">
-          <div className="max-w-7xl mx-auto px-4 py-8">
-            <div className="flex flex-col items-center justify-center min-h-[60vh]">
-              {/* Loading Spinner */}
-              <div className="relative">
-                {/* Outer ring */}
-                <div className="w-16 h-16 border-4 border-gray-200 dark:border-gray-700 rounded-full animate-spin">
-                  <div className="w-16 h-16 border-4 border-transparent border-t-indigo-600 rounded-full animate-spin"></div>
-                </div>
-                
-                {/* Inner dot */}
-                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-6 h-6 bg-indigo-600 rounded-full animate-pulse"></div>
-              </div>
-              
-              {/* Loading Text */}
-              <div className="mt-6 text-center">
-                <h3 className="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                  Đang tải thông tin việc làm
-                </h3>
-                <p className="text-gray-500 dark:text-gray-400">
-                  Vui lòng chờ trong giây lát...
-                </p>
-              </div>
-              
-              {/* Loading Dots */}
-              <div className="flex space-x-2 mt-4">
-                <div className="w-2 h-2 bg-indigo-600 rounded-full animate-bounce"></div>
-                <div className="w-2 h-2 bg-indigo-600 rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
-                <div className="w-2 h-2 bg-indigo-600 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
-              </div>
-            </div>
-          </div>
-        </main>
-        <Footer />
+        <div className="pt-20 flex items-center justify-center min-h-screen">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+        </div>
       </div>
     );
   }
@@ -650,10 +619,14 @@ const JobDetailPage = () => {
                 <div className="font-bold text-lg mb-3 text-[#4B1CD6] border-b pb-2">Việc làm tương tự cho bạn</div>
                 {similarJobs.length === 0 && <div className="text-gray-400 text-sm">Không có việc làm tương tự.</div>}
                 {similarJobs.map((sj, idx) => (
-                  <div key={sj._id || idx} className="flex items-center gap-3 py-3 border-b last:border-b-0">
+                  <div 
+                    key={sj._id || idx} 
+                    className="flex items-center gap-3 py-3 border-b last:border-b-0 cursor-pointer hover:bg-gray-50 transition-colors duration-200 rounded-lg px-2"
+                    onClick={() => navigate(`/jobs/${sj._id}`)}
+                  >
                     <img src={sj.employerLogo || sj.employerId?.companyLogoUrl || sj.companyLogoUrl || '/default-logo.png'} alt="logo" className="w-10 h-10 object-cover rounded-lg border bg-white" />
                     <div className="flex-1 min-w-0">
-                      <div className="font-semibold text-sm text-gray-900 truncate">{sj.jobTitle}</div>
+                      <div className="font-semibold text-sm text-gray-900 truncate hover:text-blue-600 transition-colors">{sj.jobTitle}</div>
                       <div className="text-xs text-gray-500 truncate">{sj.employerId?.companyName || sj.companyName || 'Không xác định'}</div>
                       <div className="flex items-center gap-2 text-xs mt-1">
                         <span className="text-blue-600 font-bold">{sj.salaryRange?.min && sj.salaryRange?.max ? formatSalary(sj.salaryRange.min, sj.salaryRange.max) : 'Thoả thuận'}</span>

@@ -82,17 +82,11 @@ const CompanyDetail = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
         <Header />
-        <main className="flex-1 pt-20">
-          <div className="max-w-6xl mx-auto px-4 py-8">
-            <div className="text-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
-              <p className="mt-4 text-gray-600 dark:text-gray-300">Đang tải thông tin công ty...</p>
-            </div>
-          </div>
-        </main>
-        <Footer />
+        <div className="pt-20 flex items-center justify-center min-h-screen">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+        </div>
       </div>
     );
   }
