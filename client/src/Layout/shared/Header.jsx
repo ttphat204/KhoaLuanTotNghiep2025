@@ -2,7 +2,7 @@ import { motion } from 'framer-motion';
 import { FaSearch, FaUser, FaBell, FaBriefcase, FaHome, FaBuilding, FaBookOpen, FaIndustry, FaCity, FaGlobe, FaUsers, FaChartBar, FaMoon, FaSun, FaInfoCircle, FaRocket, FaStar } from 'react-icons/fa';
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import LoginModal from '../auth/LoginModal';
 import RegisterModal from '../auth/RegisterModal';
 import UserProfileDropdown from '../../components/UserProfileDropdown';
@@ -154,14 +154,15 @@ const Header = () => {
 
           {/* Center - Navigation with wavy menu path effect */}
           <nav className="hidden md:flex items-center ml-12 gap-8">
-            <motion.a
-              href="/companies"
+            <motion.div
               className="group relative flex items-center gap-2 text-gray-700 dark:text-gray-300 px-4 py-2 text-sm font-medium transition-all duration-300 hover:text-indigo-600 dark:hover:text-indigo-400"
               whileHover={{ y: -2 }}
               whileTap={{ y: 0 }}
             >
-              <FaIndustry className="w-4 h-4 group-hover:animate-pulse" />
-              <span>Công ty</span>
+              <Link to="/companies" className="flex items-center gap-2">
+                <FaIndustry className="w-4 h-4 group-hover:animate-pulse" />
+                <span>Công ty</span>
+              </Link>
               {/* Wavy line effect */}
               <svg className="absolute bottom-0 left-0 w-full h-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300" viewBox="0 0 100 20" preserveAspectRatio="none">
                 <path 
@@ -178,16 +179,17 @@ const Header = () => {
                   </linearGradient>
                 </defs>
               </svg>
-            </motion.a>
+            </motion.div>
             
-            <motion.a
-              href="/about"
+            <motion.div
               className="group relative flex items-center gap-2 text-gray-700 dark:text-gray-300 px-4 py-2 text-sm font-medium transition-all duration-300 hover:text-emerald-600 dark:hover:text-emerald-400"
               whileHover={{ y: -2 }}
               whileTap={{ y: 0 }}
             >
-              <FaInfoCircle className="w-4 h-4 group-hover:animate-pulse" />
-              <span>Giới thiệu</span>
+              <Link to="/about" className="flex items-center gap-2">
+                <FaInfoCircle className="w-4 h-4 group-hover:animate-pulse" />
+                <span>Giới thiệu</span>
+              </Link>
               {/* Wavy line effect */}
               <svg className="absolute bottom-0 left-0 w-full h-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300" viewBox="0 0 100 20" preserveAspectRatio="none">
                 <path 
@@ -204,7 +206,7 @@ const Header = () => {
                   </linearGradient>
                 </defs>
               </svg>
-            </motion.a>
+            </motion.div>
           </nav>
 
           {/* Right side - Actions with 3D blend mode buttons */}
