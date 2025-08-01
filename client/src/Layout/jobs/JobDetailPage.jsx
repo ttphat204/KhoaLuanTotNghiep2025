@@ -422,13 +422,38 @@ const JobDetailPage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex flex-col">
+      <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900">
         <Header />
         <main className="flex-1 pt-20">
-          <div className="max-w-6xl mx-auto px-4 py-8">
-            <div className="text-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
-              <p className="mt-4 text-gray-600">Đang tải thông tin việc làm...</p>
+          <div className="max-w-7xl mx-auto px-4 py-8">
+            <div className="flex flex-col items-center justify-center min-h-[60vh]">
+              {/* Loading Spinner */}
+              <div className="relative">
+                {/* Outer ring */}
+                <div className="w-16 h-16 border-4 border-gray-200 dark:border-gray-700 rounded-full animate-spin">
+                  <div className="w-16 h-16 border-4 border-transparent border-t-indigo-600 rounded-full animate-spin"></div>
+                </div>
+                
+                {/* Inner dot */}
+                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-6 h-6 bg-indigo-600 rounded-full animate-pulse"></div>
+              </div>
+              
+              {/* Loading Text */}
+              <div className="mt-6 text-center">
+                <h3 className="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                  Đang tải thông tin việc làm
+                </h3>
+                <p className="text-gray-500 dark:text-gray-400">
+                  Vui lòng chờ trong giây lát...
+                </p>
+              </div>
+              
+              {/* Loading Dots */}
+              <div className="flex space-x-2 mt-4">
+                <div className="w-2 h-2 bg-indigo-600 rounded-full animate-bounce"></div>
+                <div className="w-2 h-2 bg-indigo-600 rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
+                <div className="w-2 h-2 bg-indigo-600 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
+              </div>
             </div>
           </div>
         </main>
