@@ -22,7 +22,7 @@ const CompanyList = () => {
     try {
       setLoading(true);
       // Fetch jobs để lấy danh sách employer IDs
-      const response = await fetch('https://be-khoaluan.vercel.app/api/job/all?limit=1000');
+      const response = await fetch('https://be-khoa-luan2.vercel.app/api/jobs/all');
       if (!response.ok) {
         throw new Error('Failed to fetch companies');
       }
@@ -53,43 +53,14 @@ const CompanyList = () => {
         }
       });
       
-      // Lấy thông tin chi tiết cho từng công ty
+      // Sử dụng thông tin từ jobs đã có
       const companiesList = Array.from(companyMap.values());
-      const detailedCompanies = await Promise.all(
-        companiesList.map(async (company) => {
-          try {
-            const companyResponse = await fetch(`https://be-khoaluan.vercel.app/api/employer/profile?employerId=${company._id}`);
-            if (companyResponse.ok) {
-              const companyData = await companyResponse.json();
-              if (companyData.success) {
-                return {
-                  ...company,
-                  ...companyData.data,
-                  companyName: companyData.data.companyName || company.companyName,
-                  companyLogoUrl: companyData.data.companyLogoUrl || company.companyLogoUrl,
-                  companyAddress: companyData.data.companyAddress || company.companyAddress,
-                  industry: companyData.data.industry || company.industry,
-                  companySize: companyData.data.companySize || company.companySize,
-                  companyDescription: companyData.data.companyDescription || company.companyDescription,
-                  companyEmail: companyData.data.companyEmail,
-                  companyPhoneNumber: companyData.data.companyPhoneNumber,
-                  companyWebsite: companyData.data.companyWebsite,
-                  foundedYear: companyData.data.foundedYear
-                };
-              }
-            }
-          } catch (error) {
-            console.error(`Error fetching details for company ${company._id}:`, error);
-          }
-          return company;
-        })
-      );
       
-      setCompanies(detailedCompanies);
+      setCompanies(companiesList);
       
       // Tạo danh sách industries và locations
-      const uniqueIndustries = [...new Set(detailedCompanies.map(c => c.industry).filter(Boolean))];
-      const uniqueLocations = [...new Set(detailedCompanies.map(c => {
+      const uniqueIndustries = [...new Set(companiesList.map(c => c.industry).filter(Boolean))];
+      const uniqueLocations = [...new Set(companiesList.map(c => {
         if (c.location) {
           if (typeof c.location === 'string') return c.location;
           return [c.location.addressDetail, c.location.district, c.location.province].filter(Boolean).join(', ');
