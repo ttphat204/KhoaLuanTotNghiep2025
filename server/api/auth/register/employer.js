@@ -183,8 +183,7 @@ module.exports = async function handler(req, res) {
     } catch (err) {
       return res.status(400).json({ success: false, message: 'Tạo tài khoản thất bại', error: err.message });
     }
-    console.log('authUser:', authUser);
-    console.log('authUser._id:', authUser?._id);
+    
     if (!authUser || !authUser._id) {
       return res.status(500).json({ success: false, message: 'Không tạo được tài khoản employer' });
     }

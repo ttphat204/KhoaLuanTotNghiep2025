@@ -22,6 +22,7 @@ import FavoriteJobs from './Layout/candidate/FavoriteJobs';
 import ApplicationHistory from './Layout/candidate/ApplicationHistory';
 import CVAnalysisPage from './pages/CVAnalysisPage';
 import CVCheckPage from './pages/CVCheckPage';
+import AboutPage from './pages/AboutPage';
 import './App.css';
 
 // Component để xử lý routing dựa trên authentication
@@ -48,6 +49,7 @@ const AppRoutes = () => {
       <Route path="/companies/:companyId" element={<CompanyDetail />} />
       <Route path="/employer/login" element={<EmployerLogin />} />
       <Route path="/employer/register" element={<EmployerRegister />} />
+      <Route path="/about" element={<AboutPage />} />
       <Route path="/cv-analysis" element={<CVAnalysisPage />} />
       <Route path="/cv-check" element={<CVCheckPage />} />
 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaHeart, FaTrash, FaBuilding, FaMapMarkerAlt, FaMoneyBillWave, FaClock } from 'react-icons/fa';
+import { FaHeart, FaBuilding, FaMapMarkerAlt, FaMoneyBillWave, FaClock, FaTrash } from 'react-icons/fa';
 import { useAuth } from '../../context/AuthContext';
 import Header from '../shared/Header';
 import Footer from '../../components/Footer';
@@ -27,13 +27,6 @@ const FavoriteJobs = () => {
       const data = await response.json();
       
       if (data.success) {
-        console.log('Favorite jobs data:', data.data);
-        console.log('Logo info:', data.data.map(fav => ({
-          jobTitle: fav.jobId?.jobTitle,
-          companyName: fav.jobId?.employerId?.companyName,
-          logo: fav.jobId?.employerId?.logo,
-          salary: fav.jobId?.salary || fav.jobId?.salaryRange
-        })));
         setFavoriteJobs(data.data);
       } else {
         setError(data.message || 'Không thể tải danh sách yêu thích');
@@ -106,7 +99,7 @@ const FavoriteJobs = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
         <Header />
         <div className="pt-20 flex items-center justify-center min-h-screen">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
@@ -119,11 +112,11 @@ const FavoriteJobs = () => {
     return (
       <div className="min-h-screen flex flex-col">
         <Header />
-        <main className="flex-1 bg-gray-50 pt-24 pb-8">
+        <main className="flex-1 bg-gray-50 dark:bg-gray-900 pt-24 pb-8">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center">
-              <div className="text-red-600 mb-4">
-                <FaHeart className="w-16 h-16 mx-auto mb-4 text-gray-400" />
+              <div className="text-red-600 dark:text-red-400 mb-4">
+                <FaHeart className="w-16 h-16 mx-auto mb-4 text-gray-400 dark:text-gray-500" />
                 <p>Lỗi: {error}</p>
               </div>
               <button 
@@ -143,7 +136,7 @@ const FavoriteJobs = () => {
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
-      <main className="flex-1 bg-gray-50 pt-24 pb-8">
+      <main className="flex-1 bg-gray-50 dark:bg-gray-900 pt-24 pb-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Hero Header Section */}
           <div className="mb-8">
@@ -168,8 +161,6 @@ const FavoriteJobs = () => {
                     }
                   </p>
                 </div>
-                
-
               </div>
               
               {/* Floating Elements */}
@@ -183,11 +174,11 @@ const FavoriteJobs = () => {
           {favoriteJobs.length === 0 ? (
             <div className="text-center py-16">
               <div className="max-w-md mx-auto">
-                <div className="w-24 h-24 bg-gradient-to-r from-indigo-100 to-purple-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <div className="w-24 h-24 bg-gradient-to-r from-indigo-100 to-purple-100 dark:from-indigo-900/20 dark:to-purple-900/20 rounded-full flex items-center justify-center mx-auto mb-6">
                   <FaHeart className="w-12 h-12 text-indigo-500" />
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-3">Chưa có công việc yêu thích</h3>
-                <p className="text-gray-600 mb-8 text-lg">
+                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">Chưa có công việc yêu thích</h3>
+                <p className="text-gray-600 dark:text-gray-300 mb-8 text-lg">
                   Hãy khám phá các công việc hấp dẫn và thêm vào danh sách yêu thích của bạn
                 </p>
                 <button
@@ -205,9 +196,9 @@ const FavoriteJobs = () => {
                 if (!job) return null;
                 
                 return (
-                  <div key={favorite._id} className="group bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 overflow-hidden">
+                  <div key={favorite._id} className="group bg-white dark:bg-gray-800 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 dark:border-gray-700 overflow-hidden">
                     {/* Job Header with Gradient */}
-                    <div className="relative p-6 bg-gradient-to-br from-indigo-50 to-purple-50 border-b border-gray-100">
+                    <div className="relative p-6 bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 border-b border-gray-100 dark:border-gray-700">
                       <div className="flex items-start justify-between mb-4">
                         <div className="flex items-center space-x-4">
                           {job.employerId?.logo ? (
@@ -231,17 +222,17 @@ const FavoriteJobs = () => {
                             </div>
                           )}
                           <div className="flex-1 min-w-0">
-                            <h3 className="font-bold text-gray-900 text-lg line-clamp-2 group-hover:text-indigo-600 transition-colors">
+                            <h3 className="font-bold text-gray-900 dark:text-white text-lg line-clamp-2 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
                               {job.jobTitle || job.title || 'Không có tiêu đề'}
                             </h3>
-                            <p className="text-sm text-gray-600 font-medium mt-1">
+                            <p className="text-sm text-gray-600 dark:text-gray-300 font-medium mt-1">
                               {job.employerId?.companyName || 'Công ty'}
                             </p>
                           </div>
                         </div>
                         <button
                           onClick={() => removeFavorite(favorite._id, job._id)}
-                          className="text-gray-400 hover:text-red-500 p-2 rounded-full hover:bg-red-50 transition-all duration-200 group/btn"
+                          className="text-gray-400 hover:text-red-500 p-2 rounded-full hover:bg-red-50 dark:hover:bg-red-900/20 transition-all duration-200 group/btn"
                           title="Xóa khỏi yêu thích"
                         >
                           <FaTrash size={16} className="group-hover/btn:scale-110 transition-transform" />
@@ -252,23 +243,21 @@ const FavoriteJobs = () => {
                     {/* Job Details */}
                     <div className="p-6">
                       <div className="space-y-4">
-                        <div className="flex items-center text-sm text-gray-600 bg-gray-50 px-3 py-2 rounded-lg">
+                        <div className="flex items-center text-sm text-gray-600 dark:text-gray-200 bg-gray-50 dark:bg-gray-700 px-3 py-2 rounded-lg">
                           <FaMapMarkerAlt className="mr-3 text-indigo-500 flex-shrink-0" />
                           <span className="font-medium">{getLocation(job.location)}</span>
                         </div>
                         
-                        <div className="flex items-center text-sm text-gray-600 bg-gray-50 px-3 py-2 rounded-lg">
+                        <div className="flex items-center text-sm text-gray-600 dark:text-gray-200 bg-gray-50 dark:bg-gray-700 px-3 py-2 rounded-lg">
                           <FaMoneyBillWave className="mr-3 text-green-500 flex-shrink-0" />
                           <span className="font-medium">{formatSalary(job.salary || job.salaryRange)}</span>
                         </div>
                         
-                        <div className="flex items-center text-sm text-gray-600 bg-gray-50 px-3 py-2 rounded-lg">
+                        <div className="flex items-center text-sm text-gray-600 dark:text-gray-200 bg-gray-50 dark:bg-gray-700 px-3 py-2 rounded-lg">
                           <FaClock className="mr-3 text-orange-500 flex-shrink-0" />
                           <span className="font-medium">Đăng {formatDate(job.postedDate || job.createdAt)}</span>
                         </div>
                       </div>
-
-
 
                       {/* Actions */}
                       <div className="mt-6 flex space-x-3">
@@ -280,7 +269,7 @@ const FavoriteJobs = () => {
                         </button>
                         <button
                           onClick={() => navigate(`/jobs/${job._id}?tab=apply`)}
-                          className="flex-1 px-4 py-3 border-2 border-indigo-600 text-indigo-600 text-sm font-semibold rounded-xl hover:bg-indigo-50 transition-all duration-300 transform hover:scale-105"
+                          className="flex-1 px-4 py-3 border-2 border-indigo-600 dark:border-indigo-400 text-indigo-600 dark:text-indigo-400 text-sm font-semibold rounded-xl hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-all duration-300 transform hover:scale-105"
                         >
                           Ứng tuyển
                         </button>

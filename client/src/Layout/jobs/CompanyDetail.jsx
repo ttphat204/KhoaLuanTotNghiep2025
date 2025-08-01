@@ -82,13 +82,13 @@ const CompanyDetail = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex flex-col">
+      <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900">
         <Header />
         <main className="flex-1 pt-20">
           <div className="max-w-6xl mx-auto px-4 py-8">
             <div className="text-center">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
-              <p className="mt-4 text-gray-600">Đang tải thông tin công ty...</p>
+              <p className="mt-4 text-gray-600 dark:text-gray-300">Đang tải thông tin công ty...</p>
             </div>
           </div>
         </main>
@@ -99,12 +99,12 @@ const CompanyDetail = () => {
 
   if (error || !company) {
     return (
-      <div className="min-h-screen flex flex-col">
+      <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900">
         <Header />
         <main className="flex-1 pt-20">
           <div className="max-w-6xl mx-auto px-4 py-8">
             <div className="text-center">
-              <p className="text-red-600">Lỗi: {error || 'Không tìm thấy công ty'}</p>
+              <p className="text-red-600 dark:text-red-400">Lỗi: {error || 'Không tìm thấy công ty'}</p>
               <button 
                 onClick={() => navigate('/companies')}
                 className="mt-4 bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition-colors"
@@ -120,23 +120,23 @@ const CompanyDetail = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
+    <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900">
       <Header />
       <main className="flex-1 pt-20">
         <div className="max-w-7xl mx-auto px-4 py-8">
           {/* Back Button */}
           <button
             onClick={() => navigate('/companies')}
-            className="flex items-center gap-2 text-indigo-600 hover:text-indigo-700 mb-6 transition-colors"
+            className="flex items-center gap-2 text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 mb-6 transition-colors"
           >
             <FaArrowLeft className="w-4 h-4" />
             Quay lại danh sách công ty
           </button>
 
           {/* Company Header */}
-          <div className="bg-white rounded-3xl shadow-lg p-8 mb-8">
+          <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-lg p-8 mb-8">
             <div className="flex flex-col md:flex-row items-start md:items-center gap-8">
-              <div className="w-32 h-32 rounded-2xl bg-gray-100 flex items-center justify-center overflow-hidden shadow-lg">
+              <div className="w-32 h-32 rounded-2xl bg-gray-100 dark:bg-gray-700 flex items-center justify-center overflow-hidden shadow-lg">
                 <img 
                   src={company.companyLogoUrl} 
                   alt={company.companyName}
@@ -150,20 +150,20 @@ const CompanyDetail = () => {
               </div>
               
               <div className="flex-1">
-                <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">{company.companyName}</h1>
+                <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">{company.companyName}</h1>
                 <div className="flex flex-wrap gap-6 mb-6">
-                  <div className="flex items-center gap-2 text-gray-600">
+                  <div className="flex items-center gap-2 text-gray-600 dark:text-gray-300">
                     <FaIndustry className="text-blue-500" />
                     <span>{company.industry}</span>
                   </div>
                   {company.companySize !== 'Chưa cập nhật' && (
-                    <div className="flex items-center gap-2 text-gray-600">
+                    <div className="flex items-center gap-2 text-gray-600 dark:text-gray-300">
                       <FaUsers className="text-green-500" />
                       <span>{company.companySize}</span>
                     </div>
                   )}
                   {company.foundedYear !== 'Chưa cập nhật' && (
-                    <div className="flex items-center gap-2 text-gray-600">
+                    <div className="flex items-center gap-2 text-gray-600 dark:text-gray-300">
                       <FaCalendarAlt className="text-purple-500" />
                       <span>Thành lập {company.foundedYear}</span>
                     </div>
@@ -178,8 +178,8 @@ const CompanyDetail = () => {
                     onClick={handleFollowClick}
                     className={`flex items-center gap-2 px-6 py-3 rounded-xl font-semibold transition-colors ${
                       isFollowing 
-                        ? 'bg-red-50 text-red-600 border border-red-200 hover:bg-red-100' 
-                        : 'bg-gray-50 text-gray-700 border border-gray-200 hover:bg-gray-100'
+                        ? 'bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-700 hover:bg-red-100 dark:hover:bg-red-900/30' 
+                        : 'bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-200 border border-gray-200 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-600'
                     }`}
                   >
                     <FaHeart className={isFollowing ? 'text-red-500 fill-current' : ''} />
@@ -194,19 +194,19 @@ const CompanyDetail = () => {
             {/* Main Content */}
             <div className="lg:col-span-2 space-y-6">
               {/* Company Description */}
-              <div className="bg-white rounded-2xl p-6 shadow">
-                <h2 className="text-2xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+              <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow">
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
                   <FaInfoCircle className="text-indigo-500" />
                   Giới thiệu công ty
                 </h2>
-                <div className="text-gray-700 leading-relaxed">
+                <div className="text-gray-700 dark:text-gray-200 leading-relaxed">
                   {company.companyDescription}
                 </div>
               </div>
 
               {/* Company Jobs */}
-              <div className="bg-white rounded-2xl p-6 shadow">
-                <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+              <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow">
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
                   <FaBriefcase className="text-indigo-500" />
                   Việc làm đang tuyển ({companyJobs.length})
                 </h2>
@@ -214,16 +214,16 @@ const CompanyDetail = () => {
                 {companyJobs.length === 0 ? (
                   <div className="text-center py-8">
                     <FaBriefcase className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                    <p className="text-gray-600">Hiện tại không có việc làm nào đang tuyển</p>
+                    <p className="text-gray-600 dark:text-gray-300">Hiện tại không có việc làm nào đang tuyển</p>
                   </div>
                 ) : (
                   <div className="space-y-4">
                     {companyJobs.map((job) => (
-                      <div key={job._id} className="border border-gray-200 rounded-xl p-4 hover:shadow-md transition-shadow">
+                      <div key={job._id} className="border border-gray-200 dark:border-gray-700 rounded-xl p-4 hover:shadow-md transition-shadow">
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
-                            <h3 className="text-lg font-semibold text-gray-900 mb-2">{job.jobTitle}</h3>
-                            <div className="flex flex-wrap gap-4 text-sm text-gray-600 mb-3">
+                            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">{job.jobTitle}</h3>
+                            <div className="flex flex-wrap gap-4 text-sm text-gray-600 dark:text-gray-300 mb-3">
                               <span className="flex items-center gap-1">
                                 <FaMapMarkerAlt className="text-red-500" />
                                 {getLocation(job.location)}
@@ -255,8 +255,8 @@ const CompanyDetail = () => {
             {/* Sidebar */}
             <div className="space-y-6">
               {/* Contact Info */}
-              <div className="bg-white rounded-2xl p-6 shadow">
-                <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+              <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow">
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
                   <FaEnvelope className="text-blue-500" />
                   Thông tin liên hệ
                 </h3>
@@ -264,34 +264,34 @@ const CompanyDetail = () => {
                   <div className="flex items-center gap-3">
                     <FaEnvelope className="text-blue-500" />
                     <div>
-                      <div className="font-semibold text-gray-700">Email</div>
-                      <div className="text-gray-600">{company.companyEmail}</div>
+                      <div className="font-semibold text-gray-700 dark:text-gray-200">Email</div>
+                      <div className="text-gray-600 dark:text-gray-300">{company.companyEmail}</div>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
                     <FaPhone className="text-green-500" />
                     <div>
-                      <div className="font-semibold text-gray-700">Điện thoại</div>
-                      <div className="text-gray-600">{company.companyPhoneNumber}</div>
+                      <div className="font-semibold text-gray-700 dark:text-gray-200">Điện thoại</div>
+                      <div className="text-gray-600 dark:text-gray-300">{company.companyPhoneNumber}</div>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
                     <FaMapMarkerAlt className="text-red-500" />
                     <div>
-                      <div className="font-semibold text-gray-700">Địa chỉ</div>
-                      <div className="text-gray-600">{company.companyAddress}</div>
+                      <div className="font-semibold text-gray-700 dark:text-gray-200">Địa chỉ</div>
+                      <div className="text-gray-600 dark:text-gray-300">{company.companyAddress}</div>
                     </div>
                   </div>
                   {company.companyWebsite && (
                     <div className="flex items-center gap-3">
                       <FaGlobe className="text-indigo-500" />
                       <div>
-                        <div className="font-semibold text-gray-700">Website</div>
+                        <div className="font-semibold text-gray-700 dark:text-gray-200">Website</div>
                         <a 
                           href={company.companyWebsite} 
                           target="_blank" 
                           rel="noopener noreferrer"
-                          className="text-indigo-600 hover:underline"
+                          className="text-indigo-600 dark:text-indigo-400 hover:underline"
                         >
                           {company.companyWebsite}
                         </a>

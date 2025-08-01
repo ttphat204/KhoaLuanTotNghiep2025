@@ -114,7 +114,7 @@ module.exports = async function handler(req, res) {
   await dbConnect();
   
   try {
-    console.log('Request body:', req.body); // Debug log
+
     
     const { 
       email, 

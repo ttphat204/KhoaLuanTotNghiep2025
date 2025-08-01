@@ -117,7 +117,7 @@ const ApplicationModal = ({ isOpen, onClose, job, candidateId }) => {
         profileCompletion: profileCompletion
       };
 
-      console.log('Submitting application data:', applicationData);
+
 
       const response = await fetch('https://be-khoa-luan2.vercel.app/api/application/submit', {
         method: 'POST',
@@ -165,14 +165,14 @@ const ApplicationModal = ({ isOpen, onClose, job, candidateId }) => {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" style={{ paddingTop: '80px' }}>
-      <div className="bg-white rounded-3xl max-w-3xl w-full max-h-[calc(100vh-120px)] overflow-y-auto shadow-2xl">
+      <div className="bg-white dark:bg-gray-800 rounded-3xl max-w-3xl w-full max-h-[calc(100vh-120px)] overflow-y-auto shadow-2xl">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-100">
+        <div className="flex items-center justify-between p-6 border-b border-gray-100 dark:border-gray-700">
           <div>
-            <h2 className="text-2xl font-bold text-gray-900">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
               Gửi CV cho vị trí này
             </h2>
-            <p className="text-gray-600 mt-1">
+            <p className="text-gray-600 dark:text-gray-400 mt-1">
               {job?.jobTitle} - {job?.employerId?.companyName || job?.companyName}
             </p>
           </div>
@@ -194,15 +194,15 @@ const ApplicationModal = ({ isOpen, onClose, job, candidateId }) => {
               <h3 className="text-2xl font-bold text-green-600 mb-3">
                 Nộp hồ sơ thành công!
               </h3>
-              <p className="text-gray-600 text-lg">
+              <p className="text-gray-600 dark:text-gray-400 text-lg">
                 Hồ sơ của bạn đã được gửi thành công. Chúng tôi sẽ liên hệ sớm nhất!
               </p>
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-8">
               {/* CV Selection Section */}
-              <div className="bg-gray-50 rounded-md p-2">
-                <h3 className="text-xs font-semibold text-gray-900 mb-1.5 flex items-center gap-1.5">
+              <div className="bg-gray-50 dark:bg-gray-700 rounded-md p-2">
+                <h3 className="text-xs font-semibold text-gray-900 dark:text-white mb-1.5 flex items-center gap-1.5">
                   <FaFileAlt className="w-2.5 h-2.5 text-blue-600" />
                   Chọn CV của bạn
                 </h3>
@@ -212,7 +212,7 @@ const ApplicationModal = ({ isOpen, onClose, job, candidateId }) => {
                 {isLoading && (
                   <div className="text-center py-4">
                     <FaSpinner className="w-6 h-6 animate-spin text-blue-600 mx-auto mb-2" />
-                    <p className="text-sm text-gray-600">Đang tải thông tin CV...</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">Đang tải thông tin CV...</p>
                   </div>
                 )}
                 
@@ -252,20 +252,20 @@ const ApplicationModal = ({ isOpen, onClose, job, candidateId }) => {
                           <div className="flex items-center gap-1.5 flex-1">
                             <div className="text-sm">{getFileIcon(resume.fileName)}</div>
                             <div className="flex-1">
-                              <div className="font-medium text-gray-900 text-xs">
+                              <div className="font-medium text-gray-900 dark:text-white text-xs">
                                 {resume.title}
                               </div>
-                              <div className="text-xs text-gray-500 flex items-center gap-1">
-                                <span className="bg-gray-200 px-0.5 py-0.5 rounded text-xs">
+                              <div className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
+                                <span className="bg-gray-200 dark:bg-gray-600 px-0.5 py-0.5 rounded text-xs dark:text-gray-300">
                                   {getFileType(resume.fileName)}
                                 </span>
                                 {resume.isPrimary && (
-                                  <span className="bg-blue-100 text-blue-700 px-0.5 py-0.5 rounded text-xs">
+                                  <span className="bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-0.5 py-0.5 rounded text-xs">
                                     CV chính
                                   </span>
                                 )}
                                 {resume.fromProfile && (
-                                  <span className="bg-green-100 text-green-700 px-0.5 py-0.5 rounded text-xs">
+                                  <span className="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 px-0.5 py-0.5 rounded text-xs">
                                     CV hồ sơ
                                   </span>
                                 )}
@@ -298,7 +298,7 @@ const ApplicationModal = ({ isOpen, onClose, job, candidateId }) => {
                                     window.open(pdfUrl, '_blank');
                                   }
                                 }}
-                                className="p-1 text-blue-600 hover:bg-blue-100 rounded transition-colors"
+                                className="p-1 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/20 rounded transition-colors"
                                 title="Xem CV"
                               >
                                 <FaEye className="w-3 h-3" />
@@ -310,14 +310,14 @@ const ApplicationModal = ({ isOpen, onClose, job, candidateId }) => {
                     </div>
                   </>
                 ) : !isLoading && (
-                  <div className="text-center py-4 mb-2 bg-yellow-50 border border-yellow-200 rounded-lg">
-                    <div className="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                      <FaFileAlt className="w-6 h-6 text-yellow-600" />
+                  <div className="text-center py-4 mb-2 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-lg">
+                    <div className="w-12 h-12 bg-yellow-100 dark:bg-yellow-900/30 rounded-full flex items-center justify-center mx-auto mb-3">
+                      <FaFileAlt className="w-6 h-6 text-yellow-600 dark:text-yellow-400" />
                     </div>
-                    <h4 className="text-sm font-semibold text-yellow-800 mb-2">
+                    <h4 className="text-sm font-semibold text-yellow-800 dark:text-yellow-300 mb-2">
                       {profileCompletion < 50 ? 'Hồ sơ chưa hoàn thiện' : 'Bạn chưa có CV trong hồ sơ'}
                     </h4>
-                    <p className="text-yellow-700 text-xs mb-3">
+                    <p className="text-yellow-700 dark:text-yellow-400 text-xs mb-3">
                       {profileCompletion < 50 
                         ? `Hồ sơ hiện tại chỉ hoàn thành ${profileCompletion}%. Cần hoàn thành ít nhất 50% để nộp đơn.`
                         : 'Vui lòng cập nhật CV trong hồ sơ cá nhân để tiếp tục nộp đơn'
@@ -325,13 +325,13 @@ const ApplicationModal = ({ isOpen, onClose, job, candidateId }) => {
                     </p>
                     {profileCompletion < 50 && (
                       <div className="mb-3">
-                        <div className="w-full bg-gray-200 rounded-full h-2">
+                        <div className="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2">
                           <div 
-                            className="bg-yellow-500 h-2 rounded-full transition-all duration-300" 
+                            className="bg-yellow-500 dark:bg-yellow-400 h-2 rounded-full transition-all duration-300" 
                             style={{ width: `${profileCompletion}%` }}
                           ></div>
                         </div>
-                        <p className="text-yellow-600 text-xs mt-1">{profileCompletion}% hoàn thành</p>
+                        <p className="text-yellow-600 dark:text-yellow-400 text-xs mt-1">{profileCompletion}% hoàn thành</p>
                       </div>
                     )}
                     <button

@@ -161,8 +161,7 @@ export default function JobCreateForm({ onSubmit, categories = [], initialData =
     <ErrorBoundary>
     <form
       onSubmit={handleSubmit((data) => {
-        console.log('description:', data.description);
-        console.log('jobRequirements:', data.jobRequirements);
+        
         onSubmit(data);
       })}
       className="bg-white rounded-2xl shadow-2xl p-8 max-w-[900px] w-full mx-4 space-y-8"

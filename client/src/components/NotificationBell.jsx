@@ -31,11 +31,11 @@ const NotificationBell = ({ userId }) => {
   const fetchNotifications = async () => {
     try {
       setLoading(true);
-      console.log('Fetching notifications for userId:', userId);
+
       
       // Thử fetch trực tiếp để debug
       const response = await fetch(`https://be-khoa-luan2.vercel.app/api/notifications-user?userId=${userId}`);
-      console.log('Response status:', response.status);
+      
       
       if (!response.ok) {
         console.error('Response not ok:', response.status, response.statusText);
@@ -112,15 +112,13 @@ const NotificationBell = ({ userId }) => {
       }
       
       const data = await response.json();
-      console.log('Notifications response:', data);
+      
 
       if (data.success) {
         setNotifications(data.data || []);
         const unread = (data.data || []).filter(n => !n.isRead).length;
         setUnreadCount(unread);
-        console.log('User notifications:', (data.data || []).length);
-        console.log('Unread count:', unread);
-        console.log('All notifications:', data.data);
+
       } else {
         console.error('Failed to fetch notifications:', data.message);
       }
@@ -188,7 +186,7 @@ const NotificationBell = ({ userId }) => {
       {/* Notification Bell Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="relative p-3 text-gray-600 hover:text-indigo-600 hover:bg-gradient-to-r hover:from-indigo-50 hover:to-purple-50 rounded-xl transition-all duration-300 border border-transparent hover:border-indigo-200"
+        className="relative p-3 text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-gradient-to-r hover:from-indigo-50 hover:to-purple-50 dark:hover:from-indigo-900/20 dark:hover:to-purple-900/20 rounded-xl transition-all duration-300 border border-transparent hover:border-indigo-200 dark:hover:border-indigo-600"
       >
         <FaBell className="w-5 h-5" />
         {unreadCount > 0 && (
@@ -200,7 +198,7 @@ const NotificationBell = ({ userId }) => {
 
       {/* Notification Dropdown */}
       {isOpen && (
-        <div className="absolute right-0 mt-3 w-96 bg-white rounded-2xl shadow-2xl border border-gray-100 z-50 max-h-[500px] overflow-hidden backdrop-blur-sm">
+        <div className="absolute right-0 mt-3 w-96 bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-100 dark:border-gray-700 z-50 max-h-[500px] overflow-hidden backdrop-blur-sm">
           {/* Header */}
           <div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 p-4 text-white">
             <div className="flex items-center justify-between">
@@ -236,27 +234,27 @@ const NotificationBell = ({ userId }) => {
                   <div className="w-8 h-8 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
                   <div className="absolute inset-0 w-8 h-8 border-4 border-transparent border-t-purple-500 rounded-full animate-spin" style={{ animationDuration: '1.5s' }}></div>
                 </div>
-                <span className="ml-3 text-gray-500 font-medium">Đang tải thông báo...</span>
+                <span className="ml-3 text-gray-500 dark:text-gray-400 font-medium">Đang tải thông báo...</span>
               </div>
             ) : notifications.length === 0 ? (
               <div className="text-center py-12">
                 <div className="w-16 h-16 bg-gradient-to-r from-indigo-100 to-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <FaBell className="w-8 h-8 text-indigo-400" />
                 </div>
-                <h4 className="text-lg font-semibold text-gray-900 mb-2">Không có thông báo</h4>
-                <p className="text-gray-500">Bạn sẽ nhận được thông báo khi có cập nhật mới</p>
+                <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Không có thông báo</h4>
+                <p className="text-gray-500 dark:text-gray-400">Bạn sẽ nhận được thông báo khi có cập nhật mới</p>
               </div>
             ) : (
               <div className="space-y-3">
                 {notifications.map((notification) => (
-                  <div
-                    key={notification._id}
-                    className={`group relative p-4 rounded-xl border transition-all duration-300 hover:shadow-lg ${
-                      notification.isRead 
-                        ? 'bg-gray-50 border-gray-200 hover:bg-gray-100' 
-                        : 'bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200 hover:from-blue-100 hover:to-indigo-100'
-                    }`}
-                  >
+                                     <div
+                     key={notification._id}
+                     className={`group relative p-4 rounded-xl border transition-all duration-300 hover:shadow-lg ${
+                       notification.isRead 
+                         ? 'bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-600' 
+                         : 'bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/30 border-blue-200 dark:border-blue-600 hover:from-blue-100 hover:to-indigo-100 dark:hover:from-blue-800/40 dark:hover:to-indigo-800/40'
+                     }`}
+                   >
                     {/* Status indicator */}
                     {!notification.isRead && (
                       <div className="absolute top-3 right-3 w-2 h-2 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full animate-pulse"></div>
@@ -265,29 +263,29 @@ const NotificationBell = ({ userId }) => {
                     <div className="flex items-start space-x-4">
                       {/* Icon */}
                       <div className="flex-shrink-0">
-                        <div className={`p-3 rounded-xl ${
-                          notification.isRead 
-                            ? 'bg-gray-200 text-gray-600' 
-                            : 'bg-gradient-to-r from-green-500 to-emerald-500 text-white'
-                        }`}>
+                                                 <div className={`p-3 rounded-xl ${
+                           notification.isRead 
+                             ? 'bg-gray-200 dark:bg-gray-600 text-gray-600 dark:text-gray-300' 
+                             : 'bg-gradient-to-r from-green-500 to-emerald-500 text-white'
+                         }`}>
                           {getStatusIcon(notification.type)}
                         </div>
                       </div>
 
                       {/* Content */}
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-start justify-between mb-2">
-                          <h4 className="text-sm font-bold text-gray-900 leading-tight">
-                            {notification.title}
-                          </h4>
-                          <span className="text-xs text-gray-500 font-medium ml-2 flex-shrink-0">
-                            {formatTime(notification.createdAt)}
-                          </span>
-                        </div>
-                        
-                        <p className="text-sm text-gray-600 leading-relaxed mb-3">
-                          {notification.message}
-                        </p>
+                                                 <div className="flex items-start justify-between mb-2">
+                           <h4 className="text-sm font-bold text-gray-900 dark:text-white leading-tight">
+                             {notification.title}
+                           </h4>
+                           <span className="text-xs text-gray-500 dark:text-gray-400 font-medium ml-2 flex-shrink-0">
+                             {formatTime(notification.createdAt)}
+                           </span>
+                         </div>
+                         
+                         <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed mb-3">
+                           {notification.message}
+                         </p>
 
                         {/* Actions */}
                         {!notification.isRead && (
@@ -295,10 +293,10 @@ const NotificationBell = ({ userId }) => {
                             <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-sm">
                               Mới
                             </span>
-                            <button
-                              onClick={() => markAsRead(notification._id)}
-                              className="text-xs text-indigo-600 hover:text-indigo-800 font-medium flex items-center transition-colors"
-                            >
+                                                         <button
+                               onClick={() => markAsRead(notification._id)}
+                               className="text-xs text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 font-medium flex items-center transition-colors"
+                             >
                               <FaEye className="w-3 h-3 mr-1" />
                               Đánh dấu đã đọc
                             </button>
@@ -312,16 +310,16 @@ const NotificationBell = ({ userId }) => {
             )}
           </div>
 
-          {/* Footer */}
-          {notifications.length > 0 && (
-            <div className="p-3 border-t border-gray-100 bg-gray-50">
-              <div className="text-center">
-                <button className="text-xs text-gray-500 hover:text-indigo-600 font-medium transition-colors">
-                  Xem tất cả thông báo
-                </button>
-              </div>
-            </div>
-          )}
+                     {/* Footer */}
+           {notifications.length > 0 && (
+             <div className="p-3 border-t border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-700">
+               <div className="text-center">
+                 <button className="text-xs text-gray-500 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 font-medium transition-colors">
+                   Xem tất cả thông báo
+                 </button>
+               </div>
+             </div>
+           )}
         </div>
       )}
       

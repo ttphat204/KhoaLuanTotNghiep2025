@@ -543,13 +543,13 @@ const Dashboard = () => {
 
       if (dashboardData.success && dashboardData.data) {
         const stats = dashboardData.data;
-        console.log('Dashboard stats from API:', stats);
+
         setDashboardStats(stats);
         return; // Thoát sớm nếu có dữ liệu từ API chính
       }
 
       // Chỉ sử dụng fallback nếu API chính không hoạt động
-      console.log('API chính không hoạt động, sử dụng fallback...');
+      
       showInfo('Đang tải dữ liệu từ các API phụ...');
       
       const [employerRes, categoryRes, jobsRes, applicationsRes, authStatsRes] = await Promise.all([
@@ -677,7 +677,7 @@ const Dashboard = () => {
         growthData: growthData
       };
 
-      console.log('Dashboard stats from fallback:', stats);
+      
       setDashboardStats(stats);
     } catch (error) {
       console.error('Error fetching dashboard stats:', error);

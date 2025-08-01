@@ -2,7 +2,7 @@ const express = require('express');
 const multer = require('multer');
 const router = express.Router();
 
-console.log('Upload API loaded');
+// Upload API loaded
 
 // Cấu hình multer với memory storage
 const storage = multer.memoryStorage();
@@ -20,7 +20,7 @@ const upload = multer({
 
 // Route POST cho upload
 router.post('/', upload.single('file'), (req, res) => {
-  console.log('Upload request received');
+  // Upload request received
   
   try {
     // Kiểm tra file

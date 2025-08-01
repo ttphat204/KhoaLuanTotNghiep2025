@@ -132,10 +132,10 @@ const JobCard = ({ job }) => {
 
   return (
     <div
-      className={`relative bg-white rounded-2xl border transition-all duration-300 cursor-pointer overflow-hidden group ${
+      className={`relative bg-white dark:bg-gray-800 rounded-2xl border transition-all duration-300 cursor-pointer overflow-hidden group ${
         isHovered 
-          ? 'border-blue-400 shadow-2xl shadow-blue-100 scale-[1.02]' 
-          : 'border-gray-200 shadow-lg hover:shadow-xl'
+          ? 'border-blue-400 dark:border-blue-500 shadow-2xl shadow-blue-100 dark:shadow-blue-900/20 scale-[1.02]' 
+          : 'border-gray-200 dark:border-gray-700 shadow-lg hover:shadow-xl'
       } ${isExpired() ? 'opacity-60' : ''}`}
       onClick={handleCardClick}
       onMouseEnter={() => setIsHovered(true)}
@@ -145,7 +145,7 @@ const JobCard = ({ job }) => {
       onKeyDown={e => { if (e.key === 'Enter') handleCardClick(); }}
     >
       {/* Gradient Background Overlay */}
-      <div className={`absolute inset-0 bg-gradient-to-br from-blue-50/30 to-purple-50/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
+      <div className={`absolute inset-0 bg-gradient-to-br from-blue-50/30 to-purple-50/30 dark:from-blue-900/20 dark:to-purple-900/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
       
       {/* Urgent Badge */}
       {isUrgent() && (
@@ -168,12 +168,12 @@ const JobCard = ({ job }) => {
       )}
 
       {/* Favorite Button */}
-      <button
-        className={`absolute top-4 right-4 z-20 p-2 rounded-full transition-all duration-300 ${
-          isFavorite 
-            ? 'bg-red-500 text-white shadow-lg' 
-            : 'bg-white/80 text-gray-400 hover:bg-red-50 hover:text-red-400'
-        } ${favoriteLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+              <button
+          className={`absolute top-4 right-4 z-20 p-2 rounded-full transition-all duration-300 ${
+            isFavorite 
+              ? 'bg-red-500 text-white shadow-lg' 
+              : 'bg-white/80 dark:bg-gray-800/80 text-gray-400 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-400'
+          } ${favoriteLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
         onMouseEnter={e => { e.stopPropagation(); }}
         onMouseLeave={e => { e.stopPropagation(); }}
         onClick={handleFavoriteClick}
@@ -190,10 +190,10 @@ const JobCard = ({ job }) => {
         {/* Header Section */}
         <div className="flex items-start justify-between mb-4">
           <div className="flex-1 min-w-0">
-            <h3 className="text-lg font-bold text-gray-900 mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors duration-200">
+            <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2 line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-200">
               {job.jobTitle}
             </h3>
-            <div className="flex items-center gap-2 text-sm text-gray-600 mb-3">
+            <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 mb-3">
               <FaBuilding className="w-4 h-4 text-blue-500" />
               <span className="truncate font-medium">{companyName}</span>
             </div>
@@ -226,7 +226,7 @@ const JobCard = ({ job }) => {
               <FaMoneyBillWave className="w-4 h-4 text-green-500" />
               <span className="font-bold text-green-600">{getSalary(job.salaryRange)}</span>
             </div>
-            <div className="flex items-center gap-2 text-sm text-gray-600">
+            <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
               <FaMapMarkerAlt className="w-4 h-4 text-gray-400" />
               <span className="truncate">{getLocation(job.location)}</span>
             </div>
@@ -234,11 +234,11 @@ const JobCard = ({ job }) => {
         </div>
 
         {/* Divider */}
-        <div className="w-full h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent mb-4" />
+        <div className="w-full h-px bg-gradient-to-r from-transparent via-gray-200 dark:via-gray-600 to-transparent mb-4" />
 
         {/* Footer Section */}
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2 text-xs text-gray-500">
+          <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
             <FaClock className="w-3 h-3" />
             <span className={getDeadline(job.applicationDeadline).includes('Hết hạn') ? 'text-red-500 font-medium' : ''}>
               {getDeadline(job.applicationDeadline)}
@@ -247,7 +247,7 @@ const JobCard = ({ job }) => {
           
           {/* View Count (if available) */}
           {job.viewCount && (
-            <div className="flex items-center gap-1 text-xs text-gray-400">
+            <div className="flex items-center gap-1 text-xs text-gray-400 dark:text-gray-500">
               <FaEye className="w-3 h-3" />
               <span>{job.viewCount}</span>
             </div>

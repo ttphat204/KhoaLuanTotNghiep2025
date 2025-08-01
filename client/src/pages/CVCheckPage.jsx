@@ -178,16 +178,8 @@ const CVCheckPage = () => {
   // Fetch thông tin profile đầy đủ của user
   useEffect(() => {
     const fetchUserProfile = async () => {
-      console.log('User object:', user); // Debug log
-      console.log('User ID fields:', {
-        _id: user?._id,
-        id: user?.id,
-        userId: user?.userId
-      }); // Debug log
-      
       // Tìm userId từ các field có thể có
       const userId = user?._id || user?.id || user?.userId;
-      console.log('Selected userId:', userId); // Debug log
       
       if (user && userId) {
         setLoadingProfile(true);
@@ -195,22 +187,16 @@ const CVCheckPage = () => {
         try {
           // Sử dụng userId thay vì candidateId như trong ApplicationModal
           const apiUrl = `https://be-khoaluan.vercel.app/api/candidate/profile?userId=${userId}`;
-          console.log('API URL:', apiUrl); // Debug log
           
           const response = await fetch(apiUrl);
-          console.log('Response status:', response.status); // Debug log
           
           const data = await response.json();
-          console.log('API Response:', data); // Debug log
           
           if (data.success) {
             setUserProfile(data.data);
-            console.log('Full user profile:', data.data); // Debug log
-            
             // Tìm CV URL từ profile
             const cvUrl = data.data.cvUrl || data.data.cv || data.data.resumeUrl || 
                          data.data.resume || data.data.cvFile || data.data.cvFileUrl;
-            console.log('CV URL found:', cvUrl); // Debug log
             
             if (cvUrl) {
               // Kiểm tra xem URL có hợp lệ không
@@ -221,11 +207,9 @@ const CVCheckPage = () => {
                 setCvFile(null);
               }
             } else {
-              console.log('No CV URL found in profile');
               setCvFile(null);
             }
           } else {
-            console.log('API Error:', data.message); // Debug log
             setProfileError('Không thể tải thông tin profile');
           }
         } catch (error) {
@@ -235,7 +219,6 @@ const CVCheckPage = () => {
           setLoadingProfile(false);
         }
       } else {
-        console.log('No user or userId found'); // Debug log
         setLoadingProfile(false);
       }
     };
@@ -246,10 +229,6 @@ const CVCheckPage = () => {
   // Load job requirements nếu có
   useEffect(() => {
     if (jobData) {
-      console.log('JobData received:', jobData); // Debug log
-      console.log('JobRequirements data received in CVCheckPage:', jobData.jobRequirements); // Debug log
-      console.log('Is jobRequirements data empty?', !jobData.jobRequirements); // Debug log
-      console.log('Length of jobRequirements data:', jobData.jobRequirements?.length || 0); // Debug log
       
       setJobRequirements({
         title: jobData.title || '',
@@ -270,12 +249,7 @@ const CVCheckPage = () => {
     const selectedCategoryLabel = getCategoryLabel(selectedCategory);
     const selectedPositionLabel = getPositionLabel(selectedPosition, selectedCategory);
     
-    console.log('Analyzing CV for:', {
-      category: selectedCategoryLabel,
-      position: selectedPositionLabel,
-        hasJobRequirements: !!jobRequirements,
-        cvFile: cvFile
-    });
+
     
       // Kiểm tra xem có CV file và thông tin cần thiết không
       const cvFileToUse = uploadedCV || cvFile;
@@ -290,7 +264,7 @@ const CVCheckPage = () => {
       // Chuẩn bị dữ liệu cho API
       const formData = new FormData();
       
-      console.log('CV File type:', typeof cvFileToUse, cvFileToUse);
+
       
       // Xử lý các loại CV file khác nhau
       if (cvFileToUse.startsWith('http') || cvFileToUse.startsWith('data:')) {
@@ -301,11 +275,11 @@ const CVCheckPage = () => {
             throw new Error(`HTTP error! status: ${response.status}`);
           }
           const blob = await response.blob();
-          console.log('Downloaded blob:', blob);
+
           
           // Tạo file object từ blob
           const file = new File([blob], 'cv.pdf', { type: blob.type || 'application/pdf' });
-          console.log('Created file object:', file);
+
           formData.append('cv_file', file);
         } catch (error) {
           console.error('Error downloading CV file:', error);
@@ -313,11 +287,11 @@ const CVCheckPage = () => {
         }
               } else if (cvFileToUse instanceof File) {
           // Nếu cvFile là File object
-          console.log('Using existing File object:', cvFileToUse);
+
           formData.append('cv_file', cvFileToUse);
         } else if (typeof cvFileToUse === 'string') {
         // Nếu cvFile là string (có thể là base64 hoặc path)
-        console.log('CV File is string, attempting to convert...');
+
         
         // Thử tạo file từ string (có thể là base64)
         try {
@@ -351,32 +325,24 @@ const CVCheckPage = () => {
       let jdText = '';
       if (jobRequirements) {
         // Debug jobRequirements structure
-        console.log('🔍 JobRequirements structure:', jobRequirements);
-        console.log('🔍 JobRequirements type:', typeof jobRequirements);
         
         // Handle different types of jobRequirements
         let requirementsObj = jobRequirements;
         
         if (Array.isArray(jobRequirements)) {
-          console.log('⚠️ JobRequirements is an array, using first item');
           requirementsObj = jobRequirements[0] || {};
         } else if (typeof jobRequirements === 'string') {
-          console.log('⚠️ JobRequirements is a string, creating object');
           requirementsObj = { description: jobRequirements };
         }
         
-        console.log('🔍 Final requirements object:', requirementsObj);
-        console.log('🔍 Requirements keys:', Object.keys(requirementsObj));
+
         
         // Clean HTML tags từ job requirements - với validation
         const cleanText = (text) => {
-          console.log('🔍 Cleaning text:', text, 'Type:', typeof text);
           if (!text || typeof text !== 'string') {
-            console.log('❌ Text is not valid string, returning empty');
             return '';
           }
           const cleaned = text.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim();
-          console.log('✅ Cleaned text:', cleaned);
           return cleaned;
         };
         
@@ -390,20 +356,10 @@ const CVCheckPage = () => {
                 `Yêu cầu: ${cleanRequirements}\n` +
                 `Phúc lợi: ${cleanBenefits}`;
       } else {
-        console.log('⚠️ No jobRequirements found, using fallback text');
         jdText = `Vị trí: ${selectedPositionLabel}\nNgành nghề: ${selectedCategoryLabel}`;
       }
       
-      console.log('Cleaned JD Text:', jdText);
       formData.append('jd_text', jdText);
-
-      console.log('Sending request to CV Analysis API...');
-      console.log('FormData contents:', {
-        cv_file: formData.get('cv_file'),
-        job_category: formData.get('job_category'),
-        job_position: formData.get('job_position'),
-        jd_text: formData.get('jd_text')
-      });
       
       // Gọi API phân tích CV
       const response = await fetch('https://api-analyze-cv.onrender.com/analyze-cv', {
@@ -427,33 +383,17 @@ const CVCheckPage = () => {
       }
 
       const result = await response.json();
-      console.log('CV Analysis API Response:', result);
       
       // Debug skills before and after cleaning
       const rawMatchingSkills = result.matching_analysis?.matching_skills || [];
       const rawMissingSkills = result.matching_analysis?.missing_skills || [];
       
-      console.log('🔍 Raw skills from API:');
-      console.log('Raw matching skills:', rawMatchingSkills);
-      console.log('Raw missing skills:', rawMissingSkills);
-      
       const cleanedMatchingSkills = cleanAndFilterSkills(rawMatchingSkills);
       const cleanedMissingSkills = cleanAndFilterSkills(rawMissingSkills);
-      
-      console.log('✅ Cleaned skills:');
-      console.log('Cleaned matching skills:', cleanedMatchingSkills);
-      console.log('Cleaned missing skills:', cleanedMissingSkills);
       
       // Log filtered out skills
       const filteredOutMatching = rawMatchingSkills.filter(skill => !cleanedMatchingSkills.includes(skill));
       const filteredOutMissing = rawMissingSkills.filter(skill => !cleanedMissingSkills.includes(skill));
-      
-      if (filteredOutMatching.length > 0) {
-        console.log('Filtered out matching skills:', filteredOutMatching);
-      }
-      if (filteredOutMissing.length > 0) {
-        console.log('Filtered out missing skills:', filteredOutMissing);
-      }
 
       // Force clean skills nếu vẫn còn HTML tags
       const forceCleanSkills = (skills) => {
@@ -482,10 +422,6 @@ const CVCheckPage = () => {
       // Apply force clean if needed
       const finalMatchingSkills = cleanedMatchingSkills.length > 0 ? cleanedMatchingSkills : forceCleanSkills(rawMatchingSkills);
       const finalMissingSkills = cleanedMissingSkills.length > 0 ? cleanedMissingSkills : forceCleanSkills(rawMissingSkills);
-      
-      console.log('🔧 Final skills after force clean:');
-      console.log('Final matching skills:', finalMatchingSkills);
-      console.log('Final missing skills:', finalMissingSkills);
 
       // Chuyển đổi kết quả từ API sang format hiển thị
       const evaluation = {
@@ -576,34 +512,25 @@ const CVCheckPage = () => {
 
   // Function để clean và filter skills
   const cleanAndFilterSkills = (skills) => {
-    console.log('🔍 Starting cleanAndFilterSkills with:', skills);
-    
     if (!Array.isArray(skills)) {
-      console.log('❌ Input is not an array, returning empty array');
       return [];
     }
     
     const filteredSkills = skills.filter(skill => {
-      console.log('🔍 Checking skill:', skill);
-      
       // Loại bỏ skills quá dài hoặc chứa HTML
       if (typeof skill !== 'string') {
-        console.log('❌ Not a string, filtering out');
         return false;
       }
       
       if (skill.length > 50) {
-        console.log('❌ Too long (>50 chars), filtering out');
         return false;
       }
       
       if (skill.includes('<') || skill.includes('>')) {
-        console.log('❌ Contains HTML tags, filtering out');
         return false;
       }
       
       if (skill.includes('&nbsp;') || skill.includes('&amp;')) {
-        console.log('❌ Contains HTML entities, filtering out');
         return false;
       }
       
@@ -611,30 +538,22 @@ const CVCheckPage = () => {
       const invalidWords = ['sinh nhật', 'tiêu đề', 'mô tả', 'yêu cầu', 'phúc lợi', 'hợp với bộ phận'];
       const lowerSkill = skill.toLowerCase();
       if (invalidWords.some(word => lowerSkill.includes(word))) {
-        console.log('❌ Contains invalid word, filtering out');
         return false;
       }
       
       // Loại bỏ skills chứa dấu chấm câu không phù hợp
       if (skill.includes('</p>') || skill.includes('<p>')) {
-        console.log('❌ Contains p tags, filtering out');
         return false;
       }
       
       if (skill.includes('&nbsp;&nbsp;&nbsp;')) {
-        console.log('❌ Contains multiple nbsp, filtering out');
         return false;
       }
       
-      console.log('✅ Skill passed all filters');
       return true;
     });
     
-    console.log('🔍 After filtering:', filteredSkills);
-    
     const cleanedSkills = filteredSkills.map(skill => {
-      console.log('🧹 Cleaning skill:', skill);
-      
       // Clean HTML entities và tags
       let cleanedSkill = skill
         .replace(/<[^>]*>/g, '') // Remove HTML tags
@@ -650,19 +569,16 @@ const CVCheckPage = () => {
       // Loại bỏ dấu chấm thừa ở cuối
       cleanedSkill = cleanedSkill.replace(/\.$/, '');
       
-      console.log('🧹 Cleaned skill:', cleanedSkill);
       return cleanedSkill;
     });
     
     const finalSkills = cleanedSkills.filter(skill => skill.length > 0 && skill.length <= 50);
-    console.log('✅ Final cleaned skills:', finalSkills);
     
     return finalSkills;
   };
 
   // Fallback analysis khi API không hoạt động
   const performFallbackAnalysis = async (categoryLabel, positionLabel) => {
-    console.log('Performing fallback analysis...');
     
     // Simulate API processing time
     await new Promise(resolve => setTimeout(resolve, 2000));
@@ -813,7 +729,7 @@ const CVCheckPage = () => {
                         onChange={(e) => {
                           const file = e.target.files[0];
                           if (file) {
-                            console.log('Uploaded file:', file);
+                    
                             setUploadedCV(file);
                           }
                         }}

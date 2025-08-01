@@ -56,7 +56,7 @@ module.exports = async function handler(req, res) {
       }
     }
     
-    console.log('[GET /api/employer/profile] employerId:', employerId);
+
     if (!employerId) return res.status(400).json({ success: false, message: 'Thiếu employerId' });
     
     const profile = await findProfile(employerId);
@@ -69,7 +69,7 @@ module.exports = async function handler(req, res) {
 
   if (req.method === 'PUT') {
     const { employerId, ...updateData } = req.body;
-    console.log('[PUT /api/employer/profile] employerId:', employerId, 'updateData:', updateData);
+
     if (!employerId) return res.status(400).json({ success: false, message: 'Thiếu employerId' });
     
     const profile = await findProfile(employerId);
@@ -80,7 +80,7 @@ module.exports = async function handler(req, res) {
     try {
       // Cập nhật profile
       const updatedProfile = await Employers.findByIdAndUpdate(profile._id, updateData, { new: true });
-      console.log('[PUT /api/employer/profile] profile:', updatedProfile);
+
       return res.json({ success: true, data: updatedProfile });
     } catch (err) {
       console.error('[PUT /api/employer/profile] Error:', err);
@@ -133,7 +133,7 @@ module.exports = async function handler(req, res) {
       }
     }
     
-    console.log('[POST /api/employer/profile] employerId:', employerId);
+
     if (!employerId) return res.status(400).json({ success: false, message: 'Thiếu employerId' });
     
     const profile = await findProfile(employerId);
@@ -165,7 +165,7 @@ module.exports = async function handler(req, res) {
       });
       
       await newProfile.save();
-      console.log('[POST /api/employer/profile] created profile:', newProfile);
+      
       return res.json({ success: true, data: newProfile, message: 'Tạo profile thành công' });
     } catch (err) {
       console.error('[POST /api/employer/profile] Error:', err);

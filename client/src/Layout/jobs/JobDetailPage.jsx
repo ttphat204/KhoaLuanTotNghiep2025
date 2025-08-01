@@ -13,8 +13,8 @@ const CATEGORY_API = 'https://be-khoaluan.vercel.app/api/admin/category-manageme
 const CompanyInfo = ({ companyData }) => {
   if (!companyData) {
     return (
-      <div className="bg-white rounded-2xl p-8 shadow text-center">
-        <div className="text-gray-500 text-lg">Không có thông tin công ty</div>
+      <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow text-center">
+        <div className="text-gray-500 dark:text-gray-400 text-lg">Không có thông tin công ty</div>
       </div>
     );
   }
@@ -33,9 +33,9 @@ const CompanyInfo = ({ companyData }) => {
   return (
     <div className="space-y-6">
       {/* Header công ty */}
-      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-6">
+      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6">
         <div className="flex items-center gap-6">
-          <div className="w-24 h-24 rounded-xl bg-white shadow-lg flex items-center justify-center overflow-hidden">
+          <div className="w-24 h-24 rounded-xl bg-white dark:bg-gray-700 shadow-lg flex items-center justify-center overflow-hidden">
             <img 
               src={companyLogoUrl} 
               alt={companyName}
@@ -48,8 +48,8 @@ const CompanyInfo = ({ companyData }) => {
             <FaBuilding className="w-12 h-12 text-gray-400 hidden" />
           </div>
           <div className="flex-1">
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">{companyName}</h2>
-            <div className="flex flex-wrap gap-4 text-sm text-gray-600">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">{companyName}</h2>
+            <div className="flex flex-wrap gap-4 text-sm text-gray-600 dark:text-gray-400">
               <span className="flex items-center gap-2">
                 <FaIndustry className="text-blue-500" />
                 {industry}
@@ -72,31 +72,31 @@ const CompanyInfo = ({ companyData }) => {
       </div>
 
       {/* Thông tin liên hệ */}
-      <div className="bg-white rounded-2xl p-6 shadow">
-        <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow">
+        <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
           <FaEnvelope className="text-blue-500" />
           Thông tin liên hệ
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="flex items-center gap-3 p-4 bg-blue-50 rounded-xl">
+          <div className="flex items-center gap-3 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl">
             <FaEnvelope className="text-blue-500 text-xl" />
             <div>
-              <div className="font-semibold text-gray-700">Email</div>
-              <div className="text-gray-600">{companyEmail}</div>
+              <div className="font-semibold text-gray-700 dark:text-gray-300">Email</div>
+              <div className="text-gray-600 dark:text-gray-400">{companyEmail}</div>
             </div>
           </div>
-          <div className="flex items-center gap-3 p-4 bg-green-50 rounded-xl">
+          <div className="flex items-center gap-3 p-4 bg-green-50 dark:bg-green-900/20 rounded-xl">
             <FaPhone className="text-green-500 text-xl" />
             <div>
-              <div className="font-semibold text-gray-700">Điện thoại</div>
-              <div className="text-gray-600">{companyPhone}</div>
+              <div className="font-semibold text-gray-700 dark:text-gray-300">Điện thoại</div>
+              <div className="text-gray-600 dark:text-gray-400">{companyPhone}</div>
             </div>
           </div>
-          <div className="flex items-center gap-3 p-4 bg-purple-50 rounded-xl">
+          <div className="flex items-center gap-3 p-4 bg-purple-50 dark:bg-purple-900/20 rounded-xl">
             <FaMapMarkerAlt className="text-purple-500 text-xl" />
             <div>
-              <div className="font-semibold text-gray-700">Địa chỉ</div>
-              <div className="text-gray-600">{companyAddress}</div>
+              <div className="font-semibold text-gray-700 dark:text-gray-300">Địa chỉ</div>
+              <div className="text-gray-600 dark:text-gray-400">{companyAddress}</div>
             </div>
           </div>
           {companyWebsite && (
@@ -349,10 +349,7 @@ const JobDetailPage = () => {
   };
 
   const handleCheckCV = () => {
-    console.log('Job object:', job); // Debug log
-    console.log('JobDetail object:', jobDetail); // Debug log
-    console.log('Requirements from jobDetail:', jobDetail?.jobRequirements); // Debug log
-    console.log('Requirements from job:', job.jobRequirements); // Debug log
+
     
     navigate('/cv-check', { 
       state: { 
@@ -481,26 +478,26 @@ const JobDetailPage = () => {
   const skills = jobDetail?.skillsRequired || job.skillsRequired || [];
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
+    <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900">
       <Header />
       <main className="flex-1 pt-20">
         <div className="max-w-7xl mx-auto px-4 py-8">
           {/* Back Button */}
           <button
             onClick={() => navigate('/')}
-            className="flex items-center gap-2 text-indigo-600 hover:text-indigo-700 mb-6 transition-colors bg-white px-4 py-2 rounded-lg shadow-sm hover:shadow-md border border-gray-200"
+            className="flex items-center gap-2 text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300 mb-6 transition-colors bg-white dark:bg-gray-800 px-4 py-2 rounded-lg shadow-sm hover:shadow-md border border-gray-200 dark:border-gray-700"
           >
             <FaArrowLeft className="w-4 h-4" />
             Quay lại trang chủ
           </button>
 
           {/* Header lớn */}
-          <div className="bg-white rounded-3xl shadow p-8 mb-8 flex flex-col md:flex-row md:items-center md:justify-between relative">
+          <div className="bg-white dark:bg-gray-800 rounded-3xl shadow p-8 mb-8 flex flex-col md:flex-row md:items-center md:justify-between relative">
             <div className="flex items-center gap-8 flex-1">
-              <img src={companyLogoUrl} alt="logo" className="w-28 h-28 object-contain rounded-xl border bg-white shadow" />
+              <img src={companyLogoUrl} alt="logo" className="w-28 h-28 object-contain rounded-xl border bg-white dark:bg-gray-700 shadow" />
               <div className="flex-1 min-w-0">
-                <div className="text-gray-500 text-base font-semibold mb-1">{companyName}</div>
-                <div className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">{job.jobTitle}</div>
+                <div className="text-gray-500 dark:text-gray-400 text-base font-semibold mb-1">{companyName}</div>
+                <div className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-4">{job.jobTitle}</div>
                 <div className="flex flex-wrap gap-6 mb-4">
                   <span className="flex items-center gap-2 text-blue-500 font-bold text-lg"><FaMoneyBillWave /> Mức lương <span className="text-[#7c3aed]">{salary}</span></span>
                   <span className="flex items-center gap-2 text-blue-500 font-bold text-lg"><FaCalendarAlt /> Hạn nộp hồ sơ <span className="text-[#7c3aed]">{deadline}</span></span>
@@ -508,7 +505,7 @@ const JobDetailPage = () => {
                 </div>
                 <div className="flex flex-wrap gap-3 mb-4">
                   <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full font-semibold flex items-center gap-2">🎯 Cơ hội hấp dẫn!</span>
-                  <span className="text-gray-500">Công việc đang rất được quan tâm! Ứng tuyển ngay để không lỡ cơ hội!</span>
+                  <span className="text-gray-500 dark:text-gray-400">Công việc đang rất được quan tâm! Ứng tuyển ngay để không lỡ cơ hội!</span>
                 </div>
                 <div className="flex gap-4 mt-2">
                   <button 
@@ -542,7 +539,7 @@ const JobDetailPage = () => {
                 </div>
               </div>
             </div>
-            <div className="absolute top-8 right-8 text-gray-400 text-sm flex items-center gap-2">
+            <div className="absolute top-8 right-8 text-gray-400 dark:text-gray-500 text-sm flex items-center gap-2">
               <FaCalendarAlt /> Ngày cập nhật: {updatedAt}
             </div>
           </div>

@@ -20,10 +20,10 @@ const LoginModal = ({ onClose, onOpenRegisterModal }) => {
   const navigate = useNavigate();
 
   // Debug logging
-  console.log('LoginModal rendered, onClose:', onClose);
+
 
   const handleClose = () => {
-    console.log('LoginModal handleClose called');
+
     if (typeof onClose === 'function') {
       onClose();
     } else {
@@ -44,9 +44,7 @@ const LoginModal = ({ onClose, onOpenRegisterModal }) => {
       });
       const data = await res.json();
       // Log response để kiểm tra role
-      console.log('Login API response:', data);
-      console.log('Response status:', res.status);
-      console.log('User data:', data.user);
+      
       if (!res.ok) {
         // Bắt lỗi trả về từ backend (401, 400, ...)
         setError(data.message || 'Đăng nhập thất bại!');

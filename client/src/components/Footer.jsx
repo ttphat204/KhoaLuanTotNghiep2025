@@ -130,7 +130,7 @@ const Footer = () => {
               <input
                 type="email"
                 placeholder="Nhập email của bạn"
-                className="flex-1 px-4 py-2 rounded-l-lg border-0 focus:ring-2 focus:ring-purple-500 focus:outline-none text-gray-900"
+                className="flex-1 px-4 py-2 rounded-l-lg border-0 focus:ring-2 focus:ring-purple-500 focus:outline-none text-gray-900 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400"
               />
               <button className="px-6 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-r-lg hover:from-purple-600 hover:to-pink-600 transition-all duration-200">
                 Đăng ký

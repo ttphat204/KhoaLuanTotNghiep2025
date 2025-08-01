@@ -18,10 +18,10 @@ const FullAddressDisplay = ({ formData }) => {
   if (formData.specificAddress) addressParts.push(formData.specificAddress);
   
   return (
-    <div className="px-3 py-2 bg-gray-50 rounded-lg">
+    <div className="px-3 py-2 bg-gray-50 dark:bg-gray-700 rounded-lg">
       {addressParts.length > 0 
-        ? addressParts.join(', ')
-        : <span className="text-gray-400">Chưa có thông tin</span>
+        ? <span className="text-gray-900 dark:text-gray-100">{addressParts.join(', ')}</span>
+        : <span className="text-gray-400 dark:text-gray-500">Chưa có thông tin</span>
       }
     </div>
   );
@@ -32,47 +32,47 @@ const BasicInfoForm = ({ formData, handleInputChange, user }) => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700 mb-2">Họ và tên *</label>
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Họ và tên *</label>
         <input
           type="text"
           value={formData.fullName || ''}
           onChange={(e) => handleInputChange('fullName', e.target.value)}
           placeholder="Nhập họ và tên"
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
           required
         />
       </div>
       <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
-        <div className="px-3 py-2 bg-gray-50 rounded-lg text-gray-700">
-          {user?.email || formData.email || <span className="text-gray-400">Chưa có email</span>}
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Email</label>
+        <div className="px-3 py-2 bg-gray-50 dark:bg-gray-700 rounded-lg text-gray-700 dark:text-gray-200">
+          {user?.email || formData.email || <span className="text-gray-400 dark:text-gray-500">Chưa có email</span>}
         </div>
       </div>
       <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700 mb-2">Số điện thoại</label>
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Số điện thoại</label>
         <input
           type="tel"
           value={formData.phoneNumber || ''}
           onChange={(e) => handleInputChange('phoneNumber', e.target.value)}
           placeholder="Nhập số điện thoại"
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
         />
       </div>
       <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700 mb-2">Ngày sinh</label>
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Ngày sinh</label>
         <input
           type="date"
           value={formData.dateOfBirth || ''}
           onChange={(e) => handleInputChange('dateOfBirth', e.target.value)}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
         />
       </div>
       <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700 mb-2">Giới tính</label>
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Giới tính</label>
         <select
           value={formData.gender || ''}
           onChange={(e) => handleInputChange('gender', e.target.value)}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
         >
           <option value="">Chọn giới tính</option>
           <option value="Male">Nam</option>
@@ -164,7 +164,7 @@ const CVForm = ({ formData, handleInputChange }) => {
   return (
     <div className="space-y-4">
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
           Upload CV/Resume (PDF)
         </label>
         <input
@@ -186,18 +186,18 @@ const CVForm = ({ formData, handleInputChange }) => {
               }
             }
           }}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
         />
-        <p className="text-xs text-gray-500 mt-1">
+        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
           Chọn file PDF - Tối đa 5MB
         </p>
       </div>
       
       {formData.cvUrl && (
-        <div className="flex items-center gap-4 p-4 bg-blue-50 rounded-lg">
+        <div className="flex items-center gap-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
           <div className="flex-1">
-            <h4 className="font-medium text-blue-900">CV đã upload</h4>
-            <p className="text-sm text-blue-700">File PDF đã sẵn sàng để nhà tuyển dụng xem</p>
+            <h4 className="font-medium text-blue-900 dark:text-blue-200">CV đã upload</h4>
+            <p className="text-sm text-blue-700 dark:text-blue-300">File PDF đã sẵn sàng để nhà tuyển dụng xem</p>
           </div>
           <button
             onClick={() => {
@@ -244,12 +244,12 @@ const AddressForm = ({ formData, handleInputChange, provinces, districts, wards,
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">Tỉnh/Thành phố</label>
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Tỉnh/Thành phố</label>
         <select
           value={formData.city || ''}
           onChange={(e) => handleInputChange('city', e.target.value)}
           disabled={loadingProvinces}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
+          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white disabled:bg-gray-100 dark:disabled:bg-gray-800 disabled:cursor-not-allowed"
         >
           <option value="">
             {loadingProvinces ? 'Đang tải...' : 'Chọn tỉnh/thành phố'}
@@ -262,12 +262,12 @@ const AddressForm = ({ formData, handleInputChange, provinces, districts, wards,
         </select>
       </div>
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">Quận/Huyện</label>
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Quận/Huyện</label>
         <select
           value={formData.district || ''}
           onChange={(e) => handleInputChange('district', e.target.value)}
           disabled={!formData.city || loadingProvinces}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
+          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white disabled:bg-gray-100 dark:disabled:bg-gray-800 disabled:cursor-not-allowed"
         >
           <option value="">
             {loadingProvinces && !formData.city ? 'Đang tải...' : 'Chọn quận/huyện'}
@@ -280,12 +280,12 @@ const AddressForm = ({ formData, handleInputChange, provinces, districts, wards,
         </select>
       </div>
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">Phường/Xã</label>
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Phường/Xã</label>
         <select
           value={formData.ward || ''}
           onChange={(e) => handleInputChange('ward', e.target.value)}
           disabled={!formData.district || loadingProvinces}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
+          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white disabled:bg-gray-100 dark:disabled:bg-gray-800 disabled:cursor-not-allowed"
         >
           <option value="">
             {loadingProvinces && !formData.district ? 'Đang tải...' : 'Chọn phường/xã'}
@@ -298,13 +298,13 @@ const AddressForm = ({ formData, handleInputChange, provinces, districts, wards,
         </select>
       </div>
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">Địa chỉ cụ thể</label>
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Địa chỉ cụ thể</label>
         <input
           type="text"
           value={formData.specificAddress || ''}
           onChange={(e) => handleInputChange('specificAddress', e.target.value)}
           placeholder="Nhập địa chỉ cụ thể"
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
         />
       </div>
     </div>
@@ -314,7 +314,7 @@ const AddressForm = ({ formData, handleInputChange, provinces, districts, wards,
 const BioForm = ({ formData, handleInputChange }) => {
   return (
     <div>
-      <label className="block text-sm font-medium text-gray-700 mb-2">
+      <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
         Mô tả bản thân
       </label>
       <textarea
@@ -322,7 +322,7 @@ const BioForm = ({ formData, handleInputChange }) => {
         onChange={(e) => handleInputChange('bio', e.target.value)}
         placeholder="Giới thiệu về bản thân, mục tiêu nghề nghiệp..."
         rows={6}
-        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
       />
     </div>
   );
@@ -399,52 +399,52 @@ const ExperienceForm = ({ formData, handleInputChange }) => {
         <div key={index} className="border border-gray-200 rounded-lg p-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Tên công ty</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Tên công ty</label>
               <input
                 type="text"
                 value={exp.companyName || ''}
                 onChange={(e) => updateExperience(index, 'companyName', e.target.value)}
                 placeholder="Nhập tên công ty"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Vị trí</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Vị trí</label>
               <input
                 type="text"
                 value={exp.position || ''}
                 onChange={(e) => updateExperience(index, 'position', e.target.value)}
                 placeholder="Nhập vị trí công việc"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Ngày bắt đầu</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Ngày bắt đầu</label>
               <input
                 type="date"
                 value={exp.startDate || ''}
                 onChange={(e) => updateExperience(index, 'startDate', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Ngày kết thúc</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Ngày kết thúc</label>
               <input
                 type="date"
                 value={exp.endDate || ''}
                 onChange={(e) => updateExperience(index, 'endDate', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               />
             </div>
           </div>
           <div className="mt-4">
-            <label className="block text-sm font-medium text-gray-700 mb-2">Mô tả công việc</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Mô tả công việc</label>
             <textarea
               value={exp.description || ''}
               onChange={(e) => updateExperience(index, 'description', e.target.value)}
               rows={3}
               placeholder="Mô tả công việc và thành tựu"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
             />
           </div>
           <button
@@ -486,65 +486,65 @@ const EducationForm = ({ formData, handleInputChange }) => {
   return (
     <div className="space-y-6">
       {(formData.education || []).map((edu, index) => (
-        <div key={index} className="border border-gray-200 rounded-lg p-4">
+        <div key={index} className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Trường học</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Trường học</label>
               <input
                 type="text"
                 value={edu.school || ''}
                 onChange={(e) => updateEducation(index, 'school', e.target.value)}
                 placeholder="Nhập tên trường"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Bằng cấp</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Bằng cấp</label>
               <input
                 type="text"
                 value={edu.degree || ''}
                 onChange={(e) => updateEducation(index, 'degree', e.target.value)}
                 placeholder="Nhập bằng cấp"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Chuyên ngành</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Chuyên ngành</label>
               <input
                 type="text"
                 value={edu.fieldOfStudy || ''}
                 onChange={(e) => updateEducation(index, 'fieldOfStudy', e.target.value)}
                 placeholder="Nhập chuyên ngành"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Ngày bắt đầu</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Ngày bắt đầu</label>
               <input
                 type="date"
                 value={edu.startDate || ''}
                 onChange={(e) => updateEducation(index, 'startDate', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Ngày kết thúc</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Ngày kết thúc</label>
               <input
                 type="date"
                 value={edu.endDate || ''}
                 onChange={(e) => updateEducation(index, 'endDate', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
               />
             </div>
           </div>
           <div className="mt-4">
-            <label className="block text-sm font-medium text-gray-700 mb-2">Mô tả</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Mô tả</label>
             <textarea
               value={edu.description || ''}
               onChange={(e) => updateEducation(index, 'description', e.target.value)}
               rows={3}
               placeholder="Mô tả về quá trình học tập"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
             />
           </div>
           <button
@@ -585,7 +585,7 @@ const LanguageForm = ({ formData, handleInputChange }) => {
 
   return (
     <div className="space-y-4">
-      <label className="block text-sm font-medium text-gray-700 mb-2">Ngoại ngữ</label>
+      <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Ngoại ngữ</label>
       {(formData.languages || []).map((lang, index) => (
         <div key={index} className="flex gap-2">
           <input
@@ -593,7 +593,7 @@ const LanguageForm = ({ formData, handleInputChange }) => {
             value={lang.language || ''}
             onChange={(e) => updateLanguage(index, 'language', e.target.value)}
             placeholder="Ngôn ngữ"
-            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+            className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
           />
           <select
             value={lang.proficiency || ''}
@@ -710,33 +710,33 @@ const SocialLinksForm = ({ formData, handleInputChange }) => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700 mb-2">LinkedIn</label>
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">LinkedIn</label>
         <input
           type="url"
           value={formData.socialLinks?.linkedin || ''}
           onChange={(e) => handleInputChange('linkedin', e.target.value)}
           placeholder="https://linkedin.com/in/username"
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
         />
       </div>
       <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700 mb-2">GitHub</label>
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">GitHub</label>
         <input
           type="url"
           value={formData.socialLinks?.github || ''}
           onChange={(e) => handleInputChange('github', e.target.value)}
           placeholder="https://github.com/username"
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
         />
       </div>
       <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700 mb-2">Portfolio</label>
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Portfolio</label>
         <input
           type="url"
           value={formData.socialLinks?.portfolio || ''}
           onChange={(e) => handleInputChange('portfolio', e.target.value)}
           placeholder="https://portfolio.com"
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
         />
       </div>
     </div>
@@ -748,10 +748,10 @@ const JobPreferencesForm = ({ formData, handleInputChange }) => {
     <div className="space-y-6">
       {/* Mức lương mong muốn */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">Mức lương mong muốn</label>
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Mức lương mong muốn</label>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-xs text-gray-600 mb-1">Từ (triệu VNĐ)</label>
+            <label className="block text-xs text-gray-600 dark:text-gray-300 mb-1">Từ (triệu VNĐ)</label>
             <input
               type="number"
               min="0"
@@ -763,11 +763,11 @@ const JobPreferencesForm = ({ formData, handleInputChange }) => {
                 handleInputChange('expectedSalaryMin', value);
               }}
               placeholder="Nhập mức lương tối thiểu"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
             />
           </div>
           <div>
-            <label className="block text-xs text-gray-600 mb-1">Đến (triệu VNĐ)</label>
+            <label className="block text-xs text-gray-600 dark:text-gray-300 mb-1">Đến (triệu VNĐ)</label>
             <input
               type="number"
               min="0"
@@ -779,11 +779,11 @@ const JobPreferencesForm = ({ formData, handleInputChange }) => {
                 handleInputChange('expectedSalaryMax', value);
               }}
               placeholder="Nhập mức lương tối đa"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
             />
           </div>
         </div>
-        <p className="text-xs text-gray-500 mt-1">Ví dụ: 10 - 20 (tương đương 10,000,000 - 20,000,000 VNĐ)</p>
+        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Ví dụ: 10 - 20 (tương đương 10,000,000 - 20,000,000 VNĐ)</p>
         {formData.expectedSalaryMin && formData.expectedSalaryMax && parseFloat(formData.expectedSalaryMin) > parseFloat(formData.expectedSalaryMax) && (
           <p className="text-xs text-red-500 mt-1">Mức lương tối thiểu không được lớn hơn mức lương tối đa</p>
         )}
@@ -791,9 +791,9 @@ const JobPreferencesForm = ({ formData, handleInputChange }) => {
 
       {/* Loại công việc */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">Hình thức làm việc</label>
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Hình thức làm việc</label>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          <label className="flex items-center p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+          <label className="flex items-center p-3 border border-gray-200 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
             <input
               type="checkbox"
               checked={formData.preferredJobTypes?.includes('Full-time') || false}
@@ -804,11 +804,11 @@ const JobPreferencesForm = ({ formData, handleInputChange }) => {
                   : currentTypes.filter(type => type !== 'Full-time');
                 handleInputChange('preferredJobTypes', newTypes);
               }}
-              className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 mr-3"
+              className="rounded border-gray-300 dark:border-gray-600 text-indigo-600 focus:ring-indigo-500 mr-3"
             />
             <div>
-              <div className="font-medium text-gray-900">Toàn thời gian</div>
-              <div className="text-sm text-gray-500">Làm việc 8 tiếng/ngày, 5 ngày/tuần</div>
+              <div className="font-medium text-gray-900 dark:text-white">Toàn thời gian</div>
+              <div className="text-sm text-gray-500 dark:text-gray-300">Làm việc 8 tiếng/ngày, 5 ngày/tuần</div>
             </div>
           </label>
 
@@ -823,15 +823,15 @@ const JobPreferencesForm = ({ formData, handleInputChange }) => {
                   : currentTypes.filter(type => type !== 'Part-time');
                 handleInputChange('preferredJobTypes', newTypes);
               }}
-              className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 mr-3"
+              className="rounded border-gray-300 dark:border-gray-600 text-indigo-600 focus:ring-indigo-500 mr-3"
             />
             <div>
-              <div className="font-medium text-gray-900">Bán thời gian</div>
-              <div className="text-sm text-gray-500">Làm việc ít hơn 8 tiếng/ngày</div>
+              <div className="font-medium text-gray-900 dark:text-white">Bán thời gian</div>
+              <div className="text-sm text-gray-500 dark:text-gray-300">Làm việc ít hơn 8 tiếng/ngày</div>
             </div>
           </label>
 
-          <label className="flex items-center p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+          <label className="flex items-center p-3 border border-gray-200 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
             <input
               type="checkbox"
               checked={formData.preferredJobTypes?.includes('Contract') || false}
@@ -842,15 +842,15 @@ const JobPreferencesForm = ({ formData, handleInputChange }) => {
                   : currentTypes.filter(type => type !== 'Contract');
                 handleInputChange('preferredJobTypes', newTypes);
               }}
-              className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 mr-3"
+              className="rounded border-gray-300 dark:border-gray-600 text-indigo-600 focus:ring-indigo-500 mr-3"
             />
             <div>
-              <div className="font-medium text-gray-900">Hợp đồng</div>
-              <div className="text-sm text-gray-500">Làm việc theo dự án, thời hạn nhất định</div>
+              <div className="font-medium text-gray-900 dark:text-white">Hợp đồng</div>
+              <div className="text-sm text-gray-500 dark:text-gray-300">Làm việc theo dự án, thời hạn nhất định</div>
             </div>
           </label>
 
-          <label className="flex items-center p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+          <label className="flex items-center p-3 border border-gray-200 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
             <input
               type="checkbox"
               checked={formData.preferredJobTypes?.includes('Internship') || false}
@@ -861,15 +861,15 @@ const JobPreferencesForm = ({ formData, handleInputChange }) => {
                   : currentTypes.filter(type => type !== 'Internship');
                 handleInputChange('preferredJobTypes', newTypes);
               }}
-              className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 mr-3"
+              className="rounded border-gray-300 dark:border-gray-600 text-indigo-600 focus:ring-indigo-500 mr-3"
             />
             <div>
-              <div className="font-medium text-gray-900">Thực tập</div>
-              <div className="text-sm text-gray-500">Dành cho sinh viên, học việc</div>
+              <div className="font-medium text-gray-900 dark:text-white">Thực tập</div>
+              <div className="text-sm text-gray-500 dark:text-gray-300">Dành cho sinh viên, học việc</div>
             </div>
           </label>
 
-          <label className="flex items-center p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+          <label className="flex items-center p-3 border border-gray-200 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
             <input
               type="checkbox"
               checked={formData.preferredJobTypes?.includes('Remote') || false}
@@ -880,15 +880,15 @@ const JobPreferencesForm = ({ formData, handleInputChange }) => {
                   : currentTypes.filter(type => type !== 'Remote');
                 handleInputChange('preferredJobTypes', newTypes);
               }}
-              className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 mr-3"
+              className="rounded border-gray-300 dark:border-gray-600 text-indigo-600 focus:ring-indigo-500 mr-3"
             />
             <div>
-              <div className="font-medium text-gray-900">Làm việc từ xa</div>
-              <div className="text-sm text-gray-500">Work from home, không cần đến văn phòng</div>
+              <div className="font-medium text-gray-900 dark:text-white">Làm việc từ xa</div>
+              <div className="text-sm text-gray-500 dark:text-gray-300">Work from home, không cần đến văn phòng</div>
             </div>
           </label>
 
-          <label className="flex items-center p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+          <label className="flex items-center p-3 border border-gray-200 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
             <input
               type="checkbox"
               checked={formData.preferredJobTypes?.includes('Hybrid') || false}
@@ -899,11 +899,11 @@ const JobPreferencesForm = ({ formData, handleInputChange }) => {
                   : currentTypes.filter(type => type !== 'Hybrid');
                 handleInputChange('preferredJobTypes', newTypes);
               }}
-              className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 mr-3"
+              className="rounded border-gray-300 dark:border-gray-600 text-indigo-600 focus:ring-indigo-500 mr-3"
             />
             <div>
-              <div className="font-medium text-gray-900">Làm việc kết hợp</div>
-              <div className="text-sm text-gray-500">Kết hợp làm việc tại văn phòng và từ xa</div>
+              <div className="font-medium text-gray-900 dark:text-white">Làm việc kết hợp</div>
+              <div className="text-sm text-gray-500 dark:text-gray-300">Kết hợp làm việc tại văn phòng và từ xa</div>
             </div>
           </label>
         </div>
@@ -911,7 +911,7 @@ const JobPreferencesForm = ({ formData, handleInputChange }) => {
 
       {/* Địa điểm ưa thích */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">Địa điểm ưa thích</label>
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Địa điểm ưa thích</label>
         <div className="space-y-2">
           {(formData.preferredLocations || []).map((location, index) => (
             <div key={index} className="flex gap-2">
@@ -924,14 +924,14 @@ const JobPreferencesForm = ({ formData, handleInputChange }) => {
                   handleInputChange('preferredLocations', newLocations);
                 }}
                 placeholder="Nhập địa điểm"
-                className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
               />
               <button
                 onClick={() => {
                   const newLocations = formData.preferredLocations.filter((_, i) => i !== index);
                   handleInputChange('preferredLocations', newLocations);
                 }}
-                className="px-3 py-2 text-red-600 hover:bg-red-50 rounded-lg"
+                className="px-3 py-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg"
               >
                 <FaTrash className="w-4 h-4" />
               </button>
@@ -942,7 +942,7 @@ const JobPreferencesForm = ({ formData, handleInputChange }) => {
               const newLocations = [...(formData.preferredLocations || []), ''];
               handleInputChange('preferredLocations', newLocations);
             }}
-            className="flex items-center gap-2 px-3 py-2 text-indigo-600 hover:bg-indigo-50 rounded-lg"
+            className="flex items-center gap-2 px-3 py-2 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg"
           >
             <FaPlus className="w-4 h-4" />
             Thêm địa điểm
@@ -962,9 +962,9 @@ const PrivacySettingsForm = ({ formData, handleInputChange }) => {
             type="checkbox"
             checked={formData.isAvailable || false}
             onChange={(e) => handleInputChange('isAvailable', e.target.checked)}
-            className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+            className="rounded border-gray-300 dark:border-gray-600 text-indigo-600 focus:ring-indigo-500"
           />
-          <span className="text-sm font-medium text-gray-700">
+          <span className="text-sm font-medium text-gray-700 dark:text-gray-200">
             Sẵn sàng tìm việc
           </span>
         </label>
@@ -975,9 +975,9 @@ const PrivacySettingsForm = ({ formData, handleInputChange }) => {
             type="checkbox"
             checked={formData.isPublic || false}
             onChange={(e) => handleInputChange('isPublic', e.target.checked)}
-            className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+            className="rounded border-gray-300 dark:border-gray-600 text-indigo-600 focus:ring-indigo-500"
           />
-          <span className="text-sm font-medium text-gray-700">
+          <span className="text-sm font-medium text-gray-700 dark:text-gray-200">
             Công khai hồ sơ
           </span>
         </label>
@@ -1371,7 +1371,7 @@ const CandidateProfile = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
         <Header />
         <div className="pt-20 flex items-center justify-center min-h-screen">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
@@ -1381,7 +1381,7 @@ const CandidateProfile = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <Header />
       <div className="pt-20 max-w-7xl mx-auto px-4 py-8">
         {/* Header */}
@@ -1445,8 +1445,8 @@ const CandidateProfile = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Left Sidebar - Navigation */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 sticky top-24">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Quản lý hồ sơ</h3>
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 sticky top-24">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Quản lý hồ sơ</h3>
               
               {/* Navigation Menu */}
               <nav className="space-y-2">
@@ -1454,8 +1454,8 @@ const CandidateProfile = () => {
                   onClick={() => setEditingSection('Thông tin cơ bản')}
                   className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-colors group relative ${
                     editingSection === 'Thông tin cơ bản'
-                      ? 'bg-indigo-50 text-indigo-700 border border-indigo-200'
-                      : 'text-gray-700 hover:bg-gray-50'
+                      ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-700'
+                      : 'text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700'
                   }`}
                 >
                   <FaUser className="w-5 h-5" title="Thông tin cá nhân cơ bản" />
@@ -1469,8 +1469,8 @@ const CandidateProfile = () => {
                   onClick={() => setEditingSection('Ảnh đại diện')}
                   className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-colors group relative ${
                     editingSection === 'Ảnh đại diện'
-                      ? 'bg-indigo-50 text-indigo-700 border border-indigo-200'
-                      : 'text-gray-700 hover:bg-gray-50'
+                      ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-700'
+                      : 'text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700'
                   }`}
                 >
                   <FaCamera className="w-5 h-5" title="Ảnh đại diện" />
@@ -1484,8 +1484,8 @@ const CandidateProfile = () => {
                   onClick={() => setEditingSection('CV/Resume')}
                   className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-colors group relative ${
                     editingSection === 'CV/Resume'
-                      ? 'bg-indigo-50 text-indigo-700 border border-indigo-200'
-                      : 'text-gray-700 hover:bg-gray-50'
+                      ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-700'
+                      : 'text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700'
                   }`}
                 >
                   <FaBriefcase className="w-5 h-5" title="CV/Resume" />
@@ -1499,8 +1499,8 @@ const CandidateProfile = () => {
                   onClick={() => setEditingSection('Địa chỉ')}
                   className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-colors group relative ${
                     editingSection === 'Địa chỉ'
-                      ? 'bg-indigo-50 text-indigo-700 border border-indigo-200'
-                      : 'text-gray-700 hover:bg-gray-50'
+                      ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-700'
+                      : 'text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700'
                   }`}
                 >
                   <FaMapMarkerAlt className="w-5 h-5" title="Địa chỉ liên hệ" />
@@ -1514,8 +1514,8 @@ const CandidateProfile = () => {
                   onClick={() => setEditingSection('Giới thiệu')}
                   className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-colors group relative ${
                     editingSection === 'Giới thiệu'
-                      ? 'bg-indigo-50 text-indigo-700 border border-indigo-200'
-                      : 'text-gray-700 hover:bg-gray-50'
+                      ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-700'
+                      : 'text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700'
                   }`}
                 >
                   <FaUser className="w-5 h-5" title="Mô tả bản thân" />
@@ -1529,8 +1529,8 @@ const CandidateProfile = () => {
                   onClick={() => setEditingSection('Kỹ năng')}
                   className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-colors group relative ${
                     editingSection === 'Kỹ năng'
-                      ? 'bg-indigo-50 text-indigo-700 border border-indigo-200'
-                      : 'text-gray-700 hover:bg-gray-50'
+                      ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-700'
+                      : 'text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700'
                   }`}
                 >
                   <FaBriefcase className="w-5 h-5" title="Kỹ năng chuyên môn" />
@@ -1544,8 +1544,8 @@ const CandidateProfile = () => {
                   onClick={() => setEditingSection('Kinh nghiệm làm việc')}
                   className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-colors group relative ${
                     editingSection === 'Kinh nghiệm làm việc'
-                      ? 'bg-indigo-50 text-indigo-700 border border-indigo-200'
-                      : 'text-gray-700 hover:bg-gray-50'
+                      ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-700'
+                      : 'text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700'
                   }`}
                 >
                   <FaBriefcase className="w-5 h-5" title="Kinh nghiệm làm việc" />
@@ -1559,8 +1559,8 @@ const CandidateProfile = () => {
                   onClick={() => setEditingSection('Học vấn')}
                   className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-colors group relative ${
                     editingSection === 'Học vấn'
-                      ? 'bg-indigo-50 text-indigo-700 border border-indigo-200'
-                      : 'text-gray-700 hover:bg-gray-50'
+                      ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-700'
+                      : 'text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700'
                   }`}
                 >
                   <FaGraduationCap className="w-5 h-5" title="Học vấn và bằng cấp" />
@@ -1574,8 +1574,8 @@ const CandidateProfile = () => {
                   onClick={() => setEditingSection('Ngoại ngữ')}
                   className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-colors group relative ${
                     editingSection === 'Ngoại ngữ'
-                      ? 'bg-indigo-50 text-indigo-700 border border-indigo-200'
-                      : 'text-gray-700 hover:bg-gray-50'
+                      ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-700'
+                      : 'text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700'
                   }`}
                 >
                   <FaLanguage className="w-5 h-5" title="Ngoại ngữ" />
@@ -1589,8 +1589,8 @@ const CandidateProfile = () => {
                   onClick={() => setEditingSection('Chứng chỉ')}
                   className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-colors group relative ${
                     editingSection === 'Chứng chỉ'
-                      ? 'bg-indigo-50 text-indigo-700 border border-indigo-200'
-                      : 'text-gray-700 hover:bg-gray-50'
+                      ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-700'
+                      : 'text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700'
                   }`}
                 >
                   <FaCertificate className="w-5 h-5" title="Chứng chỉ chuyên môn" />
@@ -1604,8 +1604,8 @@ const CandidateProfile = () => {
                   onClick={() => setEditingSection('Liên kết mạng xã hội')}
                   className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-colors group relative ${
                     editingSection === 'Liên kết mạng xã hội'
-                      ? 'bg-indigo-50 text-indigo-700 border border-indigo-200'
-                      : 'text-gray-700 hover:bg-gray-50'
+                      ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-700'
+                      : 'text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700'
                   }`}
                 >
                   <FaLink className="w-5 h-5" title="Liên kết mạng xã hội" />
@@ -1619,8 +1619,8 @@ const CandidateProfile = () => {
                   onClick={() => setEditingSection('Sở thích công việc')}
                   className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-colors group relative ${
                     editingSection === 'Sở thích công việc'
-                      ? 'bg-indigo-50 text-indigo-700 border border-indigo-200'
-                      : 'text-gray-700 hover:bg-gray-50'
+                      ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-700'
+                      : 'text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700'
                   }`}
                 >
                   <FaGlobe className="w-5 h-5" title="Sở thích công việc" />
@@ -1634,8 +1634,8 @@ const CandidateProfile = () => {
                   onClick={() => setEditingSection('Cài đặt riêng tư')}
                   className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-colors group relative ${
                     editingSection === 'Cài đặt riêng tư'
-                      ? 'bg-indigo-50 text-indigo-700 border border-indigo-200'
-                      : 'text-gray-700 hover:bg-gray-50'
+                      ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-700'
+                      : 'text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700'
                   }`}
                 >
                   <FaEye className="w-5 h-5" title="Cài đặt riêng tư" />
@@ -1651,7 +1651,7 @@ const CandidateProfile = () => {
           {/* Right Content - Form */}
           <div className="lg:col-span-2">
             {editingSection ? (
-              <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
                 {/* Form Header */}
                 <div className="flex items-center justify-between mb-6">
                   <div className="flex items-center gap-3">
@@ -1668,11 +1668,11 @@ const CandidateProfile = () => {
                     {editingSection === 'Liên kết mạng xã hội' && <FaLink className="w-5 h-5 text-indigo-600" />}
                     {editingSection === 'Sở thích công việc' && <FaGlobe className="w-5 h-5 text-indigo-600" />}
                     {editingSection === 'Cài đặt riêng tư' && <FaEye className="w-5 h-5 text-indigo-600" />}
-                    <h2 className="text-xl font-semibold text-gray-900">{editingSection}</h2>
+                    <h2 className="text-xl font-semibold text-gray-900 dark:text-white">{editingSection}</h2>
                   </div>
                   <button
                     onClick={() => setEditingSection(null)}
-                    className="flex items-center gap-2 px-3 py-1 text-sm text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                    className="flex items-center gap-2 px-3 py-1 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
                   >
                     <FaTimes className="w-4 h-4" />
                     Đóng
@@ -1743,10 +1743,10 @@ const CandidateProfile = () => {
                 </div>
 
                 {/* Form Actions */}
-                <div className="flex justify-end gap-3 pt-6 border-t border-gray-200">
+                <div className="flex justify-end gap-3 pt-6 border-t border-gray-200 dark:border-gray-600">
                   <button
                     onClick={() => handleSectionCancel(editingSection)}
-                    className="flex items-center gap-2 px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                    className="flex items-center gap-2 px-4 py-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
                   >
                     <FaTimes className="w-4 h-4" />
                     Hủy
@@ -1763,7 +1763,7 @@ const CandidateProfile = () => {
               </div>
             ) : (
               // Welcome Section khi không chọn chức năng chỉnh sửa
-              <div className="bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 rounded-xl p-8 border border-indigo-100">
+              <div className="bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 dark:from-indigo-900/20 dark:via-purple-900/20 dark:to-pink-900/20 rounded-xl p-8 border border-indigo-100 dark:border-indigo-800">
                 <div className="text-center">
                   {/* Welcome Icon */}
                   <div className="w-20 h-20 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -1771,33 +1771,33 @@ const CandidateProfile = () => {
                   </div>
                   
                   {/* Welcome Text */}
-                  <h2 className="text-2xl font-bold text-gray-900 mb-3">
+                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
                     Chào mừng bạn trở lại!
                   </h2>
-                  <p className="text-gray-600 mb-6 max-w-md mx-auto">
+                  <p className="text-gray-600 dark:text-gray-300 mb-6 max-w-md mx-auto">
                     Hãy chọn một mục từ menu bên trái để cập nhật thông tin hồ sơ của bạn. 
                     Hoàn thiện hồ sơ sẽ giúp bạn có cơ hội tốt hơn trong việc tìm kiếm công việc.
                   </p>
                   
                   {/* Quick Stats */}
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-lg mx-auto">
-                    <div className="bg-white rounded-lg p-4 border border-indigo-200">
-                      <div className="text-2xl font-bold text-indigo-600">
+                    <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-indigo-200 dark:border-indigo-700">
+                      <div className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">
                         {profile?.skills?.length || 0}
                       </div>
-                      <div className="text-sm text-gray-600">Kỹ năng</div>
+                      <div className="text-sm text-gray-600 dark:text-gray-300">Kỹ năng</div>
                     </div>
-                    <div className="bg-white rounded-lg p-4 border border-purple-200">
-                      <div className="text-2xl font-bold text-purple-600">
+                    <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-purple-200 dark:border-purple-700">
+                      <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">
                         {profile?.experience?.length || 0}
                       </div>
-                      <div className="text-sm text-gray-600">Kinh nghiệm</div>
+                      <div className="text-sm text-gray-600 dark:text-gray-300">Kinh nghiệm</div>
                     </div>
-                    <div className="bg-white rounded-lg p-4 border border-pink-200">
-                      <div className="text-2xl font-bold text-pink-600">
+                    <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-pink-200 dark:border-pink-700">
+                      <div className="text-2xl font-bold text-pink-600 dark:text-pink-400">
                         {profile?.education?.length || 0}
                       </div>
-                      <div className="text-sm text-gray-600">Học vấn</div>
+                      <div className="text-sm text-gray-600 dark:text-gray-300">Học vấn</div>
                     </div>
                   </div>
                   

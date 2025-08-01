@@ -22,7 +22,7 @@ const JobList = ({ jobs, loading, error, onRetry }) => {
     return (
       <div className="text-center py-12">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
-        <p className="mt-4 text-gray-600">Đang tải danh sách việc làm...</p>
+        <p className="mt-4 text-gray-600 dark:text-gray-400">Đang tải danh sách việc làm...</p>
       </div>
     );
   }
@@ -50,10 +50,10 @@ const JobList = ({ jobs, loading, error, onRetry }) => {
         <div className="text-gray-400 mb-4">
           <FaBriefcase className="w-16 h-16 mx-auto mb-4" />
         </div>
-        <h3 className="text-lg font-medium text-gray-900 mb-2">
+        <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
           Không có việc làm nào đang tuyển
         </h3>
-        <p className="text-gray-600">
+        <p className="text-gray-600 dark:text-gray-400">
           Hiện tại chưa có việc làm nào đang tuyển hoặc tất cả đã hết hạn
         </p>
       </div>
@@ -81,7 +81,7 @@ const UrgentJobsFilter = ({ selectedCategory, onCategoryChange }) => {
     fetch('https://be-khoaluan.vercel.app/api/admin/category-management')
       .then(res => res.json())
       .then(data => {
-        console.log('Categories from API:', data.categories); // Debug log
+
         const categoriesData = data.categories || [];
         setCategories(categoriesData);
       })
@@ -142,29 +142,29 @@ const UrgentJobsFilter = ({ selectedCategory, onCategoryChange }) => {
     <div>
       {/* Enhanced Category Filter Container */}
       <div className="relative">
-        {/* Gradient Overlay for Arrows */}
-        <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none"></div>
-        <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none"></div>
+                 {/* Gradient Overlay for Arrows */}
+         <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-white dark:from-gray-800 to-transparent z-10 pointer-events-none"></div>
+         <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-white dark:from-gray-800 to-transparent z-10 pointer-events-none"></div>
 
                   {/* Enhanced Left Arrow */}
-          {showLeftArrow && (
-            <button
-              onClick={() => handleScroll('left')}
-              className="absolute left-2 top-1/2 transform -translate-y-1/2 z-10 w-10 h-10 bg-white/95 backdrop-blur-sm rounded-full shadow-lg flex items-center justify-center hover:bg-white hover:shadow-xl transition-all duration-300 border border-blue-100"
-            >
-              <FaChevronLeft className="w-4 h-4 text-blue-600" />
-            </button>
-          )}
+                     {showLeftArrow && (
+             <button
+               onClick={() => handleScroll('left')}
+               className="absolute left-2 top-1/2 transform -translate-y-1/2 z-10 w-10 h-10 bg-white/95 dark:bg-gray-700/95 backdrop-blur-sm rounded-full shadow-lg flex items-center justify-center hover:bg-white dark:hover:bg-gray-600 hover:shadow-xl transition-all duration-300 border border-blue-100 dark:border-blue-600"
+             >
+               <FaChevronLeft className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+             </button>
+           )}
 
-          {/* Enhanced Right Arrow */}
-          {showRightArrow && (
-            <button
-              onClick={() => handleScroll('right')}
-              className="absolute right-2 top-1/2 transform -translate-y-1/2 z-10 w-10 h-10 bg-white/95 backdrop-blur-sm rounded-full shadow-lg flex items-center justify-center hover:bg-white hover:shadow-xl transition-all duration-300 border border-blue-100"
-            >
-              <FaChevronRight className="w-4 h-4 text-blue-600" />
-            </button>
-          )}
+           {/* Enhanced Right Arrow */}
+           {showRightArrow && (
+             <button
+               onClick={() => handleScroll('right')}
+               className="absolute right-2 top-1/2 transform -translate-y-1/2 z-10 w-10 h-10 bg-white/95 dark:bg-gray-700/95 backdrop-blur-sm rounded-full shadow-lg flex items-center justify-center hover:bg-white dark:hover:bg-gray-600 hover:shadow-xl transition-all duration-300 border border-blue-100 dark:border-blue-600"
+             >
+               <FaChevronRight className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+             </button>
+           )}
 
         {/* Enhanced Filter Buttons */}
         <div 
@@ -187,7 +187,7 @@ const UrgentJobsFilter = ({ selectedCategory, onCategoryChange }) => {
             className={`px-8 py-3 rounded-xl text-sm font-semibold whitespace-nowrap transition-all duration-300 transform hover:scale-105 ${
               selectedCategory === 'all'
                 ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-200'
-                : 'bg-white/80 text-gray-700 hover:bg-white hover:shadow-md border border-gray-200'
+                : 'bg-white/90 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-white dark:hover:bg-gray-600 hover:shadow-md border border-gray-200 dark:border-gray-600'
             }`}
           >
             <span className="flex items-center gap-2">
@@ -202,10 +202,10 @@ const UrgentJobsFilter = ({ selectedCategory, onCategoryChange }) => {
             Array.from({ length: 8 }).map((_, index) => (
               <div
                 key={index}
-                className="px-8 py-3 rounded-xl bg-gray-100 animate-pulse"
+                className="px-8 py-3 rounded-xl bg-gray-100 dark:bg-gray-700 animate-pulse"
                 style={{ width: '140px' }}
               >
-                <div className="h-4 bg-gray-200 rounded"></div>
+                <div className="h-4 bg-gray-200 dark:bg-gray-600 rounded"></div>
               </div>
             ))
           ) : (
@@ -216,7 +216,7 @@ const UrgentJobsFilter = ({ selectedCategory, onCategoryChange }) => {
                 className={`px-8 py-3 rounded-xl text-sm font-semibold whitespace-nowrap transition-all duration-300 transform hover:scale-105 ${
                   selectedCategory === (cat._id || cat)
                     ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-200'
-                    : 'bg-white/80 text-gray-700 hover:bg-white hover:shadow-md border border-gray-200'
+                    : 'bg-white/90 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-white dark:hover:bg-gray-600 hover:shadow-md border border-gray-200 dark:border-gray-600'
                 }`}
                 title={cat.name || cat}
                 style={{
@@ -302,7 +302,7 @@ const CandidateHome = () => {
 
   return (
     <CommonLayout>
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
         {/* Hero Section with Search */}
         <div className="relative overflow-hidden">
           {/* Background Pattern */}
@@ -328,7 +328,7 @@ const CandidateHome = () => {
           </div>
 
           {/* Unified Content Card */}
-          <div className="bg-white/90 backdrop-blur-md rounded-3xl shadow-2xl border border-white/30 overflow-hidden relative">
+          <div className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-md rounded-3xl shadow-2xl border border-white/30 dark:border-gray-700/30 overflow-hidden relative">
             {/* Top Connection */}
             <div className="absolute -top-1 left-1/2 transform -translate-x-1/2 w-24 h-1 bg-gradient-to-r from-blue-500/50 to-indigo-500/50 rounded-full"></div>
             {/* Urgent Jobs Header */}
@@ -357,7 +357,7 @@ const CandidateHome = () => {
             </div>
 
             {/* Category Filter */}
-            <div className="p-8 border-b border-gray-100 bg-gradient-to-r from-gray-50/50 to-blue-50/50 relative z-10">
+            <div className="p-8 border-b border-gray-100 dark:border-gray-700 bg-gradient-to-r from-gray-50/50 to-blue-50/50 dark:from-gray-700/50 dark:to-gray-800/50 relative z-10">
               <UrgentJobsFilter 
                 selectedCategory={selectedCategory}
                 onCategoryChange={setSelectedCategory}
@@ -365,19 +365,19 @@ const CandidateHome = () => {
             </div>
 
             {/* Jobs Results */}
-            <div className="p-8 bg-gradient-to-br from-white to-blue-50/30">
+            <div className="p-8 bg-gradient-to-br from-white to-blue-50/30 dark:from-gray-800 dark:to-gray-900/30">
               {/* Results Header */}
               <div className="flex items-center justify-between mb-8">
                 <div className="flex items-center gap-3">
                   <div className="w-2 h-8 bg-gradient-to-b from-blue-600 to-indigo-600 rounded-full"></div>
                   <div>
-                    <h2 className="text-xl font-bold text-gray-900">Kết quả tìm kiếm</h2>
-                    <p className="text-gray-600 text-sm">
+                    <h2 className="text-xl font-bold text-gray-900 dark:text-white">Kết quả tìm kiếm</h2>
+                    <p className="text-gray-600 dark:text-gray-400 text-sm">
                       {jobsLoading ? 'Đang tải...' : `${filteredJobs.length} việc làm đang tuyển được tìm thấy`}
                     </p>
                   </div>
                 </div>
-                <div className="flex items-center gap-2 text-sm text-gray-500">
+                <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
                   <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
                   <span>Đang cập nhật</span>
                 </div>

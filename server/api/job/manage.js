@@ -26,10 +26,7 @@ async function handler(req, res) {
     try {
       const { employerId, jobId, page = 1, limit = 10, status } = req.query;
       
-      console.log('--- [GET Jobs] ---');
-      console.log('employerId:', employerId);
-      console.log('jobId:', jobId);
-      console.log('page:', page, 'limit:', limit, 'status:', status);
+      
 
       // Nếu có jobId, lấy chi tiết một job
       if (jobId) {
@@ -74,7 +71,7 @@ async function handler(req, res) {
           query.status = status;
         }
 
-        console.log('Query jobs:', query);
+
         const jobs = await Jobs.find(query)
           .populate('categoryId', 'name')
           .populate('employerId', 'companyName email phone')
@@ -83,7 +80,7 @@ async function handler(req, res) {
           .sort({ postedDate: -1 });
 
         const total = await Jobs.countDocuments(query);
-        console.log('Số lượng jobs tìm thấy:', jobs.length, '/ Tổng:', total);
+
 
         return res.json({
           success: true,
@@ -187,9 +184,7 @@ async function handler(req, res) {
         applicationDeadline
       } = req.body;
 
-      console.log('--- [POST Create Job] ---');
-      console.log('employerId:', employerId);
-      console.log('jobTitle:', jobTitle);
+
 
       // Validation
       if (!employerId || !jobTitle || !description || !salaryRange || !location || 
@@ -294,7 +289,7 @@ async function handler(req, res) {
       await job.populate('categoryId', 'name');
       await job.populate('employerId', 'companyName email phone');
 
-      console.log('Tạo job thành công:', job._id);
+      
       return res.status(201).json({
         success: true,
         message: 'Tạo công việc thành công',
@@ -315,9 +310,7 @@ async function handler(req, res) {
     try {
       const { jobId, employerId, ...updateData } = req.body;
 
-      console.log('--- [PUT Update Job] ---');
-      console.log('jobId:', jobId);
-      console.log('employerId:', employerId);
+
 
       if (!jobId || !employerId) {
         return res.status(400).json({
@@ -407,7 +400,7 @@ async function handler(req, res) {
       await job.populate('categoryId', 'name');
       await job.populate('employerId', 'companyName email phone');
 
-      console.log('Cập nhật job thành công:', job._id);
+      
       return res.status(200).json({
         success: true,
         message: 'Cập nhật công việc thành công',
@@ -428,9 +421,7 @@ async function handler(req, res) {
     try {
       const { jobId, employerId } = req.body;
 
-      console.log('--- [DELETE Job] ---');
-      console.log('jobId:', jobId);
-      console.log('employerId:', employerId);
+
 
       if (!jobId || !employerId) {
         return res.status(400).json({
@@ -449,7 +440,7 @@ async function handler(req, res) {
 
       await Jobs.findByIdAndDelete(jobId);
 
-      console.log('Xóa job thành công:', jobId);
+      
       return res.status(200).json({
         success: true,
         message: 'Xóa công việc thành công',

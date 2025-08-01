@@ -35,7 +35,7 @@ const ApplicationHistory = () => {
       
       // Fallback: nếu API đơn giản không hoạt động, sử dụng API cũ
       if (!response.ok) {
-        console.log('API đơn giản không hoạt động, thử API cũ...');
+
         const fallbackResponse = await fetch(`https://be-khoa-luan2.vercel.app/api/application/all`);
         if (fallbackResponse.ok) {
           const fallbackData = await fallbackResponse.json();
@@ -74,11 +74,7 @@ const ApplicationHistory = () => {
           };
         });
         
-        console.log('Processed applications:', processedApplications);
-        console.log('Logo info:', processedApplications.map(app => ({
-          companyName: app.jobId.employerId.companyName,
-          logo: app.jobId.employerId.logo
-        })));
+
         setApplications(processedApplications);
       } else {
         setError(data.message || 'Không thể tải danh sách đơn ứng tuyển');
@@ -87,7 +83,7 @@ const ApplicationHistory = () => {
       console.error('Error fetching applications:', error);
       
       // Fallback: Hiển thị dữ liệu mẫu nếu API không hoạt động
-      console.log('Sử dụng dữ liệu mẫu...');
+
       setApplications([]);
       setError('Không thể kết nối server. Vui lòng thử lại sau.');
     } finally {
@@ -99,39 +95,39 @@ const ApplicationHistory = () => {
     const statusConfig = {
       'Pending': {
         label: 'Chờ xử lý',
-        color: 'bg-yellow-100 text-yellow-800',
+        color: 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-200',
         icon: FaHourglassHalf,
-        bgColor: 'bg-yellow-50'
+        bgColor: 'bg-yellow-50 dark:bg-yellow-900/10'
       },
       'Reviewed': {
         label: 'Đã xem xét',
-        color: 'bg-blue-100 text-blue-800',
+        color: 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200',
         icon: FaEye,
-        bgColor: 'bg-blue-50'
+        bgColor: 'bg-blue-50 dark:bg-blue-900/10'
       },
       'Interviewing': {
         label: 'Phỏng vấn',
-        color: 'bg-purple-100 text-purple-800',
+        color: 'bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-200',
         icon: FaUserTie,
-        bgColor: 'bg-purple-50'
+        bgColor: 'bg-purple-50 dark:bg-purple-900/10'
       },
       'Offer': {
         label: 'Đề nghị',
-        color: 'bg-green-100 text-green-800',
+        color: 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200',
         icon: FaCheckCircle,
-        bgColor: 'bg-green-50'
+        bgColor: 'bg-green-50 dark:bg-green-900/10'
       },
       'Rejected': {
         label: 'Từ chối',
-        color: 'bg-red-100 text-red-800',
+        color: 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200',
         icon: FaTimesCircle,
-        bgColor: 'bg-red-50'
+        bgColor: 'bg-red-50 dark:bg-red-900/10'
       },
       'Hired': {
         label: 'Đã tuyển',
-        color: 'bg-emerald-100 text-emerald-800',
+        color: 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-800 dark:text-emerald-200',
         icon: FaCheckCircle,
-        bgColor: 'bg-emerald-50'
+        bgColor: 'bg-emerald-50 dark:bg-emerald-900/10'
       }
     };
 
@@ -193,7 +189,7 @@ const ApplicationHistory = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
         <Header />
         <div className="pt-20 flex items-center justify-center min-h-screen">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
@@ -206,11 +202,11 @@ const ApplicationHistory = () => {
     return (
       <div className="min-h-screen flex flex-col">
         <Header />
-        <main className="flex-1 bg-gray-50 pt-24 pb-8">
+        <main className="flex-1 bg-gray-50 dark:bg-gray-900 pt-24 pb-8">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center">
-              <div className="text-red-600 mb-4">
-                <FaFileAlt className="w-16 h-16 mx-auto mb-4 text-gray-400" />
+              <div className="text-red-600 dark:text-red-400 mb-4">
+                <FaFileAlt className="w-16 h-16 mx-auto mb-4 text-gray-400 dark:text-gray-500" />
                 <p>Lỗi: {error}</p>
               </div>
               <button 
@@ -230,7 +226,7 @@ const ApplicationHistory = () => {
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
-      <main className="flex-1 bg-gray-50 pt-24 pb-8">
+      <main className="flex-1 bg-gray-50 dark:bg-gray-900 pt-24 pb-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Hero Header Section */}
           <div className="mb-8">
@@ -272,7 +268,7 @@ const ApplicationHistory = () => {
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
                   filter === 'all'
                     ? 'bg-indigo-600 text-white shadow-lg'
-                    : 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-200'
+                    : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-600'
                 }`}
               >
                 Tất cả ({applications.length})
@@ -291,7 +287,7 @@ const ApplicationHistory = () => {
                     className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-2 ${
                       filter === status
                         ? `${statusInfo.color} shadow-lg`
-                        : 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-200'
+                        : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-600'
                     }`}
                   >
                     <IconComponent className="w-4 h-4" />
@@ -306,13 +302,13 @@ const ApplicationHistory = () => {
           {filteredApplications.length === 0 ? (
             <div className="text-center py-16">
               <div className="max-w-md mx-auto">
-                <div className="w-24 h-24 bg-gradient-to-r from-blue-100 to-indigo-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <div className="w-24 h-24 bg-gradient-to-r from-blue-100 to-indigo-100 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-full flex items-center justify-center mx-auto mb-6">
                   <FaFileAlt className="w-12 h-12 text-blue-500" />
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-3">
+                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
                   {filter === 'all' ? 'Chưa có đơn ứng tuyển nào' : 'Không có đơn ứng tuyển nào'}
                 </h3>
-                <p className="text-gray-600 mb-8 text-lg">
+                <p className="text-gray-600 dark:text-gray-300 mb-8 text-lg">
                   {filter === 'all' 
                     ? 'Hãy khám phá các công việc hấp dẫn và nộp đơn ứng tuyển'
                     : `Không có đơn ứng tuyển nào ở trạng thái "${getStatusInfo(filter).label}"`
@@ -338,9 +334,9 @@ const ApplicationHistory = () => {
                 if (!job) return null;
                 
                 return (
-                  <div key={application._id} className="bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 overflow-hidden">
+                  <div key={application._id} className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 dark:border-gray-700 overflow-hidden">
                     {/* Application Header */}
-                    <div className={`p-6 ${statusInfo.bgColor} border-b border-gray-100`}>
+                    <div className={`p-6 ${statusInfo.bgColor} border-b border-gray-100 dark:border-gray-700`}>
                       <div className="flex items-start justify-between mb-4">
                         <div className="flex items-center space-x-4">
                           {job.employerId?.logo ? (
@@ -364,10 +360,10 @@ const ApplicationHistory = () => {
                             </div>
                           )}
                           <div className="flex-1 min-w-0">
-                            <h3 className="font-bold text-gray-900 text-lg line-clamp-2">
+                            <h3 className="font-bold text-gray-900 dark:text-white text-lg line-clamp-2">
                               {job.jobTitle || job.title || 'Không có tiêu đề'}
                             </h3>
-                            <p className="text-sm text-gray-600 font-medium mt-1">
+                            <p className="text-sm text-gray-600 dark:text-gray-300 font-medium mt-1">
                               {job.employerId?.companyName || 'Công ty'}
                             </p>
                           </div>
@@ -384,38 +380,38 @@ const ApplicationHistory = () => {
                     {/* Application Details */}
                     <div className="p-6">
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                        <div className="flex items-center text-sm text-gray-600 bg-gray-50 px-3 py-2 rounded-lg">
+                        <div className="flex items-center text-sm text-gray-600 dark:text-gray-200 bg-gray-50 dark:bg-gray-700 px-3 py-2 rounded-lg">
                           <FaMapMarkerAlt className="mr-3 text-blue-500 flex-shrink-0" />
                           <span className="font-medium">{getLocation(job.location)}</span>
                         </div>
                         
-                        <div className="flex items-center text-sm text-gray-600 bg-gray-50 px-3 py-2 rounded-lg">
+                        <div className="flex items-center text-sm text-gray-600 dark:text-gray-200 bg-gray-50 dark:bg-gray-700 px-3 py-2 rounded-lg">
                           <FaMoneyBillWave className="mr-3 text-green-500 flex-shrink-0" />
                           <span className="font-medium">{formatSalary(job.salary)}</span>
                         </div>
                         
-                        <div className="flex items-center text-sm text-gray-600 bg-gray-50 px-3 py-2 rounded-lg">
+                        <div className="flex items-center text-sm text-gray-600 dark:text-gray-200 bg-gray-50 dark:bg-gray-700 px-3 py-2 rounded-lg">
                           <FaCalendarAlt className="mr-3 text-orange-500 flex-shrink-0" />
                           <span className="font-medium">Nộp {formatDate(application.applicationDate)}</span>
                         </div>
                       </div>
 
                       {/* Application Info */}
-                      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-4 mb-6">
+                      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl p-4 mb-6">
                         <div className="flex items-center justify-between mb-3">
-                          <h4 className="font-semibold text-gray-900">Thông tin đơn ứng tuyển</h4>
-                          <span className="text-sm text-gray-500">#{application._id.slice(-8)}</span>
+                          <h4 className="font-semibold text-gray-900 dark:text-white">Thông tin đơn ứng tuyển</h4>
+                          <span className="text-sm text-gray-500 dark:text-gray-400">#{application._id.slice(-8)}</span>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                           <div>
-                            <span className="text-gray-600">CV sử dụng:</span>
-                            <p className="font-medium text-gray-900">
+                            <span className="text-gray-600 dark:text-gray-300">CV sử dụng:</span>
+                            <p className="font-medium text-gray-900 dark:text-white">
                               {application.resumeId?.title || 'CV từ hồ sơ'}
                             </p>
                           </div>
                           <div>
-                            <span className="text-gray-600">Cập nhật lần cuối:</span>
-                            <p className="font-medium text-gray-900">
+                            <span className="text-gray-600 dark:text-gray-300">Cập nhật lần cuối:</span>
+                            <p className="font-medium text-gray-900 dark:text-white">
                               {formatDate(application.lastStatusUpdate || application.applicationDate)}
                             </p>
                           </div>
@@ -436,7 +432,7 @@ const ApplicationHistory = () => {
                                setSelectedCoverLetter(application.coverLetter);
                                setShowCoverLetterModal(true);
                              }}
-                             className="px-4 py-3 border-2 border-blue-600 text-blue-600 text-sm font-semibold rounded-xl hover:bg-blue-50 transition-all duration-300"
+                             className="px-4 py-3 border-2 border-blue-600 dark:border-blue-400 text-blue-600 dark:text-blue-400 text-sm font-semibold rounded-xl hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all duration-300"
                            >
                              Xem thư xin việc
                            </button>
@@ -455,27 +451,27 @@ const ApplicationHistory = () => {
       {/* Cover Letter Modal */}
       {showCoverLetterModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[80vh] overflow-hidden shadow-2xl">
-            <div className="flex items-center justify-between p-6 border-b border-gray-200">
-              <h3 className="text-xl font-bold text-gray-900">Thư xin việc</h3>
+          <div className="bg-white dark:bg-gray-800 rounded-2xl max-w-2xl w-full max-h-[80vh] overflow-hidden shadow-2xl">
+            <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white">Thư xin việc</h3>
               <button
                 onClick={() => setShowCoverLetterModal(false)}
-                className="text-gray-400 hover:text-gray-600 transition-colors"
+                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
               >
                 <FaTimes className="w-6 h-6" />
               </button>
             </div>
             <div className="p-6 overflow-y-auto max-h-[60vh]">
               <div className="prose prose-sm max-w-none">
-                <p className="text-gray-700 whitespace-pre-wrap leading-relaxed">
+                <p className="text-gray-700 dark:text-gray-200 whitespace-pre-wrap leading-relaxed">
                   {selectedCoverLetter}
                 </p>
               </div>
             </div>
-            <div className="flex justify-end p-6 border-t border-gray-200">
+            <div className="flex justify-end p-6 border-t border-gray-200 dark:border-gray-700">
               <button
                 onClick={() => setShowCoverLetterModal(false)}
-                className="px-6 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+                className="px-6 py-2 bg-gray-600 dark:bg-gray-700 text-white rounded-lg hover:bg-gray-700 dark:hover:bg-gray-600 transition-colors"
               >
                 Đóng
               </button>

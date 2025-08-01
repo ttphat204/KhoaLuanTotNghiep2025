@@ -23,7 +23,7 @@ const JobSearchResultPage = () => {
         // Lọc theo từ khóa và địa điểm
         const filtered = allJobs.filter(job => {
           // Lọc theo từ khóa
-          const matchesKeyword = !keyword.trim() || 
+          const matchesKeyword = !keyword.trim() ||
             job.jobTitle?.toLowerCase().includes(keyword.toLowerCase()) ||
             job.employerId?.companyName?.toLowerCase().includes(keyword.toLowerCase()) ||
             job.description?.toLowerCase().includes(keyword.toLowerCase());
@@ -46,23 +46,21 @@ const JobSearchResultPage = () => {
             
             // Kiểm tra từng phần của địa điểm
             return addressDetail.includes(locationLower) ||
-                   district.includes(locationLower) ||
-                   province.includes(locationLower) ||
-                   city.includes(locationLower) ||
-                   // Kiểm tra tên tỉnh/thành phố rút gọn
-                   province.includes(locationLower.replace('tp.', '').replace('thành phố ', '').replace('tỉnh ', '')) ||
-                   district.includes(locationLower.replace('quận ', '').replace('huyện ', '').replace('thị xã ', ''));
+              district.includes(locationLower) ||
+              province.includes(locationLower) ||
+              city.includes(locationLower) ||
+              // Kiểm tra tên tỉnh/thành phố rút gọn
+              province.includes(locationLower.replace('tp.', '').replace('thành phố ', '').replace('tỉnh ', '')) ||
+              district.includes(locationLower.replace('quận ', '').replace('huyện ', '').replace('thị xã ', ''));
           })();
           
           return matchesKeyword && matchesLocation;
         });
         // Debug: Log một số job để kiểm tra cấu trúc location
         if (filtered.length > 0) {
-          console.log('Sample job location data:', filtered[0].location);
+          
+          setJobs(filtered);
         }
-        console.log('Search params:', { keyword, location });
-        console.log('Filtered jobs count:', filtered.length);
-        setJobs(filtered);
       })
       .catch(() => setJobs([]))
       .finally(() => setLoading(false));
@@ -137,8 +135,7 @@ const JobSearchResultPage = () => {
                 ? job.location
                 : [job.location?.addressDetail, job.location?.district, job.location?.province].filter(Boolean).join(', ');
               // Debug logo
-              console.log('job:', job);
-              console.log('companyLogoUrl:', companyLogoUrl);
+              
               return (
                 <div key={job._id || idx} className="relative bg-white border border-blue-200 rounded-2xl flex items-center px-6 py-6 min-h-[100px] group transition-all duration-200 hover:border-blue-400 cursor-pointer">
                   {/* Logo */}

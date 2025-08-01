@@ -98,9 +98,7 @@ const BarChart = ({ data, title, color = "indigo" }) => {
 
 // Component biểu đồ tròn
 const DoughnutChart = ({ data, title }) => {
-  console.log('DoughnutChart received data:', data); // Debug log
-  console.log('DoughnutChart data type:', typeof data); // Debug log
-  console.log('DoughnutChart data length:', data ? data.length : 'undefined'); // Debug log
+  
   
   const colors = ['#8B5CF6', '#3B82F6', '#10B981', '#F59E0B', '#EF4444'];
   
@@ -113,9 +111,7 @@ const DoughnutChart = ({ data, title }) => {
     { name: 'Đã từ chối', value: 0 }
   ];
 
-  console.log('Processed chartData:', chartData); // Debug log
-  console.log('ChartData has values > 0:', chartData.some(item => item.value > 0)); // Debug log
-  console.log('ChartData values:', chartData.map(item => `${item.name}: ${item.value}`)); // Debug log
+  
 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
@@ -179,7 +175,7 @@ const DoughnutChart = ({ data, title }) => {
 
 // Component biểu đồ đường
 const LineChart = ({ data, title, color = "blue" }) => {
-  console.log('LineChart data:', data); // Debug log
+  
   
   const getColorByType = (type) => {
     const colors = {
@@ -202,7 +198,7 @@ const LineChart = ({ data, title, color = "blue" }) => {
     { name: 'Tháng 6', value: 0 }
   ];
 
-  console.log('Processed chartData:', chartData); // Debug log
+  
 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
@@ -340,24 +336,20 @@ const EmployerDashboard = () => {
     try {
       showInfo('Đang tải dữ liệu dashboard...');
       
-      console.log('Fetching dashboard data for employerId:', user._id); // Debug log
+  
       
       // Fetch profile
       const profileRes = await fetch(`https://be-khoaluan.vercel.app/api/employer/profile?employerId=${user._id}`);
       const profileData = await profileRes.json();
-      console.log('Profile data:', profileData); // Debug log
+      
       if (profileData.success) setProfile(profileData.data);
 
       // Fetch dashboard stats từ API mới
       const statsRes = await fetch(`https://be-khoa-luan2.vercel.app/api/employer-dashboard-stats?employerId=${user._id}`);
-      console.log('Stats response status:', statsRes.status); // Debug log
       const statsData = await statsRes.json();
-      console.log('Raw stats data:', statsData); // Debug log
       
       if (statsData.success) {
         const stats = statsData.data;
-        
-        console.log('Dashboard stats:', stats); // Debug log
         
         setStats({ 
           totalJobs: stats.totalJobs, 
@@ -375,8 +367,6 @@ const EmployerDashboard = () => {
           'Đã từ chối': stats.statusCounts.rejected || 0
         };
 
-        console.log('Status counts:', statusCounts); // Debug log
-
         // Sử dụng dữ liệu từ API thay vì tạo dữ liệu mẫu
         const chartDataToSet = {
           applicationsByStatus: Object.entries(statusCounts).map(([status, count]) => ({
@@ -386,11 +376,9 @@ const EmployerDashboard = () => {
           applicationsByMonth: stats.monthlyData || [],
           topJobs: stats.topJobs || []
         };
-
-        console.log('Final chart data:', chartDataToSet); // Debug log
         setChartData(chartDataToSet);
       } else {
-        console.error('API returned error:', statsData); // Debug log
+
         showError('Không thể tải thống kê dashboard');
       }
 

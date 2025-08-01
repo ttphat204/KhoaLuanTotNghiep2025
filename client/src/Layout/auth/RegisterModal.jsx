@@ -132,8 +132,7 @@ const RegisterModal = ({ onClose, onOpenLoginModal }) => {
     const payload = getPayload();
     const endpoint = getApiEndpoint();
     
-    console.log('Payload gửi lên:', payload);
-    console.log('Endpoint:', endpoint);
+    
     
     try {
       const res = await fetch(endpoint, {
@@ -142,7 +141,7 @@ const RegisterModal = ({ onClose, onOpenLoginModal }) => {
         body: JSON.stringify(payload),
       });
       const data = await res.json();
-      console.log('API response:', data);
+      
       
       if (res.ok) {
         showSuccess(`Đăng ký tài khoản ${form.role} thành công!`);

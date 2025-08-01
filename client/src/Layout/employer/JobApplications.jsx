@@ -18,7 +18,7 @@ const JobApplications = () => {
   const [showCoverLetter, setShowCoverLetter] = useState(false);
 
   useEffect(() => {
-    console.log('JobApplications component mounted with jobId:', jobId);
+  
     if (jobId) {
       fetchJobAndApplications();
     } else {
@@ -37,7 +37,7 @@ const JobApplications = () => {
         return;
       }
 
-      console.log('Fetching job and applications for jobId:', jobId);
+  
 
       // Fetch job details từ API mới
       const jobResponse = await fetch(`https://be-khoa-luan2.vercel.app/api/job/${jobId}`, {

@@ -97,8 +97,8 @@ function DynamicJobCategories({ selected, setSelected }) {
       {categories.map(cat => (
         <div
           key={cat._id}
-          className={`flex flex-col items-center justify-between w-[140px] h-[170px] bg-white rounded-2xl border-2 transition-all duration-200 cursor-pointer
-            border-transparent hover:border-blue-400 hover:shadow-md hover:scale-105`}
+          className={`flex flex-col items-center justify-between w-[140px] h-[170px] bg-white dark:bg-gray-800 rounded-2xl border-2 transition-all duration-200 cursor-pointer
+            border-transparent hover:border-blue-400 dark:hover:border-blue-500 hover:shadow-md hover:scale-105`}
           onClick={() => handleCategoryClick(cat)}
           style={{ minWidth: 110, maxWidth: 150 }}
         >
@@ -106,12 +106,12 @@ function DynamicJobCategories({ selected, setSelected }) {
             <div className="flex items-center justify-center w-16 h-16 rounded-full bg-blue-50">
               <img src={getIcon(cat)} alt={cat.name} className="w-10 h-10 object-contain" />
             </div>
-            <div className="text-blue-600 font-bold text-base mt-2">
-              {(jobCountByCategory[cat._id] || 0).toLocaleString()} <span className="text-xs font-normal text-gray-500">việc</span>
+            <div className="text-blue-600 dark:text-blue-400 font-bold text-base mt-2">
+              {(jobCountByCategory[cat._id] || 0).toLocaleString()} <span className="text-xs font-normal text-gray-500 dark:text-gray-400">việc</span>
             </div>
           </div>
           <div
-            className="text-gray-800 font-semibold text-sm text-center px-2"
+            className="text-gray-800 dark:text-gray-200 font-semibold text-sm text-center px-2"
             style={{
               display: '-webkit-box',
               WebkitLineClamp: 2,
@@ -129,8 +129,8 @@ function DynamicJobCategories({ selected, setSelected }) {
       ))}
       {/* Card tất cả các ngành */}
       <div
-        className={`flex flex-col items-center justify-between w-[140px] h-[170px] bg-white rounded-2xl border-2 transition-all duration-200 cursor-pointer
-          border-transparent hover:border-blue-400 hover:scale-105 text-blue-500`}
+        className={`flex flex-col items-center justify-between w-[140px] h-[170px] bg-white dark:bg-gray-800 rounded-2xl border-2 transition-all duration-200 cursor-pointer
+          border-transparent hover:border-blue-400 dark:hover:border-blue-500 hover:scale-105 text-blue-500 dark:text-blue-400`}
         onClick={() => handleCategoryClick('all')}
         style={{ minWidth: 110, maxWidth: 150 }}
       >
@@ -138,12 +138,12 @@ function DynamicJobCategories({ selected, setSelected }) {
           <div className="flex items-center justify-center w-16 h-16 rounded-full bg-blue-50">
             <img src={imgAll} alt="Tất cả" className="w-10 h-10 object-contain" />
           </div>
-          <div className="text-blue-600 font-bold text-base mt-2">
-            {jobs.length.toLocaleString()} <span className="text-xs font-normal text-gray-500">việc</span>
+          <div className="text-blue-600 dark:text-blue-400 font-bold text-base mt-2">
+            {jobs.length.toLocaleString()} <span className="text-xs font-normal text-gray-500 dark:text-gray-400">việc</span>
           </div>
         </div>
         <div
-          className="text-gray-800 font-semibold text-sm text-center px-2"
+          className="text-gray-800 dark:text-gray-200 font-semibold text-sm text-center px-2"
           style={{
             display: '-webkit-box',
             WebkitLineClamp: 2,
@@ -283,21 +283,21 @@ const SearchBar = ({ setKeyword }) => {
       <div className="relative w-full flex justify-center" style={{ marginTop: '-80px' }}>
         {/* Hiệu ứng đổ bóng phía trên card */}
         <div className="absolute -top-8 left-1/2 -translate-x-1/2 w-[90%] h-12 bg-cyan-400 opacity-60 blur-2xl rounded-t-2xl z-0"></div>
-        <div className="relative bg-white rounded-2xl shadow-xl flex flex-col p-0 max-w-7xl w-full z-50 border-2 border-blue-200">
+        <div className="relative bg-white dark:bg-gray-800 rounded-2xl shadow-xl flex flex-col p-0 max-w-7xl w-full z-50 border-2 border-blue-200 dark:border-blue-600">
           {/* Hiệu ứng đổ màu nhẹ chỉ chiếm 20% phía trên card */}
-          <div className="absolute left-0 top-0 w-full h-[20%] rounded-t-2xl bg-gradient-to-b from-cyan-100 via-white to-transparent opacity-70 blur-md pointer-events-none z-0"></div>
+          <div className="absolute left-0 top-0 w-full h-[20%] rounded-t-2xl bg-gradient-to-b from-cyan-100 via-white to-transparent dark:from-cyan-900 dark:via-gray-800 dark:to-transparent opacity-70 blur-md pointer-events-none z-0"></div>
           <div className="relative z-10">
             {/* Search Row - Redesigned */}
             <div className="flex flex-col gap-0 p-6 pb-0 relative">
-              <div className="flex flex-col md:flex-row items-stretch gap-0 w-full bg-white rounded-full shadow-lg border-2 border-blue-200 focus-within:border-blue-400 transition-all duration-200 relative overflow-visible z-[999999]">
+              <div className="flex flex-col md:flex-row items-stretch gap-0 w-full bg-white dark:bg-gray-700 rounded-full shadow-lg border-2 border-blue-200 dark:border-blue-600 focus-within:border-blue-400 dark:focus-within:border-blue-500 transition-all duration-200 relative overflow-visible z-[999999]">
                 {/* Vị trí */}
-                <div className="flex-1 flex items-center px-5 h-16 bg-transparent rounded-l-full focus-within:bg-blue-50 transition-all duration-200 relative">
+                <div className="flex-1 flex items-center px-5 h-16 bg-transparent rounded-l-full focus-within:bg-blue-50 dark:focus-within:bg-blue-900/20 transition-all duration-200 relative">
                   <FaSearch className="text-gray-400 mr-2 text-lg" />
                   <input
                     ref={inputRef}
                     type="text"
                     placeholder="Nhập vị trí muốn ứng tuyển"
-                    className="w-full bg-transparent outline-none text-base placeholder-gray-400"
+                    className="w-full bg-transparent outline-none text-base placeholder-gray-400 dark:text-white dark:placeholder-gray-500"
                     onKeyDown={e => {
                       if (e.key === 'Enter') {
                         handleSearch();
@@ -309,14 +309,14 @@ const SearchBar = ({ setKeyword }) => {
                 {/* Tỉnh thành - fetch API */}
                 <div 
                   ref={locationRef}
-                  className="flex items-center px-5 h-16 bg-transparent border-l border-gray-100 focus-within:bg-blue-50 transition-all duration-200 relative overflow-visible z-[999999]"
+                  className="flex items-center px-5 h-16 bg-transparent border-l border-gray-100 dark:border-gray-600 focus-within:bg-blue-50 dark:focus-within:bg-blue-900/20 transition-all duration-200 relative overflow-visible z-[999999]"
                 >
                   <FaMapMarkerAlt className="text-gray-400 mr-2 text-lg" />
                   <div
                     className="w-full cursor-pointer select-none text-base flex items-center justify-between"
                     onClick={handleLocationClick}
                   >
-                    <span className="truncate text-gray-700">
+                    <span className="truncate text-gray-700 dark:text-gray-300">
                       {selectedProvince && selectedDistrict
                         ? `${selectedProvince.name.replace('Tỉnh ', '').replace('Thành phố ', '')}, ${selectedDistrict.name.replace('Quận ', '').replace('Huyện ', '').replace('Thị xã ', '').replace('Thành phố ', '')}`
                         : selectedProvince
@@ -335,7 +335,7 @@ const SearchBar = ({ setKeyword }) => {
                         onClick={() => setShowProvinceDropdown(false)}
                       />
                       <div 
-                        className="absolute w-80 bg-white rounded-2xl shadow-2xl z-[999999] p-0 max-h-[200px] overflow-y-auto border border-gray-100"
+                        className="absolute w-80 bg-white dark:bg-gray-800 rounded-2xl shadow-2xl z-[999999] p-0 max-h-[200px] overflow-y-auto border border-gray-100 dark:border-gray-700"
                         style={{
                           top: '100%',
                           right: '0',
@@ -346,9 +346,9 @@ const SearchBar = ({ setKeyword }) => {
                         {/* Danh sách tỉnh/thành hoặc quận/huyện */}
                         {selectedProvince == null ? (
                           <>
-                            <div className="divide-y divide-gray-50">
+                            <div className="divide-y divide-gray-50 dark:divide-gray-700">
                               <div
-                                className="px-4 py-3 hover:bg-gray-100 cursor-pointer text-base"
+                                className="px-4 py-3 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer text-base dark:text-white"
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   setSelectedProvince(null);
@@ -359,7 +359,7 @@ const SearchBar = ({ setKeyword }) => {
                               {provinces.map((province) => (
                                 <div
                                   key={province.code}
-                                  className="flex items-center justify-between px-4 py-3 hover:bg-gray-100 cursor-pointer text-base"
+                                  className="flex items-center justify-between px-4 py-3 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer text-base dark:text-white"
                                   onClick={(e) => {
                                     e.stopPropagation();
                                     setSelectedProvince(province);
@@ -374,9 +374,9 @@ const SearchBar = ({ setKeyword }) => {
                           </>
                         ) : (
                           <>
-                            <div className="sticky top-0 bg-white z-10 border-b border-gray-100 p-3 flex items-center gap-2">
+                            <div className="sticky top-0 bg-white dark:bg-gray-800 z-10 border-b border-gray-100 dark:border-gray-700 p-3 flex items-center gap-2">
                               <button
-                                className="text-gray-500 hover:text-blue-500 focus:outline-none"
+                                className="text-gray-500 dark:text-gray-400 hover:text-blue-500 dark:hover:text-blue-400 focus:outline-none"
                                 onClick={e => {
                                   e.stopPropagation();
                                   setSelectedProvince(null);
@@ -387,12 +387,12 @@ const SearchBar = ({ setKeyword }) => {
                                 <span className="align-middle">Tỉnh/thành phố</span>
                               </button>
                             </div>
-                            <div className="divide-y divide-gray-50">
+                            <div className="divide-y divide-gray-50 dark:divide-gray-700">
                               {selectedProvince.districts && selectedProvince.districts.length > 0 ? (
                                 selectedProvince.districts.map((district) => (
                                   <div
                                     key={district.code}
-                                    className="px-4 py-3 hover:bg-gray-100 cursor-pointer text-base"
+                                    className="px-4 py-3 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer text-base dark:text-white"
                                     onClick={(e) => {
                                       e.stopPropagation();
                                       setSelectedDistrict(district);
@@ -401,7 +401,7 @@ const SearchBar = ({ setKeyword }) => {
                                   >{district.name.replace('Quận ', '').replace('Huyện ', '').replace('Thị xã ', '').replace('Thành phố ', '')}</div>
                                 ))
                               ) : (
-                                <div className="px-4 py-3 text-gray-400">Không có quận/huyện</div>
+                                <div className="px-4 py-3 text-gray-400 dark:text-gray-500">Không có quận/huyện</div>
                               )}
                             </div>
                           </>

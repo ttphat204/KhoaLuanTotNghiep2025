@@ -39,7 +39,7 @@ const JobList = ({ keyword = '' }) => {
           <div className="max-w-7xl mx-auto px-4 py-8">
             <div className="text-center">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
-              <p className="mt-4 text-gray-600">Đang tải danh sách việc làm...</p>
+              <p className="mt-4 text-gray-600 dark:text-gray-400">Đang tải danh sách việc làm...</p>
             </div>
           </div>
         </main>
@@ -80,10 +80,10 @@ const JobList = ({ keyword = '' }) => {
           
           {/* Job List Header */}
           <div className="flex justify-between items-center mb-6">
-            <h1 className="text-3xl font-bold text-gray-900">
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
               {searchKeyword ? `Kết quả tìm kiếm cho "${searchKeyword}"` : 'Tất cả việc làm'}
             </h1>
-            <p className="text-gray-600">
+            <p className="text-gray-600 dark:text-gray-400">
               {jobs.length} việc làm được tìm thấy
             </p>
           </div>
@@ -96,10 +96,10 @@ const JobList = ({ keyword = '' }) => {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
               </div>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">
+              <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
                 Không tìm thấy việc làm
               </h3>
-              <p className="text-gray-600">
+              <p className="text-gray-600 dark:text-gray-400">
                 {searchKeyword 
                   ? `Không có việc làm nào phù hợp với từ khóa "${searchKeyword}"`
                   : 'Hiện tại chưa có việc làm nào được đăng tải'
