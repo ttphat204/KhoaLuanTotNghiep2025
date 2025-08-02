@@ -351,10 +351,10 @@ const EmployerRegister = () => {
                     className="font-semibold text-indigo-300 hover:text-indigo-200 transition-colors duration-200"
                   >
                     Đăng nhập ngay
-                  </a>
-                </p>
+              </a>
+            </p>
               </div>
-
+              
               {/* Register Form */}
               <form onSubmit={handleSubmit} className="space-y-8">
                 {/* Thông tin cơ bản */}
@@ -364,92 +364,92 @@ const EmployerRegister = () => {
                     Thông tin cơ bản
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
+              <div>
                       <label htmlFor="companyName" className="block text-sm font-semibold text-white mb-2">
                         Tên công ty <span className="text-red-400">*</span>
-                      </label>
+                </label>
                       <div className="relative">
                         <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                           <FaBuilding className="h-5 w-5 text-gray-400" />
                         </div>
-                        <input
-                          id="companyName"
-                          name="companyName"
-                          type="text"
-                          required
+                <input
+                  id="companyName"
+                  name="companyName"
+                  type="text"
+                  required
                           className="block w-full pl-12 pr-4 py-3 border border-white/30 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 bg-white/20 focus:bg-white/30 text-white placeholder-gray-300"
-                          placeholder="Tên công ty"
-                          value={formData.companyName}
-                          onChange={handleChange}
-                        />
+                  placeholder="Tên công ty"
+                  value={formData.companyName}
+                  onChange={handleChange}
+                />
                       </div>
-                    </div>
+              </div>
 
-                    <div>
+              <div>
                       <label htmlFor="email" className="block text-sm font-semibold text-white mb-2">
                         Email <span className="text-red-400">*</span>
-                      </label>
+                </label>
                       <div className="relative">
                         <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                           <FaEnvelope className="h-5 w-5 text-gray-400" />
                         </div>
-                        <input
-                          id="email"
-                          name="email"
-                          type="email"
-                          autoComplete="email"
-                          required
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  autoComplete="email"
+                  required
                           className="block w-full pl-12 pr-4 py-3 border border-white/30 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 bg-white/20 focus:bg-white/30 text-white placeholder-gray-300"
                           placeholder="Email công ty"
-                          value={formData.email}
-                          onChange={handleChange}
-                        />
+                  value={formData.email}
+                  onChange={handleChange}
+                />
                       </div>
-                    </div>
+              </div>
 
-                    <div>
+              <div>
                       <label htmlFor="phone" className="block text-sm font-semibold text-white mb-2">
                         Số điện thoại <span className="text-red-400">*</span>
-                      </label>
+                </label>
                       <div className="relative">
                         <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                           <FaPhone className="h-5 w-5 text-gray-400" />
                         </div>
-                        <input
-                          id="phone"
-                          name="phone"
-                          type="tel"
-                          required
+                <input
+                  id="phone"
+                  name="phone"
+                  type="tel"
+                  required
                           className="block w-full pl-12 pr-4 py-3 border border-white/30 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 bg-white/20 focus:bg-white/30 text-white placeholder-gray-300"
-                          placeholder="Số điện thoại"
-                          value={formData.phone}
-                          onChange={handleChange}
-                        />
+                  placeholder="Số điện thoại"
+                  value={formData.phone}
+                  onChange={handleChange}
+                />
                       </div>
-                    </div>
+              </div>
 
-                    <div>
+              <div>
                       <label htmlFor="industry" className="block text-sm font-semibold text-white mb-2">
                         Ngành nghề <span className="text-red-400">*</span>
-                      </label>
+                </label>
                       <div className="relative">
                         <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                           <FaIndustry className="h-5 w-5 text-gray-400" />
                         </div>
-                        <input
-                          id="industry"
-                          name="industry"
-                          type="text"
-                          required
+                <input
+                  id="industry"
+                  name="industry"
+                  type="text"
+                  required
                           className="block w-full pl-12 pr-4 py-3 border border-white/30 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 bg-white/20 focus:bg-white/30 text-white placeholder-gray-300"
-                          placeholder="Ví dụ: Công nghệ thông tin"
-                          value={formData.industry}
-                          onChange={handleChange}
-                        />
-                      </div>
+                  placeholder="Ví dụ: Công nghệ thông tin"
+                  value={formData.industry}
+                  onChange={handleChange}
+                />
+              </div>
                     </div>
                   </div>
-                </div>
+              </div>
 
                 {/* Địa chỉ công ty */}
                 <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
@@ -458,167 +458,167 @@ const EmployerRegister = () => {
                     Địa chỉ công ty
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
+              <div>
                       <label htmlFor="city" className="block text-sm font-semibold text-white mb-2">
                         Tỉnh/Thành phố <span className="text-red-400">*</span>
-                      </label>
-                      <select
-                        id="city"
-                        name="city"
-                        required
-                        disabled={locationLoading}
+                </label>
+                <select
+                  id="city"
+                  name="city"
+                  required
+                  disabled={locationLoading}
                         className="block w-full px-4 py-3 border border-white/30 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 bg-white/20 focus:bg-white/30 text-white disabled:bg-white/10 disabled:cursor-not-allowed"
-                        value={formData.cityCode}
-                        onChange={(e) => handleProvinceChange(e.target.value)}
-                      >
-                        <option value="">
-                          {locationLoading ? 'Đang tải...' : 'Chọn tỉnh/thành phố'}
-                        </option>
-                        {locationData.provinces.map((province) => (
+                  value={formData.cityCode}
+                  onChange={(e) => handleProvinceChange(e.target.value)}
+                >
+                  <option value="">
+                    {locationLoading ? 'Đang tải...' : 'Chọn tỉnh/thành phố'}
+                  </option>
+                  {locationData.provinces.map((province) => (
                           <option key={province.code} value={province.code} className="text-gray-900">
-                            {province.name}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
+                      {province.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
 
-                    <div>
+              <div>
                       <label htmlFor="district" className="block text-sm font-semibold text-white mb-2">
                         Quận/Huyện <span className="text-red-400">*</span>
-                      </label>
-                      <select
-                        id="district"
-                        name="district"
-                        required
-                        disabled={!formData.cityCode || locationData.districts.length === 0}
+                </label>
+                <select
+                  id="district"
+                  name="district"
+                  required
+                  disabled={!formData.cityCode || locationData.districts.length === 0}
                         className="block w-full px-4 py-3 border border-white/30 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 bg-white/20 focus:bg-white/30 text-white disabled:bg-white/10 disabled:cursor-not-allowed"
-                        value={formData.districtCode}
-                        onChange={(e) => handleDistrictChange(e.target.value)}
-                      >
-                        <option value="">
-                          {!formData.cityCode ? 'Chọn tỉnh/thành phố trước' : 
-                           locationData.districts.length === 0 ? 'Đang tải...' : 'Chọn quận/huyện'}
-                        </option>
-                        {locationData.districts.map((district) => (
+                  value={formData.districtCode}
+                  onChange={(e) => handleDistrictChange(e.target.value)}
+                >
+                  <option value="">
+                    {!formData.cityCode ? 'Chọn tỉnh/thành phố trước' : 
+                     locationData.districts.length === 0 ? 'Đang tải...' : 'Chọn quận/huyện'}
+                  </option>
+                  {locationData.districts.map((district) => (
                           <option key={district.code} value={district.code} className="text-gray-900">
-                            {district.name}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
+                      {district.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
 
-                    <div>
+              <div>
                       <label htmlFor="ward" className="block text-sm font-semibold text-white mb-2">
                         Phường/Xã <span className="text-red-400">*</span>
-                      </label>
-                      <select
-                        id="ward"
-                        name="ward"
-                        required
-                        disabled={!formData.districtCode || locationData.wards.length === 0}
+                </label>
+                <select
+                  id="ward"
+                  name="ward"
+                  required
+                  disabled={!formData.districtCode || locationData.wards.length === 0}
                         className="block w-full px-4 py-3 border border-white/30 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 bg-white/20 focus:bg-white/30 text-white disabled:bg-white/10 disabled:cursor-not-allowed"
-                        value={formData.wardCode}
-                        onChange={(e) => handleWardChange(e.target.value)}
-                      >
-                        <option value="">
-                          {!formData.districtCode ? 'Chọn quận/huyện trước' : 
-                           locationData.wards.length === 0 ? 'Đang tải...' : 'Chọn phường/xã'}
-                        </option>
-                        {locationData.wards.map((ward) => (
+                  value={formData.wardCode}
+                  onChange={(e) => handleWardChange(e.target.value)}
+                >
+                  <option value="">
+                    {!formData.districtCode ? 'Chọn quận/huyện trước' : 
+                     locationData.wards.length === 0 ? 'Đang tải...' : 'Chọn phường/xã'}
+                  </option>
+                  {locationData.wards.map((ward) => (
                           <option key={ward.code} value={ward.code} className="text-gray-900">
-                            {ward.name}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
+                      {ward.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
 
-                    <div>
+              <div>
                       <label htmlFor="companySize" className="block text-sm font-semibold text-white mb-2">
-                        Quy mô công ty
-                      </label>
+                  Quy mô công ty
+                </label>
                       <div className="relative">
                         <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                           <FaUsers className="h-5 w-5 text-gray-400" />
                         </div>
-                        <input
-                          id="companySize"
-                          name="companySize"
-                          type="number"
+                <input
+                  id="companySize"
+                  name="companySize"
+                  type="number"
                           className="block w-full pl-12 pr-4 py-3 border border-white/30 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 bg-white/20 focus:bg-white/30 text-white placeholder-gray-300"
-                          placeholder="Số nhân viên"
-                          value={formData.companySize}
-                          onChange={handleChange}
-                        />
+                  placeholder="Số nhân viên"
+                  value={formData.companySize}
+                  onChange={handleChange}
+                />
                       </div>
                     </div>
                   </div>
-                </div>
+              </div>
 
-                {/* Thông tin bổ sung */}
+              {/* Thông tin bổ sung */}
                 <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
                   <h3 className="text-xl font-bold text-white mb-6 flex items-center">
                     <FaGlobe className="mr-3 text-indigo-300" />
                     Thông tin bổ sung
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
+              <div>
                       <label htmlFor="companyWebsite" className="block text-sm font-semibold text-white mb-2">
-                        Website công ty
-                      </label>
+                  Website công ty
+                </label>
                       <div className="relative">
                         <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                           <FaGlobe className="h-5 w-5 text-gray-400" />
                         </div>
-                        <input
-                          id="companyWebsite"
-                          name="companyWebsite"
-                          type="url"
+                <input
+                  id="companyWebsite"
+                  name="companyWebsite"
+                  type="url"
                           className="block w-full pl-12 pr-4 py-3 border border-white/30 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 bg-white/20 focus:bg-white/30 text-white placeholder-gray-300"
-                          placeholder="https://company.com"
-                          value={formData.companyWebsite}
-                          onChange={handleChange}
-                        />
+                  placeholder="https://company.com"
+                  value={formData.companyWebsite}
+                  onChange={handleChange}
+                />
                       </div>
-                    </div>
+              </div>
 
-                    <div>
+              <div>
                       <label htmlFor="foundedYear" className="block text-sm font-semibold text-white mb-2">
-                        Năm thành lập
-                      </label>
+                  Năm thành lập
+                </label>
                       <div className="relative">
                         <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                           <FaCalendarAlt className="h-5 w-5 text-gray-400" />
                         </div>
-                        <input
-                          id="foundedYear"
-                          name="foundedYear"
-                          type="number"
-                          min="1900"
-                          max={new Date().getFullYear()}
+                <input
+                  id="foundedYear"
+                  name="foundedYear"
+                  type="number"
+                  min="1900"
+                  max={new Date().getFullYear()}
                           className="block w-full pl-12 pr-4 py-3 border border-white/30 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 bg-white/20 focus:bg-white/30 text-white placeholder-gray-300"
-                          placeholder="Ví dụ: 2020"
-                          value={formData.foundedYear}
-                          onChange={handleChange}
-                        />
+                  placeholder="Ví dụ: 2020"
+                  value={formData.foundedYear}
+                  onChange={handleChange}
+                />
                       </div>
-                    </div>
+              </div>
 
-                    <div className="md:col-span-2">
+              <div className="md:col-span-2">
                       <label htmlFor="companyDescription" className="block text-sm font-semibold text-white mb-2">
-                        Mô tả công ty
-                      </label>
-                      <textarea
-                        id="companyDescription"
-                        name="companyDescription"
-                        rows="3"
+                  Mô tả công ty
+                </label>
+                <textarea
+                  id="companyDescription"
+                  name="companyDescription"
+                  rows="3"
                         className="block w-full px-4 py-3 border border-white/30 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 bg-white/20 focus:bg-white/30 text-white placeholder-gray-300 resize-none"
-                        placeholder="Mô tả về công ty, lĩnh vực hoạt động..."
-                        value={formData.companyDescription}
-                        onChange={handleChange}
-                      />
-                    </div>
+                  placeholder="Mô tả về công ty, lĩnh vực hoạt động..."
+                  value={formData.companyDescription}
+                  onChange={handleChange}
+                />
+              </div>
                   </div>
-                </div>
+              </div>
 
                 {/* Tài khoản */}
                 <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
@@ -627,25 +627,25 @@ const EmployerRegister = () => {
                     Tài khoản
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
+              <div>
                       <label htmlFor="password" className="block text-sm font-semibold text-white mb-2">
                         Mật khẩu <span className="text-red-400">*</span>
-                      </label>
+                </label>
                       <div className="relative">
                         <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                           <FaLock className="h-5 w-5 text-gray-400" />
                         </div>
-                        <input
-                          id="password"
-                          name="password"
+                <input
+                  id="password"
+                  name="password"
                           type={showPassword ? 'text' : 'password'}
-                          autoComplete="new-password"
-                          required
+                  autoComplete="new-password"
+                  required
                           className="block w-full pl-12 pr-12 py-3 border border-white/30 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 bg-white/20 focus:bg-white/30 text-white placeholder-gray-300"
-                          placeholder="Mật khẩu (ít nhất 8 ký tự)"
-                          value={formData.password}
-                          onChange={handleChange}
-                        />
+                  placeholder="Mật khẩu (ít nhất 8 ký tự)"
+                  value={formData.password}
+                  onChange={handleChange}
+                />
                         <button
                           type="button"
                           className="absolute inset-y-0 right-0 pr-4 flex items-center"
@@ -658,27 +658,27 @@ const EmployerRegister = () => {
                           )}
                         </button>
                       </div>
-                    </div>
+              </div>
 
-                    <div>
+              <div>
                       <label htmlFor="confirmPassword" className="block text-sm font-semibold text-white mb-2">
                         Xác nhận mật khẩu <span className="text-red-400">*</span>
-                      </label>
+                </label>
                       <div className="relative">
                         <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                           <FaLock className="h-5 w-5 text-gray-400" />
                         </div>
-                        <input
-                          id="confirmPassword"
-                          name="confirmPassword"
+                <input
+                  id="confirmPassword"
+                  name="confirmPassword"
                           type={showConfirmPassword ? 'text' : 'password'}
-                          autoComplete="new-password"
-                          required
+                  autoComplete="new-password"
+                  required
                           className="block w-full pl-12 pr-12 py-3 border border-white/30 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 bg-white/20 focus:bg-white/30 text-white placeholder-gray-300"
-                          placeholder="Xác nhận mật khẩu"
-                          value={formData.confirmPassword}
-                          onChange={handleChange}
-                        />
+                  placeholder="Xác nhận mật khẩu"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                />
                         <button
                           type="button"
                           className="absolute inset-y-0 right-0 pr-4 flex items-center"
@@ -692,14 +692,14 @@ const EmployerRegister = () => {
                         </button>
                       </div>
                     </div>
-                  </div>
-                </div>
+              </div>
+            </div>
 
                 {/* Submit Button */}
-                <div>
-                  <button
-                    type="submit"
-                    disabled={loading}
+            <div>
+              <button
+                type="submit"
+                disabled={loading}
                     className="group relative w-full flex justify-center py-4 px-4 border border-transparent text-lg font-semibold rounded-xl text-white bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 transform hover:scale-105 shadow-lg"
                   >
                     {loading ? (
@@ -713,9 +713,9 @@ const EmployerRegister = () => {
                         Đăng ký nhà tuyển dụng
                       </div>
                     )}
-                  </button>
-                </div>
-              </form>
+              </button>
+            </div>
+          </form>
             </div>
           </div>
 

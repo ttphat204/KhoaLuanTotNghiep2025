@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { FaArrowLeft, FaUser, FaFileAlt, FaStar, FaCheckCircle, FaExclamationTriangle, FaLightbulb, FaEye, FaTimes, FaHeart } from 'react-icons/fa';
+import { FaArrowLeft, FaUser, FaFileAlt, FaStar, FaCheckCircle, FaExclamationTriangle, FaLightbulb, FaEye, FaTimes, FaHeart, FaUpload, FaCog, FaChartLine, FaBrain, FaRocket, FaShieldAlt, FaAward } from 'react-icons/fa';
+import Header from '../Layout/shared/Header';
+import Footer from '../components/Footer';
 
 // Danh sách categories và positions
 const jobCategories = [
@@ -624,40 +626,74 @@ const CVCheckPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
       {/* Header */}
-      <div className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center">
-              <button
-                onClick={() => navigate(-1)}
-                className="flex items-center gap-2 text-gray-600 hover:text-indigo-600 transition-colors"
-              >
-                <FaArrowLeft className="w-4 h-4" />
-                <span>Quay lại</span>
-              </button>
+      <Header />
+
+      {/* Hero Section */}
+      <div className="relative overflow-hidden bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 mt-16">
+        <div className="absolute inset-0 bg-black/20"></div>
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                      <div className="text-center">
+              <div className="flex items-center justify-center gap-3 mb-4">
+                <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
+                  <FaBrain className="w-6 h-6 text-white" />
+                </div>
+                <h1 className="text-3xl md:text-4xl font-bold text-white">
+                  Kiểm Tra CV
+                </h1>
+              </div>
+                          <p className="text-lg text-white/90 max-w-3xl mx-auto mb-6">
+                Sử dụng AI để phân tích và đánh giá CV của bạn với độ chính xác cao, 
+                giúp tăng cơ hội trúng tuyển vào vị trí mơ ước
+              </p>
+            <div className="flex flex-wrap justify-center gap-4 text-white/80">
+              <div className="flex items-center gap-2">
+                <FaShieldAlt className="w-5 h-5" />
+                <span>Bảo mật tuyệt đối</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <FaAward className="w-5 h-5" />
+                <span>Độ chính xác cao</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <FaRocket className="w-5 h-5" />
+                <span>Kết quả nhanh chóng</span>
+              </div>
             </div>
-            <h1 className="text-xl font-bold text-gray-900">Kiểm Tra CV</h1>
-            <div className="w-20"></div>
           </div>
         </div>
+        
+        {/* Decorative elements */}
+        <div className="absolute top-10 left-10 w-20 h-20 bg-white/10 rounded-full blur-xl"></div>
+        <div className="absolute bottom-10 right-10 w-32 h-32 bg-white/10 rounded-full blur-xl"></div>
+        <div className="absolute top-1/2 left-1/4 w-16 h-16 bg-white/10 rounded-full blur-lg"></div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Left Side - CV File Display */}
+          {/* Left Side - Input Form */}
           <div className="space-y-6">
-            {loadingProfile ? (
-              <div className="bg-white rounded-lg shadow-sm border p-6">
+            {/* CV Selection Card */}
+            <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-6">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
+                  <FaFileAlt className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h2 className="text-xl font-bold text-gray-900">Chọn CV của bạn</h2>
+                  <p className="text-gray-600">Tải lên CV hoặc sử dụng CV từ hồ sơ</p>
+                </div>
+              </div>
+              
+              {loadingProfile ? (
                 <div className="text-center py-8">
                   <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
                   <h3 className="text-lg font-semibold text-gray-900 mb-2">Đang tải thông tin CV...</h3>
                   <p className="text-gray-600">Vui lòng chờ trong giây lát</p>
                 </div>
-              </div>
-            ) : profileError ? (
-              <div className="bg-white rounded-lg shadow-sm border p-6">
+              ) : profileError ? (
                 <div className="text-center py-8">
                   <FaFileAlt className="w-16 h-16 text-red-300 mx-auto mb-4" />
                   <h3 className="text-lg font-semibold text-gray-900 mb-2">Lỗi tải thông tin</h3>
@@ -669,138 +705,130 @@ const CVCheckPage = () => {
                     Thử lại
                   </button>
                 </div>
-              </div>
-            ) : cvFile ? (
-              <div className="bg-white rounded-lg shadow-sm border p-6">
-                <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                  <FaFileAlt className="w-5 h-5 text-indigo-600" />
-                  Chọn CV của bạn
-                </h2>
-                
-                <div className="border-2 border-blue-200 bg-blue-50 rounded-lg p-4">
+              ) : cvFile ? (
+                <div className="border-2 border-blue-200 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-4">
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
                         <FaFileAlt className="w-6 h-6 text-blue-600" />
                       </div>
                       <div>
                         <h3 className="text-lg font-bold text-gray-900">CV từ hồ sơ</h3>
-                        <div className="flex gap-2 mt-1">
-                          <span className="px-2 py-1 bg-gray-200 text-gray-700 text-xs font-medium rounded">
+                        <div className="flex gap-2 mt-2">
+                          <span className="px-3 py-1 bg-gray-200 text-gray-700 text-xs font-medium rounded-full">
                             PDF
                           </span>
-                          <span className="px-2 py-1 bg-blue-200 text-blue-700 text-xs font-medium rounded">
+                          <span className="px-3 py-1 bg-blue-200 text-blue-700 text-xs font-medium rounded-full">
                             CV chính
                           </span>
-                          <span className="px-2 py-1 bg-green-200 text-green-700 text-xs font-medium rounded">
+                          <span className="px-3 py-1 bg-green-200 text-green-700 text-xs font-medium rounded-full">
                             CV hồ sơ
                           </span>
                         </div>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <div className="w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center">
-                        <FaCheckCircle className="w-4 h-4 text-white" />
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
+                        <FaCheckCircle className="w-5 h-5 text-white" />
                       </div>
                       <button
                         onClick={() => setShowCVModal(true)}
-                        className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center hover:bg-blue-200 transition-colors"
+                        className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center hover:bg-blue-200 transition-colors"
                         title="Xem CV"
                       >
-                        <FaEye className="w-4 h-4 text-blue-600" />
+                        <FaEye className="w-5 h-5 text-blue-600" />
                       </button>
                     </div>
                   </div>
                 </div>
-              </div>
-            ) : (
-              <div className="bg-white rounded-lg shadow-sm border p-6">
-                <div className="text-center py-8">
-                  <FaFileAlt className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Không có file CV</h3>
-                  <p className="text-gray-600 mb-4">Vui lòng tải lên CV hoặc cập nhật profile</p>
+              ) : (
+                <div className="space-y-4">
+                  <div className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:border-indigo-400 transition-colors">
+                    <input
+                      type="file"
+                      accept=".pdf,.doc,.docx,.txt"
+                      onChange={(e) => {
+                        const file = e.target.files[0];
+                        if (file) {
+                          setUploadedCV(file);
+                        }
+                      }}
+                      className="hidden"
+                      id="cv-upload"
+                    />
+                    <label
+                      htmlFor="cv-upload"
+                      className="cursor-pointer flex flex-col items-center"
+                    >
+                      <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center mb-4">
+                        <FaUpload className="w-8 h-8 text-white" />
+                      </div>
+                      <span className="text-lg font-semibold text-gray-900 mb-2">
+                        Tải lên CV của bạn
+                      </span>
+                      <span className="text-gray-600">
+                        Hỗ trợ PDF, DOC, DOCX, TXT (Tối đa 10MB)
+                      </span>
+                    </label>
+                  </div>
                   
-                  {/* Upload CV File */}
-                  <div className="space-y-4">
-                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-6">
-                      <input
-                        type="file"
-                        accept=".pdf,.doc,.docx,.txt"
-                        onChange={(e) => {
-                          const file = e.target.files[0];
-                          if (file) {
-                    
-                            setUploadedCV(file);
-                          }
-                        }}
-                        className="hidden"
-                        id="cv-upload"
-                      />
-                      <label
-                        htmlFor="cv-upload"
-                        className="cursor-pointer flex flex-col items-center"
-                      >
-                        <FaFileAlt className="w-8 h-8 text-gray-400 mb-2" />
-                        <span className="text-sm text-gray-600">
-                          Click để chọn file CV (PDF, DOC, DOCX, TXT)
+                  {uploadedCV && (
+                    <div className="bg-green-50 border border-green-200 rounded-xl p-4">
+                      <div className="flex items-center gap-3">
+                        <FaCheckCircle className="w-5 h-5 text-green-600" />
+                        <span className="text-green-800 font-medium">
+                          Đã chọn: {uploadedCV.name}
                         </span>
-                      </label>
+                      </div>
                     </div>
+                  )}
+                  
+                  <div className="flex gap-3">
+                    <button
+                      onClick={() => navigate('/candidate/profile')}
+                      className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-colors font-medium"
+                    >
+                      <FaUser className="w-4 h-4" />
+                      Cập nhật Profile
+                    </button>
                     
                     {uploadedCV && (
-                      <div className="bg-green-50 border border-green-200 rounded-lg p-3">
-                        <div className="flex items-center gap-2">
-                          <FaCheckCircle className="w-4 h-4 text-green-600" />
-                          <span className="text-sm text-green-800">
-                            Đã chọn: {uploadedCV.name}
-                          </span>
-                        </div>
-                      </div>
+                      <button
+                        onClick={() => setUploadedCV(null)}
+                        className="px-4 py-3 bg-gray-600 text-white rounded-xl hover:bg-gray-700 transition-colors"
+                      >
+                        <FaTimes className="w-4 h-4" />
+                      </button>
                     )}
-                    
-                    <div className="flex gap-2">
-                  <button
-                    onClick={() => navigate('/candidate/profile')}
-                    className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
-                  >
-                    <FaUser className="w-4 h-4" />
-                    Cập nhật Profile
-                  </button>
-                      
-                      {uploadedCV && (
-                        <button
-                          onClick={() => setUploadedCV(null)}
-                          className="inline-flex items-center gap-2 px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
-                        >
-                          <FaTimes className="w-4 h-4" />
-                          Xóa file
-                        </button>
-                      )}
-                    </div>
                   </div>
                 </div>
-              </div>
-            )}
+              )}
+            </div>
 
-            {/* Category Selection */}
-            <div className="bg-white rounded-lg shadow-sm border p-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                <FaFileAlt className="w-5 h-5 text-blue-600" />
-                Chọn Ngành Nghề
-              </h2>
+            {/* Job Category Selection Card */}
+            <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-6">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center">
+                  <FaCog className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h2 className="text-xl font-bold text-gray-900">Chọn Ngành Nghề</h2>
+                  <p className="text-gray-600">Xác định vị trí công việc mục tiêu</p>
+                </div>
+              </div>
               
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
                     Ngành nghề
                   </label>
                   <select
                     value={selectedCategory}
                     onChange={(e) => {
                       setSelectedCategory(e.target.value);
-                      setSelectedPosition(''); // Reset position when category changes
+                      setSelectedPosition('');
                     }}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white/50 backdrop-blur-sm"
                   >
                     <option value="">Chọn ngành nghề</option>
                     {jobCategories.map((category) => (
@@ -813,13 +841,13 @@ const CVCheckPage = () => {
 
                 {selectedCategory && (
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
                       Vị trí công việc
                     </label>
                     <select
                       value={selectedPosition}
                       onChange={(e) => setSelectedPosition(e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white/50 backdrop-blur-sm"
                     >
                       <option value="">Chọn vị trí</option>
                       {getPositionsForCategory(selectedCategory).map((position) => (
@@ -832,8 +860,8 @@ const CVCheckPage = () => {
                 )}
 
                 {selectedCategory && selectedPosition && (
-                  <div className="bg-blue-50 border border-blue-200 rounded-md p-3">
-                    <div className="text-sm text-blue-800">
+                  <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-4">
+                    <div className="text-sm text-blue-800 font-medium">
                       <strong>Đã chọn:</strong> {getCategoryLabel(selectedCategory)} - {getPositionLabel(selectedPosition, selectedCategory)}
                     </div>
                   </div>
@@ -841,165 +869,174 @@ const CVCheckPage = () => {
               </div>
             </div>
 
-            {jobRequirements ? (
-              <div className="bg-white rounded-lg shadow-sm border p-6">
-                <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                  <FaFileAlt className="w-5 h-5 text-green-600" />
-                  Yêu Cầu Công Việc
-                </h2>
+            {/* Job Requirements Card */}
+            {jobRequirements && (
+              <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-6">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-600 rounded-xl flex items-center justify-center">
+                    <FaChartLine className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-bold text-gray-900">Yêu Cầu Công Việc</h2>
+                    <p className="text-gray-600">Thông tin chi tiết về vị trí ứng tuyển</p>
+                  </div>
+                </div>
                 
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
                       Mô tả công việc
                     </label>
                     <div 
-                      className="px-3 py-2 bg-gray-50 rounded-md text-gray-900 min-h-[80px]"
+                      className="px-4 py-3 bg-gray-50 rounded-xl text-gray-900 min-h-[80px] max-h-[200px] border border-gray-200 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100"
                       dangerouslySetInnerHTML={{ __html: decodeHtmlEntities(jobRequirements.description || 'Chưa cập nhật') }}
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
                       Yêu cầu ứng viên
                     </label>
                     <div 
-                      className="px-3 py-2 bg-gray-50 rounded-md text-gray-900 min-h-[80px]"
+                      className="px-4 py-3 bg-gray-50 rounded-xl text-gray-900 min-h-[80px] max-h-[200px] border border-gray-200 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100"
                       dangerouslySetInnerHTML={{ __html: decodeHtmlEntities(jobRequirements.requirements || 'Chưa cập nhật') }}
                     />
-                    {/* Debug info */}
-                    <div className="text-xs text-gray-500 mt-1">
-                      Debug: {jobRequirements.requirements ? 'Có dữ liệu' : 'Không có dữ liệu'} - 
-                      Length: {jobRequirements.requirements?.length || 0}
-                    </div>
                   </div>
-                </div>
-              </div>
-            ) : (
-              <div className="bg-white rounded-lg shadow-sm border p-6">
-                <div className="text-center py-8">
-                  <FaFileAlt className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Không có thông tin công việc</h3>
-                  <p className="text-gray-600">Vui lòng chọn một công việc để kiểm tra</p>
                 </div>
               </div>
             )}
 
+            {/* Analyze Button */}
             <button
               onClick={analyzeCV}
               disabled={isAnalyzing || (!cvFile && !uploadedCV) || (!jobRequirements && !selectedPosition) || loadingProfile}
-              className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-3 px-6 rounded-lg font-semibold hover:from-indigo-700 hover:to-purple-700 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="w-full bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white py-4 px-6 rounded-2xl font-bold hover:from-indigo-700 hover:via-purple-700 hover:to-pink-700 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3 shadow-lg hover:shadow-xl transform hover:scale-[1.02]"
             >
               {isAnalyzing ? (
                 <>
-                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
                   Đang phân tích...
                 </>
               ) : (
                 <>
-                  <FaStar className="w-5 h-5" />
-                  Phân Tích CV
+                  <FaBrain className="w-6 h-6" />
+                  Phân Tích CV với AI
                 </>
               )}
             </button>
           </div>
 
-          {/* Right Side - Evaluation Results */}
+          {/* Right Side - Results */}
           <div className="space-y-6">
             {isAnalyzing && (
-              <div className="bg-white rounded-lg shadow-sm border p-8 text-center">
-                <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-indigo-600 mx-auto mb-4"></div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Đang phân tích CV...</h3>
-                <p className="text-gray-600 mb-4">Hệ thống AI đang đánh giá sự phù hợp của CV với yêu cầu công việc</p>
-                <div className="space-y-2 text-sm text-gray-500">
-                  <p>• Đang trích xuất thông tin từ CV...</p>
-                  <p>• Phân tích kỹ năng và kinh nghiệm...</p>
-                  <p>• So sánh với yêu cầu công việc...</p>
-                  <p>• Tạo đánh giá thông minh...</p>
+              <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-8 text-center">
+                <div className="animate-spin rounded-full h-20 w-20 border-b-2 border-indigo-600 mx-auto mb-6"></div>
+                <h3 className="text-2xl font-bold text-gray-900 mb-4">Đang phân tích CV...</h3>
+                <p className="text-gray-600 mb-6">Hệ thống AI đang đánh giá sự phù hợp của CV với yêu cầu công việc</p>
+                <div className="space-y-3 text-sm text-gray-500">
+                  <div className="flex items-center justify-center gap-2">
+                    <div className="w-2 h-2 bg-indigo-600 rounded-full animate-pulse"></div>
+                    <span>Đang trích xuất thông tin từ CV...</span>
+                  </div>
+                  <div className="flex items-center justify-center gap-2">
+                    <div className="w-2 h-2 bg-purple-600 rounded-full animate-pulse"></div>
+                    <span>Phân tích kỹ năng và kinh nghiệm...</span>
+                  </div>
+                  <div className="flex items-center justify-center gap-2">
+                    <div className="w-2 h-2 bg-pink-600 rounded-full animate-pulse"></div>
+                    <span>So sánh với yêu cầu công việc...</span>
+                  </div>
+                  <div className="flex items-center justify-center gap-2">
+                    <div className="w-2 h-2 bg-indigo-600 rounded-full animate-pulse"></div>
+                    <span>Tạo đánh giá thông minh...</span>
+                  </div>
                 </div>
               </div>
             )}
 
             {analysisError && (
-              <div className="bg-white rounded-lg shadow-sm border p-6">
-                <div className="text-center py-8">
-                  <FaExclamationTriangle className="w-16 h-16 text-red-300 mx-auto mb-4" />
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Lỗi phân tích CV</h3>
-                  <p className="text-gray-600 mb-4">{analysisError}</p>
-                  <button
-                    onClick={() => {
-                      setAnalysisError(null);
-                      analyzeCV();
-                    }}
-                    className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
-                  >
-                    Thử lại
-                  </button>
-                </div>
+              <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-8 text-center">
+                <FaExclamationTriangle className="w-20 h-20 text-red-400 mx-auto mb-6" />
+                <h3 className="text-2xl font-bold text-gray-900 mb-4">Lỗi phân tích CV</h3>
+                <p className="text-gray-600 mb-6">{analysisError}</p>
+                <button
+                  onClick={() => {
+                    setAnalysisError(null);
+                    analyzeCV();
+                  }}
+                  className="inline-flex items-center gap-2 px-6 py-3 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-colors font-medium"
+                >
+                  <FaCog className="w-4 h-4" />
+                  Thử lại
+                </button>
               </div>
             )}
 
             {evaluation && !isAnalyzing && !analysisError && (
               <>
-                {/* Overall Score */}
-                <div className="bg-white rounded-lg shadow-sm border p-6">
-                  <h2 className="text-lg font-semibold text-gray-900 mb-4">Đánh Giá Tổng Quan</h2>
+                {/* Overall Score Card */}
+                <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-6">
+                  <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">Đánh Giá Tổng Quan</h2>
                   
-                  {/* Target Position Info */}
                   {evaluation.targetPosition && (
-                    <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                      <div className="text-sm text-blue-800">
+                    <div className="mb-6 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl">
+                      <div className="text-sm text-blue-800 font-medium">
                         <strong>Vị trí mục tiêu:</strong> {evaluation.targetPosition.category} - {evaluation.targetPosition.position}
                       </div>
                     </div>
                   )}
                   
                   <div className="grid grid-cols-2 gap-4 mb-6">
-                    <div className="text-center p-4 bg-gradient-to-br from-indigo-50 to-purple-50 rounded-lg">
-                      <div className="text-2xl font-bold text-indigo-600">{evaluation.overallScore}/100</div>
+                    <div className="text-center p-6 bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl border border-indigo-200">
+                      <div className="text-3xl font-bold text-indigo-600 mb-2">{evaluation.overallScore}/100</div>
                       <div className="text-sm text-gray-600">Điểm tổng thể</div>
                     </div>
-                    <div className="text-center p-4 bg-gradient-to-br from-green-50 to-emerald-50 rounded-lg">
-                      <div className="text-2xl font-bold text-green-600">{evaluation.matchScore}%</div>
+                    <div className="text-center p-6 bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl border border-green-200">
+                      <div className="text-3xl font-bold text-green-600 mb-2">{evaluation.matchScore}%</div>
                       <div className="text-sm text-gray-600">Độ phù hợp</div>
                     </div>
                   </div>
 
                   {/* Analysis Summary */}
-                  <div className="bg-gray-50 rounded-lg p-4 mb-6">
-                    <h3 className="font-semibold text-gray-900 mb-3">Tóm Tắt Phân Tích</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                  <div className="bg-gradient-to-r from-gray-50 to-slate-50 rounded-xl p-4 border border-gray-200">
+                    <h3 className="font-bold text-gray-900 mb-4 text-center">Tóm Tắt Phân Tích</h3>
+                    <div className="grid grid-cols-3 gap-4 text-sm">
                       <div className="text-center">
-                        <div className="font-semibold text-blue-600">
+                        <div className="text-2xl font-bold text-blue-600 mb-1">
                           {evaluation.matchingSkills?.length || 0}
                         </div>
                         <div className="text-gray-600">Kỹ năng phù hợp</div>
                       </div>
                       <div className="text-center">
-                        <div className="font-semibold text-red-600">
+                        <div className="text-2xl font-bold text-red-600 mb-1">
                           {evaluation.missingSkills?.length || 0}
                         </div>
                         <div className="text-gray-600">Kỹ năng thiếu</div>
                       </div>
                       <div className="text-center">
-                        <div className="font-semibold text-orange-600">
+                        <div className="text-2xl font-bold text-orange-600 mb-1">
                           {evaluation.atsScore || 0}/100
                         </div>
                         <div className="text-gray-600">Điểm ATS</div>
                       </div>
                     </div>
                   </div>
+                </div>
 
-                  <div className="space-y-4">
+                {/* Strengths & Weaknesses */}
+                <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-6">
+                  <h2 className="text-xl font-bold text-gray-900 mb-6">Phân Tích Chi Tiết</h2>
+                  
+                  <div className="space-y-6">
                     <div>
-                      <h3 className="font-semibold text-gray-900 mb-2 flex items-center gap-2">
-                        <FaCheckCircle className="w-4 h-4 text-green-600" />
+                      <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
+                        <FaCheckCircle className="w-5 h-5 text-green-600" />
                         Điểm mạnh
                       </h3>
-                      <ul className="space-y-2">
+                      <ul className="space-y-3">
                         {evaluation.strengths.map((strength, index) => (
-                          <li key={index} className="flex items-start gap-2">
-                            <span className="text-green-500 mt-1">✓</span>
+                          <li key={index} className="flex items-start gap-3 p-3 bg-green-50 rounded-xl border border-green-200">
+                            <span className="text-green-500 mt-1 text-lg">✓</span>
                             <span className="text-gray-700">{strength}</span>
                           </li>
                         ))}
@@ -1007,14 +1044,14 @@ const CVCheckPage = () => {
                     </div>
 
                     <div>
-                      <h3 className="font-semibold text-gray-900 mb-2 flex items-center gap-2">
-                        <FaExclamationTriangle className="w-4 h-4 text-yellow-600" />
+                      <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
+                        <FaExclamationTriangle className="w-5 h-5 text-yellow-600" />
                         Điểm cần cải thiện
                       </h3>
-                      <ul className="space-y-2">
+                      <ul className="space-y-3">
                         {evaluation.weaknesses.map((weakness, index) => (
-                          <li key={index} className="flex items-start gap-2">
-                            <span className="text-yellow-500 mt-1">⚠</span>
+                          <li key={index} className="flex items-start gap-3 p-3 bg-yellow-50 rounded-xl border border-yellow-200">
+                            <span className="text-yellow-500 mt-1 text-lg">⚠</span>
                             <span className="text-gray-700">{weakness}</span>
                           </li>
                         ))}
@@ -1022,14 +1059,14 @@ const CVCheckPage = () => {
                     </div>
 
                     <div>
-                      <h3 className="font-semibold text-gray-900 mb-2 flex items-center gap-2">
-                        <FaLightbulb className="w-4 h-4 text-blue-600" />
+                      <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
+                        <FaLightbulb className="w-5 h-5 text-blue-600" />
                         Gợi ý cải thiện
                       </h3>
-                      <ul className="space-y-2">
+                      <ul className="space-y-3">
                         {evaluation.suggestions.map((suggestion, index) => (
-                          <li key={index} className="flex items-start gap-2">
-                            <span className="text-blue-500 mt-1">💡</span>
+                          <li key={index} className="flex items-start gap-3 p-3 bg-blue-50 rounded-xl border border-blue-200">
+                            <span className="text-blue-500 mt-1 text-lg">💡</span>
                             <span className="text-gray-700">{suggestion}</span>
                           </li>
                         ))}
@@ -1038,57 +1075,18 @@ const CVCheckPage = () => {
                   </div>
                 </div>
 
-                {/* Detailed Analysis */}
-                <div className="bg-white rounded-lg shadow-sm border p-6">
-                  <h2 className="text-lg font-semibold text-gray-900 mb-4">Phân Tích Chi Tiết</h2>
-                  
-                  <div className="space-y-4">
-                    {Object.entries(evaluation.detailedAnalysis).map(([category, data]) => (
-                      <div key={category} className="border-b border-gray-100 pb-4 last:border-b-0">
-                        <div className="flex items-center justify-between mb-2">
-                          <span className="font-medium text-gray-900 capitalize">
-                            {category === 'experience' && 'Kinh nghiệm'}
-                            {category === 'education' && 'Học vấn'}
-                            {category === 'skills' && 'Kỹ năng'}
-                            {category === 'certifications' && 'Chứng chỉ'}
-                          </span>
-                          <span className={`px-3 py-1 rounded-full text-sm font-semibold ${getScoreBgColor(data.score)} ${getScoreColor(data.score)}`}>
-                            {data.score}/100
-                          </span>
-                        </div>
-                        <p className="text-sm text-gray-600">{data.comment}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* ATS Score */}
-                {evaluation.atsScore > 0 && (
-                  <div className="bg-white rounded-lg shadow-sm border p-6">
-                    <h2 className="text-lg font-semibold text-gray-900 mb-4">Điểm ATS</h2>
-                    <div className="text-center p-4 bg-gradient-to-br from-orange-50 to-red-50 rounded-lg">
-                      <div className="text-2xl font-bold text-orange-600">{evaluation.atsScore}/100</div>
-                      <div className="text-sm text-gray-600">Khả năng vượt qua hệ thống ATS</div>
-                    </div>
-                    <p className="text-sm text-gray-600 mt-3">
-                      Điểm ATS đánh giá khả năng CV của bạn được hệ thống Applicant Tracking System (ATS) 
-                      của các công ty nhận diện và xử lý tốt.
-                    </p>
-                  </div>
-                )}
-
-                {/* Skills Matching Analysis */}
+                {/* Skills Analysis */}
                 {evaluation.matchingSkills && evaluation.matchingSkills.length > 0 && (
-                  <div className="bg-white rounded-lg shadow-sm border p-6">
-                    <h2 className="text-lg font-semibold text-gray-900 mb-4">Kỹ Năng Phù Hợp</h2>
-                    <div className="mb-3">
+                  <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-6">
+                    <h2 className="text-xl font-bold text-gray-900 mb-4">Kỹ Năng Phù Hợp</h2>
+                    <div className="mb-4">
                       <span className="text-sm text-gray-600">
                         Tìm thấy {evaluation.matchingSkills.length} kỹ năng phù hợp với yêu cầu công việc
                       </span>
                     </div>
                     <div className="flex flex-wrap gap-2">
                       {evaluation.matchingSkills.map((skill, index) => (
-                        <span key={index} className="px-3 py-1 bg-green-100 text-green-800 text-sm font-medium rounded-full">
+                        <span key={index} className="px-4 py-2 bg-green-100 text-green-800 text-sm font-medium rounded-full border border-green-200">
                           ✓ {skill}
                         </span>
                       ))}
@@ -1097,45 +1095,30 @@ const CVCheckPage = () => {
                 )}
 
                 {/* Missing Skills */}
-                {evaluation.missingSkills && evaluation.missingSkills.length > 0 ? (
-                  <div className="bg-white rounded-lg shadow-sm border p-6">
-                    <h2 className="text-lg font-semibold text-gray-900 mb-4">Kỹ Năng Cần Bổ Sung</h2>
-                    <div className="mb-3">
+                {evaluation.missingSkills && evaluation.missingSkills.length > 0 && (
+                  <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-6">
+                    <h2 className="text-xl font-bold text-gray-900 mb-4">Kỹ Năng Cần Bổ Sung</h2>
+                    <div className="mb-4">
                       <span className="text-sm text-gray-600">
                         Cần bổ sung {evaluation.missingSkills.length} kỹ năng để đáp ứng yêu cầu công việc
                       </span>
-                      {evaluation.apiResult?.matching_analysis?.missing_skills?.length > evaluation.missingSkills.length && (
-                        <div className="mt-2 p-2 bg-yellow-50 border border-yellow-200 rounded text-xs text-yellow-800">
-                          <strong>Lưu ý:</strong> Một số kỹ năng đã được lọc bỏ do định dạng không phù hợp
-                        </div>
-                      )}
                     </div>
                     <div className="flex flex-wrap gap-2">
                       {evaluation.missingSkills.map((skill, index) => (
-                        <span key={index} className="px-3 py-1 bg-red-100 text-red-800 text-sm font-medium rounded-full">
+                        <span key={index} className="px-4 py-2 bg-red-100 text-red-800 text-sm font-medium rounded-full border border-red-200">
                           ⚠ {skill}
                         </span>
                       ))}
                     </div>
                   </div>
-                ) : evaluation.apiResult?.matching_analysis?.missing_skills?.length > 0 ? (
-                  <div className="bg-white rounded-lg shadow-sm border p-6">
-                    <h2 className="text-lg font-semibold text-gray-900 mb-4">Kỹ Năng Cần Bổ Sung</h2>
-                    <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-                      <div className="text-sm text-yellow-800">
-                        <strong>Lưu ý:</strong> Tất cả kỹ năng từ API đã được lọc bỏ do định dạng không phù hợp. 
-                        Vui lòng kiểm tra lại nội dung JD hoặc thử lại.
-                      </div>
-                    </div>
-                  </div>
-                ) : null}
+                )}
 
                 {/* Intelligent Feedback */}
                 {evaluation.intelligentFeedback && (
-                  <div className="bg-white rounded-lg shadow-sm border p-6">
-                    <h2 className="text-lg font-semibold text-gray-900 mb-4">Đánh Giá Thông Minh</h2>
+                  <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-6">
+                    <h2 className="text-xl font-bold text-gray-900 mb-4">Đánh Giá Thông Minh</h2>
                     {evaluation.isFallback && (
-                      <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                      <div className="mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-xl">
                         <div className="text-sm text-yellow-800">
                           <strong>⚠️ Lưu ý:</strong> Đang sử dụng đánh giá cơ bản do API không khả dụng. 
                           Kết quả này chỉ mang tính tham khảo.
@@ -1143,115 +1126,30 @@ const CVCheckPage = () => {
                       </div>
                     )}
                     
-                    {/* Overall Assessment */}
-                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
-                      <h3 className="font-semibold text-gray-900 mb-2">Đánh Giá Tổng Quan</h3>
+                    <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-4">
+                      <h3 className="font-bold text-gray-900 mb-3">Đánh Giá Tổng Quan</h3>
                       <p className="text-gray-700 leading-relaxed">
                         {evaluation.intelligentFeedback}
                       </p>
                     </div>
-
-                    {/* Strengths */}
-                    {evaluation.strengths && evaluation.strengths.length > 0 && (
-                      <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
-                        <h3 className="font-semibold text-gray-900 mb-2 flex items-center gap-2">
-                          <FaCheckCircle className="w-4 h-4 text-green-600" />
-                          Điểm Mạnh
-                        </h3>
-                        <ul className="space-y-2">
-                          {evaluation.strengths.map((strength, index) => (
-                            <li key={index} className="flex items-start gap-2">
-                              <span className="text-green-500 mt-1">✓</span>
-                              <span className="text-gray-700">{strength}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-
-                    {/* Weaknesses */}
-                    {evaluation.weaknesses && evaluation.weaknesses.length > 0 && (
-                      <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
-                        <h3 className="font-semibold text-gray-900 mb-2 flex items-center gap-2">
-                          <FaExclamationTriangle className="w-4 h-4 text-red-600" />
-                          Điểm Cần Cải Thiện
-                        </h3>
-                        <ul className="space-y-2">
-                          {evaluation.weaknesses.map((weakness, index) => (
-                            <li key={index} className="flex items-start gap-2">
-                              <span className="text-red-500 mt-1">⚠</span>
-                              <span className="text-gray-700">{weakness}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-
-                    {/* Specific Suggestions */}
-                    {evaluation.suggestions && evaluation.suggestions.length > 0 && (
-                      <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 mb-4">
-                        <h3 className="font-semibold text-gray-900 mb-2 flex items-center gap-2">
-                          <FaLightbulb className="w-4 h-4 text-purple-600" />
-                          Gợi Ý Cụ Thể
-                        </h3>
-                        <ul className="space-y-2">
-                          {evaluation.suggestions.map((suggestion, index) => (
-                            <li key={index} className="flex items-start gap-2">
-                              <span className="text-purple-500 mt-1">💡</span>
-                              <span className="text-gray-700">{suggestion}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-
-                    {/* Priority Actions */}
-                    {evaluation.priorityActions && evaluation.priorityActions.length > 0 && (
-                      <div className="bg-orange-50 border border-orange-200 rounded-lg p-4 mb-4">
-                        <h3 className="font-semibold text-gray-900 mb-2 flex items-center gap-2">
-                          <FaStar className="w-4 h-4 text-orange-600" />
-                          Hành Động Ưu Tiên
-                        </h3>
-                        <ul className="space-y-2">
-                          {evaluation.priorityActions.map((action, index) => (
-                            <li key={index} className="flex items-start gap-2">
-                              <span className="text-orange-500 mt-1">⭐</span>
-                              <span className="text-gray-700">{action}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-
-                    {/* Encouragement */}
-                    {evaluation.encouragement && (
-                      <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-4">
-                        <h3 className="font-semibold text-gray-900 mb-2 flex items-center gap-2">
-                          <FaHeart className="w-4 h-4 text-indigo-600" />
-                          Lời Khuyến Khích
-                        </h3>
-                        <p className="text-gray-700 leading-relaxed">
-                          {evaluation.encouragement}
-                        </p>
-                      </div>
-                    )}
                   </div>
                 )}
-
-
               </>
             )}
 
             {!evaluation && !isAnalyzing && !analysisError && (
-              <div className="bg-white rounded-lg shadow-sm border p-8 text-center">
-                <FaFileAlt className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Chưa có đánh giá</h3>
-                <p className="text-gray-600">Nhập thông tin CV và yêu cầu công việc, sau đó nhấn "Phân Tích CV" để xem kết quả</p>
+              <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-8 text-center">
+                <FaBrain className="w-20 h-20 text-gray-300 mx-auto mb-6" />
+                <h3 className="text-2xl font-bold text-gray-900 mb-4">Chưa có đánh giá</h3>
+                <p className="text-gray-600">Nhập thông tin CV và yêu cầu công việc, sau đó nhấn "Phân Tích CV với AI" để xem kết quả</p>
               </div>
             )}
           </div>
         </div>
       </div>
+
+      {/* Footer */}
+      <Footer />
 
       {/* CV Modal */}
       {showCVModal && cvFile && (
@@ -1264,7 +1162,7 @@ const CVCheckPage = () => {
             ></div>
 
             {/* Modal content */}
-            <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full">
+            <div className="inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full">
               {/* Modal header */}
               <div className="bg-white px-6 py-4 border-b border-gray-200 flex items-center justify-between">
                 <div className="flex items-center gap-3">
@@ -1276,7 +1174,7 @@ const CVCheckPage = () => {
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => window.open(cvFile, '_blank')}
-                    className="px-3 py-1.5 bg-indigo-600 text-white text-sm rounded-md hover:bg-indigo-700 transition-colors"
+                    className="px-4 py-2 bg-indigo-600 text-white text-sm rounded-lg hover:bg-indigo-700 transition-colors"
                   >
                     Mở trong tab mới
                   </button>
@@ -1308,7 +1206,7 @@ const CVCheckPage = () => {
                       <p className="text-gray-600 mb-4">Không thể hiển thị CV</p>
                       <button
                         onClick={() => window.open(cvFile, '_blank')}
-                        className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors"
+                        className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
                       >
                         Mở trong tab mới
                       </button>
@@ -1321,7 +1219,7 @@ const CVCheckPage = () => {
               <div className="bg-gray-50 px-6 py-4 flex justify-end gap-3">
                 <button
                   onClick={() => setShowCVModal(false)}
-                  className="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+                  className="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
                 >
                   Đóng
                 </button>

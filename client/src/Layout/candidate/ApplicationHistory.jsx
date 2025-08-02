@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaArrowLeft, FaEye, FaBuilding, FaMapMarkerAlt, FaMoneyBillWave, FaClock, FaFileAlt, FaCheckCircle, FaHourglassHalf, FaTimesCircle, FaUserTie, FaCalendarAlt, FaTimes } from 'react-icons/fa';
 import { useAuth } from '../../context/AuthContext';
@@ -12,6 +12,7 @@ const ApplicationHistory = () => {
   const [filter, setFilter] = useState('all');
   const [showCoverLetterModal, setShowCoverLetterModal] = useState(false);
   const [selectedCoverLetter, setSelectedCoverLetter] = useState('');
+  const [isFetching, setIsFetching] = useState(false); // Thêm state để tránh fetch đồng thời
   const navigate = useNavigate();
   const { user } = useAuth();
 
@@ -20,15 +21,30 @@ const ApplicationHistory = () => {
       navigate('/login');
       return;
     }
+    
+    // Chỉ fetch một lần khi component mount
     fetchApplications();
-    // Polling để cập nhật trạng thái mỗi 30 giây
-    const interval = setInterval(fetchApplications, 30000);
-    return () => clearInterval(interval);
-  }, [user, navigate]);
+    
+    // Tắt polling để giảm tải server - user có thể dùng nút "Cập nhật" để refresh
+  }, [user?._id, user?.role, fetchApplications]); // Thêm fetchApplications vào dependency
 
-  const fetchApplications = async () => {
+  const fetchApplications = useCallback(async () => {
+    // Kiểm tra user trước khi fetch
+    if (!user || !user._id) {
+      console.log('User not available, skipping fetch');
+      return;
+    }
+
+    // Tránh fetch đồng thời
+    if (isFetching) {
+      console.log('Already fetching, skipping...');
+      return;
+    }
+
     try {
+      setIsFetching(true);
       setLoading(true);
+      setError(null); // Reset error state
       
       // Sử dụng API đơn giản đang hoạt động
       const response = await fetch(`https://be-khoa-luan2.vercel.app/api/simple-candidate-applications?candidateId=${user._id}`);
@@ -88,8 +104,9 @@ const ApplicationHistory = () => {
       setError('Không thể kết nối server. Vui lòng thử lại sau.');
     } finally {
       setLoading(false);
+      setIsFetching(false);
     }
-  };
+  }, [user?._id, isFetching]); // Thêm dependency array cho useCallback
 
   const getStatusInfo = (status) => {
     const statusConfig = {
@@ -262,7 +279,8 @@ const ApplicationHistory = () => {
 
           {/* Filter Section */}
           <div className="mb-6">
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-2 justify-between items-center">
+              <div className="flex flex-wrap gap-2">
               <button
                 onClick={() => setFilter('all')}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
@@ -295,6 +313,26 @@ const ApplicationHistory = () => {
                   </button>
                 );
               })}
+              </div>
+              
+              {/* Refresh Button */}
+              <button
+                onClick={fetchApplications}
+                disabled={isFetching}
+                className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 transition-all duration-200"
+              >
+                {isFetching ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                    Đang cập nhật...
+                  </>
+                ) : (
+                  <>
+                    <FaEye className="w-4 h-4" />
+                    Cập nhật
+                  </>
+                )}
+              </button>
             </div>
           </div>
 

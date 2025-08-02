@@ -6,7 +6,6 @@ import {
   FaUserEdit, 
   FaCog, 
   FaBell, 
-  FaBriefcase,
   FaHeart,
   FaFileAlt,
   FaBuilding,
@@ -66,14 +65,7 @@ const UserProfileDropdown = () => {
     setIsOpen(false);
   }, [user?.role, navigate]);
 
-  const handleDashboardClick = useCallback(() => {
-    if (user?.role === 'candidate') {
-      navigate('/candidate');
-    } else if (user?.role === 'employer') {
-      navigate('/employer');
-    }
-    setIsOpen(false);
-  }, [user?.role, navigate]);
+
 
   const handleApplicationsClick = useCallback(() => {
     if (user?.role === 'candidate') {
@@ -192,22 +184,6 @@ const UserProfileDropdown = () => {
             <div className="py-2">
               {/* Menu Items */}
               <div className="py-1">
-                {/* Dashboard */}
-                <motion.button
-                  onClick={handleDashboardClick}
-                  className="w-full flex items-center gap-3 px-4 py-2.5 text-gray-700 dark:text-gray-300 hover:bg-gray-50/80 dark:hover:bg-gray-700/50 transition-all duration-150 group"
-                  whileHover={{ x: 3 }}
-                  whileTap={{ x: 0 }}
-                >
-                  <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-400 to-purple-500 flex items-center justify-center group-hover:from-indigo-500 group-hover:to-purple-600 transition-all duration-200 shadow-sm">
-                    <FaBriefcase className="w-3.5 h-3.5 text-white" />
-                  </div>
-                  <div className="flex-1 text-left">
-                    <span className="font-medium text-sm group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">Bảng điều khiển</span>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">Quản lý tài khoản</p>
-                  </div>
-                </motion.button>
-
                 {/* Profile */}
                 <motion.button
                   onClick={handleProfileClick}
